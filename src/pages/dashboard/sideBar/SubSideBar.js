@@ -3,22 +3,23 @@ import ConversationCard from "../../../components/common/ConversationCard";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 import icons from "../../../components/shared/icon";
 import AddFriendModal from "./modals/AddFriendModal";
-import { BASE_URL, userToken } from "../../../components/shared/api";
+import { BASE_URL, getListConversation, userToken } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation, setListConversation, setListMessage, setViewState } from "../../../hooks/redux/reducer";
 
 export default function SubSideBar() {
+
+    const dispatch = useDispatch();
+
     const reduxListConversation = useSelector((state) => state.listConversation);
     const viewState = useSelector((state) => state.view);
-    console.log(viewState);
+    // console.log(viewState);
 
     const [isLoading, setLoading] = useState(false);
     const [isFLSelected, setFLSelected] = useState(true);
     const [isGLSelected, setGLSelected] = useState(false);
     const [isRLSelected, setRLSelected] = useState(false);
-
-    const dispatch = useDispatch();
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
@@ -77,26 +78,9 @@ export default function SubSideBar() {
         }
     }
 
-    const getListConversation = async () => {
-        setLoading(true)
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/conservations",
-                method: 'GET',
-                headers: { Authorization: `Bearer ${userToken}` },
-                params: { type: 'private' }
-            })
-            console.log(response);
-            dispatch(setListConversation(response.data.data))
-            setLoading(false)
-        } catch (error) {
-            console.log(error);
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
-        getListConversation();
+        console.log(reduxListConversation)
+        getListConversation(dispatch);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -111,10 +95,10 @@ export default function SubSideBar() {
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer">{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto scroll-smooth">
-                    {!isLoading && reduxListConversation ? reduxListConversation.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
+                    {!isLoading && reduxListConversation ? (reduxListConversation.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
                         <ConversationCard props={e} />
                     </div>
-                    )) : <ConversationSkeleton />}
+                    ))) : (<ConversationSkeleton />)}
                 </div>
                 <div style={{ width: '100%', height: 10, position: 'relative' }}>
 
