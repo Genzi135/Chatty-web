@@ -1,7 +1,7 @@
 function CustomButton({ name }) {
     return (
         <div>
-            <button className="btn" color={color}>{name}</button>
+            <button className="btn btn-secondary" >{name}</button>
         </div>
     )
 }
