@@ -48,9 +48,7 @@ function Login({ state }) {
         }
     }
 
-
-
-
+    
 
     return (
         <div className="card shadow-2xl p-8">

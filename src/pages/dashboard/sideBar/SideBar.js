@@ -44,7 +44,7 @@ export default function SideBar() {
                     {viewState.subSideBar === 'contact' ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.contactFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer" onClick={() => setContactView()}>{icons.contact}</div>)}
                 </div>
             </div>
-            <div className="p-2 text-white" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()) }}>
+            <div className="p-2 text-white" onClick={() => setSettingSelected(!isSettingSelected)}>
                 {isSettingSelected ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.settingFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer">{icons.setting}</div>)}
             </div>
             <dialog id="ProfileModal" className="modal">

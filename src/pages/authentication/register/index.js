@@ -1,5 +1,7 @@
 import { useState } from "react";
 import InputDate from "../../../components/common/InputDate";
+import {handleLogin, handleRegisterAPI} from '../../../components/shared/api';
+import { useDispatch } from "react-redux";
 
 function Register({ state }) {
 
@@ -17,6 +19,8 @@ function Register({ state }) {
     const onConfirmChange = (e) => setConfirm(e.target.value);
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
+    
+    const dispatch = useDispatch();
 
     const handleRegister = () => {
         if (password !== confirm) {
@@ -29,13 +33,15 @@ function Register({ state }) {
             return;
         }
 
-        console.log('Registering user:', {
-            email,
-            password,
-            userName,
-            gender,
-            dob,
-        });
+        handleRegisterAPI (email, password, userName, gender, dob);
+        handleLogin(email, password, dispatch);
+
+        setEmail('')
+        setPassword('')
+        setConfirm('')
+        setUserName('')
+        setGender('')
+        setDob('')
     };
 
     return (

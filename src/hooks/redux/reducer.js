@@ -65,7 +65,6 @@ const reducer = (state = initialState, action) => {
                 login: true,
             }
         case 'SET_LOG_OUT':
-            localStorage.removeItem('userToken')
             return {
                 ...state,
                 login: false
