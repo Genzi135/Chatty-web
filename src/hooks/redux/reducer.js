@@ -36,6 +36,10 @@ export const setSelectedUser = (user) => ({
     type: 'SET_SELECTED_USER',
     payload: user
 })
+export const addConversation = (conversation) => ({
+    type: 'ADD_CONVERSATION',
+    payload: conversation
+})
 
 const initialState = {
     view: {
@@ -104,6 +108,12 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 selectedUser: action.payload
             }
+        case 'ADD_CONVERSATION': {
+            return {
+                ...state,
+                listConversation: [...state.listConversation, action.payload] 
+            }
+        }
         default: return state;
     }
 }
