@@ -29,7 +29,7 @@ function Login({ state }) {
                 url: BASE_URL + "/api/v1/auth/login",
                 method: "post",
                 data: {
-                    phone: email,
+                    email: email,
                     password: password
                 }
             })

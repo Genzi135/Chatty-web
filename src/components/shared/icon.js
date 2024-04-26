@@ -1,4 +1,4 @@
-import { BsArrow90DegDown, BsCamera, BsChatDots, BsChatDotsFill, BsCollectionPlay, BsEmojiSmile, BsFillCircleFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonFillDash, BsReplyFill, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
+import { BsArrow90DegDown, BsCamera, BsChatDots, BsChatDotsFill, BsCollectionPlay, BsEmojiSmile, BsFillCircleFill, BsFillPeopleFill, BsFillPersonCheckFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonFillDash, BsPersonLinesFill, BsReplyFill, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
 
 const icons = {
     contact: <BsJournalBookmark size={25} />,
@@ -29,7 +29,10 @@ const icons = {
     dot: <BsFillCircleFill size={12} />,
     forward: <BsReplyFill size={18} />,
     reply: <BsArrow90DegDown size={15} />,
-    removeMessage: <BsTrash3 size={16} color="red" />
+    removeMessage: <BsTrash3 size={16} color="red" />,
+    listFriend: <BsPersonLinesFill size={25} />,
+    listGroup: <BsFillPeopleFill size={25} />,
+    listRequest: <BsFillPersonCheckFill size={25} />,
 }
 
 export default icons;
