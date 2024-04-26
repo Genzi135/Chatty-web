@@ -53,63 +53,62 @@ export async function handleRegisterAPI(email, password, name, gender, dob) {
 }
 
 //Add friend
-export async function handleSearchFriendAPI(email) {
-    console.log(email)
-    export async function handleSearchFriendAPI(email) {
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/users/findByEmail/" + email,
-                headers: { Authorization: `Bearer ${userToken}` },
-                method: 'GET'
-            })
+async function handleSearchFriendAPI(email) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/findByEmail/" + email,
+            headers: { Authorization: `Bearer ${userToken}` },
+            method: 'GET'
+        })
 
-            console.log(response)
-        } catch (err) {
-            console.log(err)
-        }
+        console.log(response)
+    } catch (err) {
+        console.log(err)
     }
+}
 
-    //Get friend list
-    export async function handleGetFriendList() {
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/friends/",
-                method: "GET",
-                headers: { Authorization: `Bearer ${userToken}` },
-                params: { type: 'private' }
-            })
-            return response
-        } catch (err) {
-            console.log(err)
-        }
-    }
 
-    //Get group list
-    export async function handleGetGroupList() {
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/conservations",
-                method: 'GET',
-                headers: { Authorization: `Bearer ${userToken}` },
-                params: { type: 'group' }
-            })
-            return response
-        } catch (err) {
-            console.log(err)
-        }
+//Get friend list
+export async function handleGetFriendList() {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/friends/",
+            method: "GET",
+            headers: { Authorization: `Bearer ${userToken}` },
+            params: { type: 'private' }
+        })
+        return response
+    } catch (err) {
+        console.log(err)
     }
+}
 
-    //Get list of conversation
-    export async function getListConversation(dispatch) {
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/conservations",
-                method: 'GET',
-                headers: { Authorization: `Bearer ${userToken}` },
-                params: { type: 'private' }
-            })
-            dispatch(setListConversation(response.data.data))
-        } catch (error) {
-            console.log(error);
-        }
+//Get group list
+export async function handleGetGroupList() {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/conservations",
+            method: 'GET',
+            headers: { Authorization: `Bearer ${userToken}` },
+            params: { type: 'group' }
+        })
+        return response
+    } catch (err) {
+        console.log(err)
     }
+}
+
+//Get list of conversation
+export async function getListConversation(dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/conservations",
+            method: 'GET',
+            headers: { Authorization: `Bearer ${userToken}` },
+            params: { type: 'private' }
+        })
+        dispatch(setListConversation(response.data.data))
+    } catch (error) {
+        console.log(error);
+    }
+}
