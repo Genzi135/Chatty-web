@@ -17,9 +17,6 @@ export default function SubSideBar() {
     // console.log(viewState);
 
     const [isLoading, setLoading] = useState(false);
-    const [isFLSelected, setFLSelected] = useState(true);
-    const [isGLSelected, setGLSelected] = useState(false);
-    const [isRLSelected, setRLSelected] = useState(false);
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
@@ -31,37 +28,11 @@ export default function SubSideBar() {
         getListMessageByConversation(e._id)
     }
 
-    const setViewFriendList = () => {
-        setFLSelected(true)
-        setGLSelected(false)
-        setRLSelected(false)
-        const view = {
-            box: 'contact',
+    const setViewList = (box) => {
+        dispatch(setViewState({
+            box: box,
             subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
-    }
-
-    const setViewGroupList = () => {
-        setFLSelected(false)
-        setGLSelected(true)
-        setRLSelected(false)
-        const view = {
-            box: 'group',
-            subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
-    }
-
-    const setViewRequestList = () => {
-        setFLSelected(false)
-        setGLSelected(false)
-        setRLSelected(true)
-        const view = {
-            box: 'request',
-            subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
+        }))
     }
 
     const getListMessageByConversation = async (id) => {
@@ -118,15 +89,15 @@ export default function SubSideBar() {
                 </div>
                 <div className="overflow-auto flex flex-col scroll-smooth mt-2 gap-2 p-2">
                     {/* body */}
-                    <div onClick={() => setViewFriendList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'contact' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('contact')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'contact' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listFriend}</div>
                         <label className="font-semibold ">Friend list</label>
                     </div>
-                    <div onClick={() => setViewGroupList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'group' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('group')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'group' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listGroup}</div>
                         <label className="font-semibold ">Group list</label>
                     </div>
-                    <div onClick={() => setViewRequestList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'request' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('request')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'request' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listRequest}</div>
                         <label className="font-semibold ">Request list</label>
                     </div>

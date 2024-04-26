@@ -53,7 +53,7 @@ export async function handleRegisterAPI(email, password, name, gender, dob) {
 }
 
 //Add friend
-async function handleSearchFriendAPI(email) {
+export async function handleSearchFriendAPI(email) {
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/users/findByEmail/" + email,
