@@ -60,3 +60,18 @@ export async function handleSearchFriendAPI (email) {
         console.log(err)
     }
 }
+
+//Get friend list
+export async function handleGetFriendList () {
+    try {
+        const response = await axios({
+            url: BASE_URL + "api/v1/friends",
+            method: "GET",
+            header: { Authorization: `Bearer ${userToken}` }
+        })
+
+        console.log(response);
+    } catch (err) {
+        console.log(err)
+    }
+}
