@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { CgLayoutGrid } from 'react-icons/cg';
 import { useDispatch } from 'react-redux';
-import { setCurrentUser, setListConversation, setLogin } from '../../hooks/redux/reducer';
+import { addConversation, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
 import { useEffect } from 'react';
+import SubSideBar from '../../pages/dashboard/sideBar/SubSideBar';
+import { checkExist } from '../../helpers/helperFunction';
 
 export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
 
@@ -86,7 +88,21 @@ export async function handleGetGroupList() {
             headers: { Authorization: `Bearer ${userToken}` },
             params: { type: 'group' }
         })
+        console.log(response.data.data)
         return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Remove friend
+export async function handleRemoveFriend(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/remove" + id,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` }
+        })
     } catch (err) {
         console.log(err)
     }
@@ -99,9 +115,48 @@ export async function getListConversation(dispatch) {
             url: BASE_URL + "/api/v1/conservations",
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` },
-            params: { type: 'private' }
         })
         dispatch(setListConversation(response.data.data))
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function handleOpenConversation (id, dispatch, listConversation) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/conservations/open/" + `${id}`,
+            method: 'post',
+            headers: { Authorization: `Bearer ${userToken}` },
+        })
+
+        dispatch(setCurrentConversation(response.data.data))
+        dispatch(setViewState({
+            box: 'chat',
+            subSideBar: 'chat'
+        }))
+
+        console.log(checkExist(listConversation, response.data.data._id))
+        if (!checkExist(listConversation, response.data.data._id)) {
+            dispatch(addConversation(response.data.data))
+        }
+        getListMessageByConversation(response.data.data._id, dispatch)
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+//Get list message
+export async function getListMessageByConversation(id, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${id}/messages`,
+            method: 'GET',
+            headers: { Authorization: `Bearer ${userToken}` }
+        })
+        console.log(response);
+        dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
         console.log(error);
     }

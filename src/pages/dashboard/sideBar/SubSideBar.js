@@ -3,7 +3,7 @@ import ConversationCard from "../../../components/common/ConversationCard";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 import icons from "../../../components/shared/icon";
 import AddFriendModal from "./modals/AddFriendModal";
-import { BASE_URL, getListConversation, userToken } from "../../../components/shared/api";
+import { BASE_URL, getListConversation, getListMessageByConversation, userToken } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation, setListConversation, setListMessage, setViewState } from "../../../hooks/redux/reducer";
@@ -17,9 +17,17 @@ export default function SubSideBar() {
     // console.log(viewState);
 
     const [isLoading, setLoading] = useState(false);
-    const [isFLSelected, setFLSelected] = useState(true);
-    const [isGLSelected, setGLSelected] = useState(false);
-    const [isRLSelected, setRLSelected] = useState(false);
+
+    const [inputValue, setInput] = useState((''))
+    const [dataSource, setDataSource] = useState([])
+
+    useEffect(() => {
+        setDataSource(reduxListConversation)
+    }, [reduxListConversation])
+
+    const setInputValue = (e) => {
+        setInput(e.target.value)
+    }
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
@@ -28,54 +36,14 @@ export default function SubSideBar() {
     const onConversationClick = async (e) => {
         console.log(e);
         dispatch(setCurrentConversation(e))
-        getListMessageByConversation(e._id)
+        getListMessageByConversation(e._id, dispatch)
     }
 
-    const setViewFriendList = () => {
-        setFLSelected(true)
-        setGLSelected(false)
-        setRLSelected(false)
-        const view = {
-            box: 'contact',
+    const setViewList = (box) => {
+        dispatch(setViewState({
+            box: box,
             subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
-    }
-
-    const setViewGroupList = () => {
-        setFLSelected(false)
-        setGLSelected(true)
-        setRLSelected(false)
-        const view = {
-            box: 'group',
-            subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
-    }
-
-    const setViewRequestList = () => {
-        setFLSelected(false)
-        setGLSelected(false)
-        setRLSelected(true)
-        const view = {
-            box: 'request',
-            subSideBar: 'contact'
-        }
-        dispatch(setViewState(view))
-    }
-
-    const getListMessageByConversation = async (id) => {
-        try {
-            const response = await axios({
-                url: BASE_URL + `/api/v1/conservations/${id}/messages`,
-                method: 'GET',
-                headers: { Authorization: `Bearer ${userToken}` }
-            })
-            console.log(response);
-            dispatch(setListMessage(response.data.data.reverse()))
-        } catch (error) {
-            console.log(error);
-        }
+        }))
     }
 
     useEffect(() => {
@@ -84,18 +52,34 @@ export default function SubSideBar() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    function searchUser() {
+        let found = [];
+        reduxListConversation.map((e) => {
+            console.log(inputValue)
+            if (e.name.includes(inputValue)) {
+                found.push(e);
+            }
+        })
+        setDataSource(found)
+    }
+
+    const keyPressed = (e) => {
+        if (e.key === 'Enter')
+            searchUser()
+    }
+
     return (
         <div style={{ width: 320, height: '100vh' }} >
             {viewState && viewState.subSideBar === 'chat' && <div style={{ width: 320 }} className="bg-gray-100 flex flex-col">
                 <div className="w-full bg-white flex justify-between items-center gap-2 p-4">
                     <label className="w-48 h-10 bg-pink-100 input input-bordered flex items-center gap-2">
-                        <input type="text" className="grow" placeholder="Search" />
+                        <input type="text" className="grow" placeholder="Search" onChange={setInputValue} onKeyDown={keyPressed}/>
                     </label>
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer">{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto scroll-smooth">
-                    {!isLoading && reduxListConversation ? (reduxListConversation.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
+                    {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
                         <ConversationCard props={e} />
                     </div>
                     ))) : (<ConversationSkeleton />)}
@@ -118,15 +102,15 @@ export default function SubSideBar() {
                 </div>
                 <div className="overflow-auto flex flex-col scroll-smooth mt-2 gap-2 p-2">
                     {/* body */}
-                    <div onClick={() => setViewFriendList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'contact' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('contact')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'contact' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listFriend}</div>
                         <label className="font-semibold ">Friend list</label>
                     </div>
-                    <div onClick={() => setViewGroupList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'group' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('group')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'group' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listGroup}</div>
                         <label className="font-semibold ">Group list</label>
                     </div>
-                    <div onClick={() => setViewRequestList()} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'request' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
+                    <div onClick={() => setViewList('request')} className={`flex items-center w-full gap-2 p-4 ${viewState.box === 'request' ? "bg-pink-300" : "bg-white hover:bg-pink-100"} `}>
                         <div>{icons.listRequest}</div>
                         <label className="font-semibold ">Request list</label>
                     </div>

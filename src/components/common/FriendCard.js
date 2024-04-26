@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import ModalConfirm from "./ModalConfirm";
+import { handleOpenConversation, handleRemoveFriend } from "../shared/api";
+import { checkExistChat } from "../../helpers/helperFunction";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function FriendCard({props}){
-    
+    const reduxListConversation = useSelector((state) => state.listConversation);
     const [option, setOption] = useState('');
+    const dispatch = useDispatch()
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
@@ -15,9 +19,13 @@ export default function FriendCard({props}){
             setOption('');
             onClose('modalConfirm')
         }else if(option==="confirm"){
-            console.log(option)
+            // handleRemoveFriend(// user id here // );
+            
+            setOption('');
+            onClose('modalConfirm')
         }
     },[option])
+
     return(
         <div className="p-2 w-auto">
         <div className={`flex justify-between items-center p-4 gap-2 bg-white rounded-lg hover:bg-pink-100`}>
@@ -30,7 +38,7 @@ export default function FriendCard({props}){
             <label className="font-semibold text-lg">{props.name&&props.name}</label>
             </div>
             <div className="flex justify-center items-center gap-2">
-                <button className="btn btn-secondary text-white">Chat</button>
+                <button className="btn btn-secondary text-white" onClick={() => {handleOpenConversation(props.userId, dispatch, reduxListConversation)}}>Chat</button>
                 <button onClick={()=>document.getElementById("modalConfirm").showModal()} className="btn btn-error text-white">Remove</button>
             </div>
         </div>
