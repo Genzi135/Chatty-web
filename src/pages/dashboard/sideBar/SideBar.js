@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
-import { setLogout, setViewState } from "../../../hooks/redux/reducer";
+import { setListConversation, setLogout, setViewState } from "../../../hooks/redux/reducer";
 import { useState } from "react";
 import ProfileModal from "./modals/ProfileModal";
 
@@ -45,6 +45,9 @@ export default function SideBar() {
                 </div>
             </div>
             <div className="p-2 text-white" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()) }}>
+                {isSettingSelected ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.settingFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer">{icons.setting}</div>)}
+            </div>
+            <div className="p-2 text-white" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()); localStorage.removeItem("userToken"); dispatch(setListConversation([])); }}>
                 {isSettingSelected ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.settingFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer">{icons.setting}</div>)}
             </div>
             <dialog id="ProfileModal" className="modal">

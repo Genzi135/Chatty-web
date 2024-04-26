@@ -1,9 +1,26 @@
 import { useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
+import { handleGetFriendList, handleGetGroupList } from "../../../components/shared/api";
+import { useEffect, useState } from "react";
+import ConversationCard from "../../../components/common/ConversationCard";
+import FriendCard from "../../../components/common/FriendCard";
+import GroupCard from "../../../components/common/GroupCard";
+import RequestReceiveCard from "../../../components/common/RequestReceiveCard";
+import ModalConfirm from "../../../components/common/ModalConfirm";
 
 export default function Contact() {
     const viewState = useSelector(state => state.view)
-    console.log(viewState);
+    const [friendDataSource, setFriendDataSource] = useState([]);
+    const [groupDataSource, setGroupDataSource] = useState([]);
+    const [requestReceiveList, setRequestReceiveList] = useState([]);
+
+    useEffect(() => {
+        handleGetFriendList()
+            .then((dataSource) => setFriendDataSource(dataSource.data.data))
+        handleGetGroupList()
+            .then((dataSource) => setGroupDataSource(dataSource.data.data))
+    }, [])
+
     return (
         <div style={{ width: '100%', height: '100vh' }}>
             {viewState.box === 'contact' && <div className="flex flex-col gap-2">
@@ -13,7 +30,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-
+                        {friendDataSource.map((e) =>(<FriendCard props={e} key={e._id}/>))}
                     </div>
                 </div>
             </div>}
@@ -24,7 +41,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-
+                        {groupDataSource.map((e) =>(<GroupCard props={e} key={e._id}/>))}
                     </div>
                 </div>
             </div>}
@@ -35,7 +52,20 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-
+                        <div className="w-full h-auto flex flex-col">
+                            <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests recieved</label>
+                            <div className="h-auto w-full p-2">
+                                <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
+                                    {groupDataSource.map((e) =>(<RequestReceiveCard props={e} key={e._id}/>))}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="w-full h-auto flex flex-col ">
+                            <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests sent</label>
+                            <div className="h-auto w-full p-2">
+                                
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>}

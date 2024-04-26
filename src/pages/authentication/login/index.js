@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BASE_URL } from "../../../components/shared/api";
+import { BASE_URL, handleLogin } from "../../../components/shared/api";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, setLogin } from "../../../hooks/redux/reducer";
@@ -21,32 +21,32 @@ function Login({ state }) {
         setPassword(e.target.value)
     }
 
-    const handleLogin = async () => {
-        console.log(email);
-        console.log(password);
-        try {
-            const response = await axios({
-                url: BASE_URL + "/api/v1/auth/login",
-                method: "post",
-                data: {
-                    email: email,
-                    password: password
-                }
-            })
-            if (response.data.status === "success")
-                setReport('');
-            dispatch(setCurrentUser(response.data.data.user))
-            localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
-            dispatch(setLogin())
-        } catch (error) {
-            console.log(error)
-            if (error.response.data.message === 'Bad credentials.') {
-                setReport('Phone or password is not correct')
-            } else {
-                setReport(error.response.data.message)
-            }
-        }
-    }
+    // const handleLogin = async () => {
+    //     console.log(email);
+    //     console.log(password);
+    //     try {
+    //         const response = await axios({
+    //             url: BASE_URL + "/api/v1/auth/login",
+    //             method: "post",
+    //             data: {
+    //                 email: email,
+    //                 password: password
+    //             }
+    //         })
+    //         if (response.data.status === "success")
+    //             setReport('');
+    //         dispatch(setCurrentUser(response.data.data.user))
+    //         localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
+    //         dispatch(setLogin())
+    //     } catch (error) {
+    //         console.log(error)
+    //         if (error.response.data.message === 'Bad credentials.') {
+    //             setReport('Phone or password is not correct')
+    //         } else {
+    //             setReport(error.response.data.message)
+    //         }
+    //     }
+    // }
 
     
 
@@ -83,7 +83,7 @@ function Login({ state }) {
                 </form>
                 <div className="flex justify-center items-center text-red-500">{report}</div>
                 <div className="flex justify-center items-center">
-                    <button className="btn btn-secondary text-white" onClick={() => { handleLogin() }}>LOGIN</button>
+                    <button className="btn btn-secondary text-white" onClick={() => { handleLogin(email, password, dispatch) }}>LOGIN</button>
                 </div>
             </div>
         </div>
