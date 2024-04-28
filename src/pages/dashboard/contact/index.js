@@ -30,7 +30,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                        {friendDataSource.map((e) =>(<FriendCard props={e} key={e._id}/>))}
+                        {friendDataSource.map((e) => (<FriendCard props={e} optionButton={'ChatRemove'} key={e._id} />))}
                     </div>
                 </div>
             </div>}
@@ -41,7 +41,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                        {groupDataSource.map((e) =>(<GroupCard props={e} key={e._id}/>))}
+                        {groupDataSource.map((e) => (<GroupCard props={e} key={e._id} />))}
                     </div>
                 </div>
             </div>}
@@ -56,14 +56,14 @@ export default function Contact() {
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests recieved</label>
                             <div className="h-auto w-full p-2">
                                 <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                                    {groupDataSource.map((e) =>(<RequestReceiveCard props={e} key={e._id}/>))}
+                                    {groupDataSource.map((e) => (<RequestReceiveCard props={e} key={e._id} />))}
                                 </div>
                             </div>
                         </div>
                         <div className="w-full h-auto flex flex-col ">
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests sent</label>
                             <div className="h-auto w-full p-2">
-                                
+
                             </div>
                         </div>
                     </div>

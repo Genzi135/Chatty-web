@@ -7,6 +7,7 @@ import { BASE_URL, getListConversation, getListMessageByConversation, userToken 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation, setListConversation, setListMessage, setViewState } from "../../../hooks/redux/reducer";
+import CreateGroupModal from "./modals/CreateGroupModal";
 
 export default function SubSideBar() {
 
@@ -76,7 +77,7 @@ export default function SubSideBar() {
                         <input type="text" className="grow" placeholder="Search" onChange={setInputValue} onKeyDown={keyPressed} />
                     </label>
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
-                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer">{icons.createGroup}</div>
+                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto scroll-smooth">
                     {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
@@ -87,9 +88,11 @@ export default function SubSideBar() {
                 <div style={{ width: '100%', height: 10, position: 'relative' }}>
 
                 </div>
-
                 <dialog id="addFriendModal" className="modal">
                     <AddFriendModal onClose={onClose} />
+                </dialog>
+                <dialog id="createGroupModal" className="modal">
+                    <CreateGroupModal onClose={onClose} />
                 </dialog>
             </div>}
             {viewState && viewState.subSideBar === 'contact' && <div style={{ width: 320 }} className="bg-gray-100 flex flex-col">

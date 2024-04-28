@@ -8,7 +8,7 @@ export default function ConversationCard({ props }) {
         <div className="p-2 w-auto">
             <div className={`flex justify-start items-center p-4 ${isCurrent ? "bg-pink-300" : 'bg-white'} rounded-lg ${isCurrent ? " shadow-2xl" : 'shadow-sm'} gap-3 w-full   ${isCurrent ? "" : 'hover:bg-pink-100'}`}>
                 <div className="avatar">
-                    <div className="avatar w-16 h-16 rounded-full bg-black">
+                    <div className="avatar w-12 h-12 rounded-full bg-black">
                         <img src={props.image} alt="avatar" />
                     </div>
                 </div>
