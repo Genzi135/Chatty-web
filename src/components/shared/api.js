@@ -62,8 +62,8 @@ export async function handleSearchFriendAPI(email) {
             headers: { Authorization: `Bearer ${userToken}` },
             method: 'GET'
         })
-
         console.log(response)
+        return response
     } catch (err) {
         console.log(err)
     }
@@ -165,5 +165,84 @@ export async function getListMessageByConversation(id, dispatch) {
         dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
         console.log(error);
+    }
+}
+
+//Create group
+export async function handleCreateGroup(id, member, groupName, groupImage) {
+    try {
+        const response = await axios({
+            url: BASE_URL + '/api/v1/conservations/createGroup',
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                creatorId: id,
+                members: member,
+                name: groupName,
+                image: groupImage
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Profile avatar update
+export async function handleUpdateAvatar(inputAva) {
+    // try {
+    //     const response = await axios({
+    //         url: BASE_URL + "/api/v1/users/updateAvatar",
+    //         method: "PUT",
+    //         type: "application/json",
+    //         headers: {
+    //             Authorization: `Bearer ${userToken}`,
+    //             'Content-Type': 'multipart/form-data',
+    //         },
+    //         data: { avatar: inputAva },
+    //     })
+    // } catch (err) {
+    //     console.log(err)
+    // }
+
+    await fetch (BASE_URL + '/api/v1/users/updateAvatar', {
+        method: 'PUT',
+        type: 'application/json',
+        headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'multipart/form-data'
+        },
+        data: { avatar: inputAva },
+    })
+    .then(response => console.log(response))
+    .catch(err => console.log(err)) 
+}
+
+//Group avatar update
+export async function handleUpdateGroupAvatar(conversation, inputAva) {
+    await fetch (BASE_URL + `/api/v1/${conversation._id}/changeImageV2`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'multipart/form-data'
+        },
+        data: { avatar: inputAva },
+    })
+}
+
+//Send message
+export async function handleSendMessage(currentConversation, inputMessage, dispatch) {
+    try {
+        const respone = await axios({
+            url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendText`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+              content: inputMessage
+            }
+          });
+          dispatch(addMessage(respone.data.data))
+    } catch (err) {
+        console.log(err)
     }
 }

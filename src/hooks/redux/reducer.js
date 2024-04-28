@@ -40,6 +40,10 @@ export const addConversation = (conversation) => ({
     type: 'ADD_CONVERSATION',
     payload: conversation
 })
+export const addMessage = (message) => ({
+    type: 'ADD_MESSAGE',
+    payload: message
+})
 
 const initialState = {
     view: {
@@ -112,6 +116,12 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 listConversation: [...state.listConversation, action.payload] 
+            }
+        }
+        case: 'ADD_MESSAGE': {
+            return {
+                ...state,
+                listMessage: [...state.listMessage, action.payload]
             }
         }
         default: return state;
