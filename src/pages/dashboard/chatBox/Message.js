@@ -30,6 +30,10 @@ export default function Message({ data }) {
         document.getElementById('ForwardModal').showModal()
     }
 
+    const onClose = (id) => {
+        id && document.getElementById(id).close();
+    }
+
     const showSelectedImage = (url) => {
         setSelectedImage(url)
     }
@@ -99,7 +103,7 @@ export default function Message({ data }) {
                 <div className="absolute top-2 right-2" onClick={() => setSelectedImage('')}>{icons.xCloseAnimation}</div>
             </div>}
             <dialog id="ForwardModal" className="modal">
-                <ForwardModal />
+                <ForwardModal onClose={onClose}/>
             </dialog>
         </div>
     )

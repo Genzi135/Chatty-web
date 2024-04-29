@@ -3,7 +3,7 @@ import icons from "../../../components/shared/icon";
 import { setReplyMessage } from "../../../hooks/redux/reducer";
 import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
-import { handleReplyMessage, handleSendMessage } from "../../../components/shared/api";
+import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 
 export default function ChatInput() {
     const replyMessage = useSelector((state) => state.replyMessage);
@@ -49,10 +49,25 @@ export default function ChatInput() {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
                 dispatch(setReplyMessage({}))
             }
+        } else if (inputFiles || inputVideos || inputImages) {
+            let formData = new FormData()
+            if (inputFiles) {
+                inputFiles.map(e => formData.append('files', e))
+            }
+            if (inputVideos) {
+                inputVideos.map(e => formData.append('files', e))
+            }
+            if (inputImages) {
+                inputImages.map(e => formData.append('files', e))
+            }
+            handleSendFile(currentConversation, formData, dispatch)
         } else if (inputMessage) {
             handleSendMessage(currentConversation, inputMessage, dispatch)
         }
         document.getElementById('chatInput').value = ''
+        setInputFiles([])
+        setInputVideos([])
+        setInputImages([])
     }
 
     return (

@@ -247,6 +247,22 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
     }
 }
 
+//Send files
+export async function handleSendFile(currentConversation, formData, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendFiles`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: formData
+        });
+        dispatch(addMessage(response.data.data))
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 //Reply message
 export async function handleReplyMessage(conversation, message, inputMessage, dispatch) {
     try {
@@ -267,16 +283,30 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
 //Forawrd message
 export async function handleForwardMessage(conversation, message, dispatch) {
     try {
-        const response = await axios({
-            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/sendText`,
-            method: 'POST',
-            headers: { Authorization: `Bearer: ${userToken}` },
-            data: {
-                content: message
-            }
-        })
-        console.log(response.data.data)
-        dispatch(addMessage(response.data.data))
+        if (message.attachments) {
+            const response = await axios({
+                url: BASE_URL + `/api/v1/conservations/${conversation._id}/forwardFiles`,
+                method: 'POST',
+                headers: { Authorization: `Bearer: ${userToken}` },
+                data: {
+                    files: message.attachments
+                }
+            })
+            console.log(response.data.data)
+            dispatch(addMessage(response.data.data))
+        } else {
+            const response = await axios({
+                url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/sendText`,
+                method: 'POST',
+                headers: { Authorization: `Bearer: ${userToken}` },
+                data: {
+                    content: message.content
+                }
+            })
+            console.log(response.data.data)
+            dispatch(addMessage(response.data.data))
+        }
+
     } catch (err) {
         console.log(err)
     }
