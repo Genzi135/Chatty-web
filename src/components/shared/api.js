@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { CgLayoutGrid } from 'react-icons/cg';
 import { useDispatch } from 'react-redux';
-import { addConversation, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
+import { addConversation, addMessage, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
 import { useEffect } from 'react';
 import SubSideBar from '../../pages/dashboard/sideBar/SubSideBar';
 import { checkExist } from '../../helpers/helperFunction';
@@ -128,7 +128,7 @@ export async function getListConversation(dispatch) {
     }
 }
 
-export async function handleOpenConversation (id, dispatch, listConversation) {
+export async function handleOpenConversation(id, dispatch, listConversation) {
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/open/" + `${id}`,
@@ -205,7 +205,7 @@ export async function handleUpdateAvatar(inputAva) {
     //     console.log(err)
     // }
 
-    await fetch (BASE_URL + '/api/v1/users/updateAvatar', {
+    await fetch(BASE_URL + '/api/v1/users/updateAvatar', {
         method: 'PUT',
         type: 'application/json',
         headers: {
@@ -214,13 +214,13 @@ export async function handleUpdateAvatar(inputAva) {
         },
         data: { avatar: inputAva },
     })
-    .then(response => console.log(response))
-    .catch(err => console.log(err)) 
+        .then(response => console.log(response))
+        .catch(err => console.log(err))
 }
 
 //Group avatar update
 export async function handleUpdateGroupAvatar(conversation, inputAva) {
-    await fetch (BASE_URL + `/api/v1/${conversation._id}/changeImageV2`, {
+    await fetch(BASE_URL + `/api/v1/${conversation._id}/changeImageV2`, {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${userToken}`,
@@ -238,10 +238,10 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
-              content: inputMessage
+                content: inputMessage
             }
-          });
-          dispatch(addMessage(respone.data.data))
+        });
+        dispatch(addMessage(respone.data.data))
     } catch (err) {
         console.log(err)
     }

@@ -55,7 +55,7 @@ const initialState = {
     currentConversation: {},
     listConversation: [],
     listMessage: [],
-    replyMessage: {},
+    replyMessage: null,
     selectedMessage: {},
     selectedUser: {}
 }
@@ -115,10 +115,10 @@ const reducer = (state = initialState, action) => {
         case 'ADD_CONVERSATION': {
             return {
                 ...state,
-                listConversation: [...state.listConversation, action.payload] 
+                listConversation: [...state.listConversation, action.payload]
             }
         }
-        case: 'ADD_MESSAGE': {
+        case 'ADD_MESSAGE': {
             return {
                 ...state,
                 listMessage: [...state.listMessage, action.payload]

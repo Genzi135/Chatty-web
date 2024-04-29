@@ -1,4 +1,4 @@
-import { BsArrow90DegDown, BsCamera, BsChatDots, BsChatDotsFill, BsCollectionPlay, BsEmojiSmile, BsFillCircleFill, BsFillPeopleFill, BsFillPersonCheckFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonFillDash, BsPersonLinesFill, BsReplyFill, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
+import { BsArrow90DegDown, BsCamera, BsChatDots, BsChatDotsFill, BsCollectionPlay, BsEmojiSmile, BsFillCircleFill, BsFillPeopleFill, BsFillPersonCheckFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPaperclip, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonFillDash, BsPersonLinesFill, BsReplyFill, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
 
 const icons = {
     contact: <BsJournalBookmark size={25} />,
@@ -33,6 +33,7 @@ const icons = {
     listFriend: <BsPersonLinesFill size={25} />,
     listGroup: <BsFillPeopleFill size={25} />,
     listRequest: <BsFillPersonCheckFill size={25} />,
+    attachments: <BsPaperclip size={20} />
 }
 
 export default icons;
