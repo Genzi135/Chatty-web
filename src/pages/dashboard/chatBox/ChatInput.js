@@ -3,16 +3,23 @@ import icons from "../../../components/shared/icon";
 import { setReplyMessage } from "../../../hooks/redux/reducer";
 import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
+import { handleReplyMessage, handleSendMessage } from "../../../components/shared/api";
 
 export default function ChatInput() {
     const replyMessage = useSelector((state) => state.replyMessage);
+    const currentConversation = useSelector((state) => state.currentConversation)
 
     const [showImages, setShowImages] = useState(null);
     const [inputImages, setInputImages] = useState([]);
     const [inputFiles, setInputFiles] = useState([]);
     const [inputVideos, setInputVideos] = useState([]);
+    const [inputMessage, setInputMessage] = useState('');
 
     const dispatch = useDispatch();
+
+    const setInput = (e) => {
+        setInputMessage(e.target.value)
+    }
 
     const removeImageFromList = (index) => {
         const newListImages = [...inputImages];
@@ -34,6 +41,18 @@ export default function ChatInput() {
         const newListFiles = [...inputFiles];
         newListFiles.splice(index, 1);
         setInputFiles(newListFiles);
+    }
+
+    const SendMessage = async() => {
+        if (replyMessage != null) {
+            if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
+                handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
+                dispatch(setReplyMessage({}))
+            }
+        } else if (inputMessage) {
+            handleSendMessage(currentConversation, inputMessage, dispatch)
+        }
+        document.getElementById('chatInput').value = ''
     }
 
     return (
@@ -171,9 +190,9 @@ export default function ChatInput() {
             </div>
             <div className="flex justify-between items-center pt-2 pb-2 gap-2 p-5">
                 <div className="w-full h-auto">
-                    <input className="input w-full input-secondary" />
+                    <input className="input w-full input-secondary" id='chatInput'  onChange={(setInput)}/>
                 </div>
-                <div className="btn btn-secondary">
+                <div className="btn btn-secondary" onClick={SendMessage}>
                     <label>SEND</label>
                 </div>
             </div>

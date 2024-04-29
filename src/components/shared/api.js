@@ -233,7 +233,7 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
 //Send message
 export async function handleSendMessage(currentConversation, inputMessage, dispatch) {
     try {
-        const respone = await axios({
+        const response = await axios({
             url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendText`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
@@ -241,7 +241,42 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
                 content: inputMessage
             }
         });
-        dispatch(addMessage(respone.data.data))
+        dispatch(addMessage(response.data.data))
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Reply message
+export async function handleReplyMessage(conversation, message, inputMessage, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/replyText/${message._id}`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                content: inputMessage
+            }
+        });
+        dispatch(addMessage(response.data.data))
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Forawrd message
+export async function handleForwardMessage(conversation, message, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/sendText`,
+            method: 'POST',
+            headers: { Authorization: `Bearer: ${userToken}` },
+            data: {
+                content: message
+            }
+        })
+        console.log(response.data.data)
+        dispatch(addMessage(response.data.data))
     } catch (err) {
         console.log(err)
     }
