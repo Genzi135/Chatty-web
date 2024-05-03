@@ -5,11 +5,14 @@ import { formatTime } from "../../../helpers/formatDate";
 import { setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import ForwardModal from "./ForwardModal";
+import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 
 export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
+
+    console.log()
 
     const dispatch = useDispatch();
 
@@ -41,7 +44,7 @@ export default function Message({ data }) {
         <div
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
-            className={`${currentUser._id === data.sender._id ? 'flex flex-row-reverse mb-2 pr-2' : 'flex mb-2 pl-2'}`}>
+            className={`${data.sender && currentUser._id == data.sender._id ? 'flex flex-row-reverse mb-2 pr-2' : 'flex mb-2 pl-2'}`}>
             {currentUser._id === data.sender._id ? <div>
             </div> : <div className="avatar">
                 <div className="avatar rounded-full w-8 h-8 mr-2">

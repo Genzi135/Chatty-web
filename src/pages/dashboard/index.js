@@ -5,18 +5,18 @@ import SubSideBar from "./sideBar/SubSideBar";
 import Contact from "./contact";
 import { useSocket } from "../../hooks/context/socket";
 import { useEffect } from "react";
-import { addMessage } from "../../hooks/redux/reducer";
+import { addMessage, setListConversation } from "../../hooks/redux/reducer";
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view)
     const {socket} = useSocket()
     const currentConversation = useSelector(state => state.currentConversation)
+    const listConversation = useSelector(state => state.listConversation)
 
     const dispatch = useDispatch()
 
     useEffect(() => {
-        socket.on("message:receive", (response, currentConversation) => {
-            console.log(currentConversation)
+        socket.on("message:receive", (response) => {
             if (currentConversation._id === response.conversation._id) {
                 //dispatch(updateConversationLastMessage(response.conversation._id, response));
                 dispatch(addMessage(response))
@@ -24,6 +24,15 @@ export default function Dashboard() {
             else {
                 //dispatch(updateConversationLastMessage(response.conversation._id, response));
             }
+
+            listConversation.map(conversation => {
+                if (conversation._id === response.conversation._id) {
+                    conversation.lastMessage = response
+                }
+            })
+
+            console.log(listConversation)
+            dispatch(setListConversation(listConversation))
         });
     }, [currentConversation])
 

@@ -71,7 +71,14 @@ export default function ChatInput() {
                     })
                 })
         } else if (inputMessage !== '') {
-            // handleSendText()
+            handleSendMessage(currentConversation, inputMessage, dispatch)
+                .then(response => {
+                    console.log(response)
+                    socket.emit("message:send", {
+                        ...response,
+                        conversation: currentConversation
+                      })
+                })
         }
         document.getElementById('chatInput').value = ''
         setInputFiles([])

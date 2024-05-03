@@ -29,7 +29,7 @@ export default function ConversationCard({ props }) {
                     </div>
                     <div className="flex justify-center items-center">
                         <label className="text-red-500">
-                            {props.isReadMessage ? icons.dot : ""}
+                            {!props.isReadMessage ? icons.dot : ""}
                         </label>
                     </div>
                 </div>

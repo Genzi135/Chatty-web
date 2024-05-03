@@ -14,7 +14,6 @@ export default function FriendCard({ props, optionButton, isRefresh }) {
     }
 
     useEffect(() => {
-        console.log(option)
         if (option === "cancel") {
             setOption('');
             onClose('modalConfirm')

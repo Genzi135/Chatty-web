@@ -13,7 +13,7 @@ export default function SubSideBar() {
 
     const dispatch = useDispatch();
 
-    const reduxListConversation = useSelector((state) => state.listConversation);
+    var reduxListConversation = useSelector((state) => state.listConversation);
     const viewState = useSelector((state) => state.view);
     // console.log(viewState);
 
@@ -23,6 +23,7 @@ export default function SubSideBar() {
     const [dataSource, setDataSource] = useState([])
 
     useEffect(() => {
+        console.log(reduxListConversation)
         setDataSource(reduxListConversation)
     }, [reduxListConversation])
 
@@ -48,7 +49,6 @@ export default function SubSideBar() {
     }
 
     useEffect(() => {
-        console.log(reduxListConversation)
         getListConversation(dispatch);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -80,7 +80,7 @@ export default function SubSideBar() {
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto scroll-smooth">
-                    {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
+                    {!isLoading && dataSource ? (reduxListConversation.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
                         <ConversationCard props={e} />
                     </div>
                     ))) : (<ConversationSkeleton />)}
