@@ -1,3 +1,5 @@
+import { handleSendFriendRequest } from "../shared/api";
+
 export default function AddFriendCard({ props }) {
     return (
         <div className="p-2 w-auto bg-gray-100 mt-5">
@@ -14,7 +16,7 @@ export default function AddFriendCard({ props }) {
                     <label className="font-semibold text-lg">{props && props.name}</label>
                 </div>
                 <div>
-                    <button className="btn btn-secondary text-white">Add</button>
+                    <button className="btn btn-secondary text-white" onClick={() => handleSendFriendRequest(props._id)}>Add</button>
                     <button className="btn btn-disabled">Cancel</button>
                 </div>
             </div>

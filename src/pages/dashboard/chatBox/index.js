@@ -12,7 +12,6 @@ export default function ChatBox() {
     const listMessage = useSelector((state) => state.listMessage);
 
     const [isShowDrawer, setShowDrawer] = useState(false);
-    console.log(listMessage);
 
     return (
         <div style={{ width: '100%', height: '100vh' }}>

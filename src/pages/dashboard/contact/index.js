@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
-import { handleGetFriendList, handleGetGroupList } from "../../../components/shared/api";
+import { handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import ConversationCard from "../../../components/common/ConversationCard";
 import FriendCard from "../../../components/common/FriendCard";
@@ -13,12 +13,24 @@ export default function Contact() {
     const [friendDataSource, setFriendDataSource] = useState([]);
     const [groupDataSource, setGroupDataSource] = useState([]);
     const [requestReceiveList, setRequestReceiveList] = useState([]);
+    const [isRefresh, setIsRefresh] = useState(false);
+
+    useEffect(() => {
+        console.log(isRefresh)
+        if (isRefresh) {
+            handleGetFriendList()
+                .then((dataSource) => setFriendDataSource(dataSource.data.data))
+            setIsRefresh(false)
+        }
+    }, [isRefresh])
 
     useEffect(() => {
         handleGetFriendList()
             .then((dataSource) => setFriendDataSource(dataSource.data.data))
         handleGetGroupList()
             .then((dataSource) => setGroupDataSource(dataSource.data.data))
+        handleGetFriendRequest()
+            .then((dataSource) => setRequestReceiveList(dataSource.data.data))
     }, [])
 
     return (
@@ -30,7 +42,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                        {friendDataSource.map((e) => (<FriendCard props={e} optionButton={'ChatRemove'} key={e._id} />))}
+                        {friendDataSource.map((e) => (<FriendCard props={e} isRefresh={setIsRefresh} optionButton={'ChatRemove'} key={e._id} />))}
                     </div>
                 </div>
             </div>}
@@ -56,7 +68,7 @@ export default function Contact() {
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests recieved</label>
                             <div className="h-auto w-full p-2">
                                 <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                                    {groupDataSource.map((e) => (<RequestReceiveCard props={e} key={e._id} />))}
+                                    {requestReceiveList.map((e) => (<RequestReceiveCard props={e} key={e._id} />))}
                                 </div>
                             </div>
                         </div>

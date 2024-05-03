@@ -4,7 +4,7 @@ import { handleOpenConversation, handleRemoveFriend } from "../shared/api";
 import { checkExistChat } from "../../helpers/helperFunction";
 import { useDispatch, useSelector } from "react-redux";
 
-export default function FriendCard({ props, optionButton }) {
+export default function FriendCard({ props, optionButton, isRefresh }) {
     const reduxListConversation = useSelector((state) => state.listConversation);
     const [option, setOption] = useState('');
     const dispatch = useDispatch()
@@ -19,8 +19,8 @@ export default function FriendCard({ props, optionButton }) {
             setOption('');
             onClose('modalConfirm')
         } else if (option === "confirm") {
-            // handleRemoveFriend(// user id here // );
-
+            handleRemoveFriend(props._id)
+            isRefresh(true)
             setOption('');
             onClose('modalConfirm')
         }

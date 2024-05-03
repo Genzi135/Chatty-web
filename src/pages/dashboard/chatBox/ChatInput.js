@@ -4,16 +4,18 @@ import { setReplyMessage } from "../../../hooks/redux/reducer";
 import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatInput() {
     const replyMessage = useSelector((state) => state.replyMessage);
     const currentConversation = useSelector((state) => state.currentConversation)
 
     const [showImages, setShowImages] = useState(null);
-    const [inputImages, setInputImages] = useState([]);
-    const [inputFiles, setInputFiles] = useState([]);
-    const [inputVideos, setInputVideos] = useState([]);
+    const [inputImages, setInputImages] = useState(null);
+    const [inputFiles, setInputFiles] = useState(null);
+    const [inputVideos, setInputVideos] = useState(null);
     const [inputMessage, setInputMessage] = useState('');
+    const {socket} = useSocket()
 
     const dispatch = useDispatch();
 
@@ -43,7 +45,19 @@ export default function ChatInput() {
         setInputFiles(newListFiles);
     }
 
-    const SendMessage = async() => {
+    const handleSendText = async() => {
+        console.log(inputMessage, currentConversation)
+        handleSendMessage(currentConversation, inputMessage, dispatch)
+            .then(response => {
+                socket.emit("message:send", {
+                    ...response,
+                    conversation: currentConversation
+                  })
+            })
+    }
+
+    async function SendMessage() {
+        console.log(inputMessage)
         if (replyMessage != null) {
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
@@ -61,8 +75,14 @@ export default function ChatInput() {
                 inputImages.map(e => formData.append('files', e))
             }
             handleSendFile(currentConversation, formData, dispatch)
-        } else if (inputMessage) {
-            handleSendMessage(currentConversation, inputMessage, dispatch)
+                .then(response => {
+                    socket.emit("message:send", {
+                        ...response,
+                        conversation: currentConversation
+                      })
+                })
+        } else if (inputMessage !== '') {
+            handleSendText()
         }
         document.getElementById('chatInput').value = ''
         setInputFiles([])
@@ -207,7 +227,7 @@ export default function ChatInput() {
                 <div className="w-full h-auto">
                     <input className="input w-full input-secondary" id='chatInput'  onChange={(setInput)}/>
                 </div>
-                <div className="btn btn-secondary" onClick={SendMessage}>
+                <div className="btn btn-secondary" onClick={() => SendMessage()}>
                     <label>SEND</label>
                 </div>
             </div>

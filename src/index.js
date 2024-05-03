@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import store from './hooks/redux/store';
-import { SocketProvider } from './hooks/context/scoket';
+import { SocketProvider } from './hooks/context/socket';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
