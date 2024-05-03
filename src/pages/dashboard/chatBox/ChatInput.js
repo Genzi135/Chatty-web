@@ -45,6 +45,7 @@ export default function ChatInput() {
         setInputFiles(newListFiles);
     }
 
+<<<<<<< HEAD
     const handleSendText = async() => {
         console.log(inputMessage, currentConversation)
         handleSendMessage(currentConversation, inputMessage, dispatch)
@@ -58,10 +59,13 @@ export default function ChatInput() {
 
     async function SendMessage() {
         console.log(inputMessage)
+=======
+    const SendMessage = async () => {
+>>>>>>> da0d65a13d37f89ff2dda09bdc8931cf6ed7eb9d
         if (replyMessage != null) {
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
-                dispatch(setReplyMessage({}))
+                dispatch(setReplyMessage(null))
             }
         } else if (inputFiles || inputVideos || inputImages) {
             let formData = new FormData()
@@ -225,7 +229,7 @@ export default function ChatInput() {
             </div>
             <div className="flex justify-between items-center pt-2 pb-2 gap-2 p-5">
                 <div className="w-full h-auto">
-                    <input className="input w-full input-secondary" id='chatInput'  onChange={(setInput)}/>
+                    <input className="input w-full input-secondary" id='chatInput' onChange={(setInput)} />
                 </div>
                 <div className="btn btn-secondary" onClick={() => SendMessage()}>
                     <label>SEND</label>

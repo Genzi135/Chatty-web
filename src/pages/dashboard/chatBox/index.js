@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ConversationDrawer from "./ConversationDrawer";
 import { useSelector } from "react-redux";
 import Avatar from "../../../components/common/Avatar";
@@ -13,36 +13,60 @@ export default function ChatBox() {
 
     const [isShowDrawer, setShowDrawer] = useState(false);
 
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [listMessage]);
+
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
     return (
         <div style={{ width: '100%', height: '100vh' }}>
-            {Object.keys(currentConversation).length === 0 ? (<LandingPage />) : (<div style={{ width: '100%', height: '100%' }} className="bg-gray-100 flex justify-between" >
-                <div className="flex flex-col justify-between items-center w-full h-full min-w-[500]">
-                    <div className="flex justify-between w-full h-44 p-3 items-center bg-pink-300 shadow-xl">
-                        {/*Header*/}
-                        <div className="flex gap-5 items-center">
-                            <Avatar link={currentConversation.image} />
-                            <label className="font-semibold text-lg">
-                                {currentConversation.name}
-                            </label>
+            {Object.keys(currentConversation).length === 0 ? (
+                <LandingPage />
+            ) : (
+                <div style={{ width: '100%', height: '100%' }} className="bg-gray-100 flex justify-between">
+                    <div className="flex flex-col justify-between items-center w-full h-full min-w-[500]">
+                        <div className="flex justify-between w-full h-44 p-3 items-center bg-pink-300 shadow-xl">
+                            {/*Header*/}
+                            <div className="flex gap-5 items-center">
+                                <Avatar link={currentConversation.image} />
+                                <label className="font-semibold text-lg">
+                                    {currentConversation.name}
+                                </label>
+                            </div>
+                            <div>
+                                {isShowDrawer ? (
+                                    <div className="flex justify-center items-center p-2 text-white rounded-lg bg-pink-500" onClick={() => setShowDrawer(!isShowDrawer)}>
+                                        {icons.sideBarOpen}
+                                    </div>
+                                ) : (
+                                    <div className="text-white" onClick={() => setShowDrawer(!isShowDrawer)}>
+                                        {icons.sideBarClose}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div>
-                            {isShowDrawer ? <div className="flex justify-center items-center p-2 text-white rounded-lg  bg-pink-500" onClick={() => setShowDrawer(!isShowDrawer)}>{icons.sideBarOpen}</div> : <div className="text-white" onClick={() => setShowDrawer(!isShowDrawer)}>{icons.sideBarClose}</div>}
+                        <div className="flex flex-col w-full h-full bg-gray-200 overflow-auto overflow-y-visible p-2">
+                            {/*Body */}
+                            {listMessage.map((message, index) => (
+                                <Message key={index} data={message} />
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        <div className="w-full">
+                            {/*Input */}
+                            <ChatInput />
                         </div>
                     </div>
-                    <div className="flex flex-col w-full h-full bg-gray-200 overflow-auto overflow-y-visible p-2 ">
-                        {/**Body */}
-                        {listMessage.map((e, index) => (<div>
-                            <Message data={e} />
-                        </div>))}
-                    </div>
-                    <div className="w-full">
-                        {/**Input */}
-                        <ChatInput />
-                    </div>
+                    {isShowDrawer && <ConversationDrawer />}
                 </div>
-                {isShowDrawer && <ConversationDrawer />}
-            </div>)
-            }
+            )}
         </div>
-    )
+    );
 }

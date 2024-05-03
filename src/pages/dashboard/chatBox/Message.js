@@ -10,6 +10,7 @@ export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
+    console.log(data);
 
     const dispatch = useDispatch();
 
@@ -48,13 +49,17 @@ export default function Message({ data }) {
                     <img src={data.avatar} alt="avatar" />
                 </div>
             </div>}
-            <div className={`${currentUser._id === data.sender._id ? 'w-[auto] max-w-[60%] p-2 bg-pink-400 rounded-lg flex flex-col' : 'w-[auto] max-w-[60%] p-2 bg-slate-300 rounded-lg flex flex-col'}`}>
+            <div className={`${currentUser._id === data.sender._id ? 'w-[auto] max-w-[60%] p-2 bg-pink-200 rounded-lg flex flex-col' : 'w-[auto] max-w-[60%] p-2 bg-slate-300 rounded-lg flex flex-col'}`}>
                 <div className="font-semibold p-2">
                     {data.name}
                 </div>
-                <div className="">
-                    {data.attachments && data.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
-                        {e.type === 'image' && <img onClick={() => showSelectedImage(e.url)} src={e.url} alt="" className="cursor-pointer" />}
+                {data.parent && <div className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary">
+                    <div>{data.parent.name}</div>
+                    {data.parent.attachments && data.parent.attachments.length > 0 && data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
+                        {e.type === 'image' && <div className="flex gap-2">
+                            {icons.image} image
+                            {/* <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" /> */}
+                        </div>}
                         {e.type === 'application' &&
                             <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-blue-100 p-1 rounded-lg">
                                 {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
@@ -71,7 +76,37 @@ export default function Message({ data }) {
                                 {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
 
                                 {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
-                                <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split("/").pop()}</label>
+                                <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
+                            </div>
+                        }
+                        {e.type === 'video' && <div>
+                            <video controls width={'auto'}>
+                                <source src={e.url} type="video/mp4" />
+                            </video>
+                        </div>}
+                    </div>))}
+
+                </div>}
+                <div className=" flex flex-col gap-2">
+                    {data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
+                        {e.type === 'image' && <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" />}
+                        {e.type === 'application' &&
+                            <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-blue-100 p-1 rounded-lg">
+                                {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
+                                {e.url.split(".").pop() === 'doc' && <BsFiletypeDoc size={40} color='blue' />}
+
+                                {e.url.split(".").pop() === 'pptx' && <BsFiletypePptx size={40} color='red' />}
+                                {e.url.split(".").pop() === 'ppt' && <BsFiletypePpt size={40} color='red' />}
+                                {e.url.split(".").pop() === 'pdf' && <BsFiletypePdf size={40} color='red' />}
+
+                                {e.url.split(".").pop() === 'xlsx' && <BsFiletypeXlsx size={40} color='green' />}
+                                {e.url.split(".").pop() === 'xls' && <BsFiletypeXls size={40} color='green' />}
+
+                                {e.url.split(".").pop() === 'rar' && <BsFileZip size={40} color='purple' />}
+                                {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
+
+                                {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
+                                <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
                             </div>
                         }
                         {e.type === 'video' && <div>
@@ -103,7 +138,7 @@ export default function Message({ data }) {
                 <div className="absolute top-2 right-2" onClick={() => setSelectedImage('')}>{icons.xCloseAnimation}</div>
             </div>}
             <dialog id="ForwardModal" className="modal">
-                <ForwardModal onClose={onClose}/>
+                <ForwardModal onClose={onClose} />
             </dialog>
         </div>
     )
