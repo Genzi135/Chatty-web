@@ -8,9 +8,11 @@ const SocketContext = createContext();
 export const SocketProvider = ({ children }) => {
     let socket = io("http://ec2-52-221-252-41.ap-southeast-1.compute.amazonaws.com:8555");
     const currentUser = useSelector((state) => state.user);
+    console.log('connect...');
     useEffect(() => {
         if (currentUser && currentUser._id) {
             socket.emit('user_connected', { userId: currentUser._id });
+
         }
         return () => {
             socket.disconnect();
