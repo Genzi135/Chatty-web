@@ -10,7 +10,6 @@ export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
-    console.log(data);
 
     const dispatch = useDispatch();
 

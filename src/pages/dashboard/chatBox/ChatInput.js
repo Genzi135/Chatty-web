@@ -45,17 +45,6 @@ export default function ChatInput() {
         setInputFiles(newListFiles);
     }
 
-    const handleSendText = async () => {
-        console.log(inputMessage, currentConversation)
-        handleSendMessage(currentConversation, inputMessage, dispatch)
-            .then(response => {
-                socket.emit("message:send", {
-                    ...response,
-                    conversation: currentConversation
-                })
-            })
-        }
-
     async function SendMessage() {
         console.log(inputMessage)
         if (replyMessage != null) {
@@ -82,7 +71,7 @@ export default function ChatInput() {
                     })
                 })
         } else if (inputMessage !== '') {
-            handleSendText()
+            // handleSendText()
         }
         document.getElementById('chatInput').value = ''
         setInputFiles([])
@@ -233,4 +222,5 @@ export default function ChatInput() {
             </div>
         </div>
     )
+
 }
