@@ -30,6 +30,8 @@ export default function AddFriendModal({ onClose }) {
         console.log(dataSource)
     }
 
+
+
     return (
         <div className="flex flex-col justify-between bg-white p-5 w-96 rounded-xl">
             <HeaderModal name={"Add friend"} />
