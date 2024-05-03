@@ -1,18 +1,23 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
 import { formatTime } from "../../../helpers/formatDate";
-import { setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
+import { setListMessage, setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import ForwardModal from "./ForwardModal";
-import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
+import ModalConfirm from "../../../components/common/ModalConfirm";
+import { handleDeleteMessage } from "../../../components/shared/api";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
+    const listMessage = useSelector((state) => state.listMessage);
+    const currentConversation = useSelector((state) => state.currentConversation)
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
+    const [option, setOption] = useState('');
 
-    console.log()
+    const {socket} = useSocket()
 
     const dispatch = useDispatch();
 
@@ -28,6 +33,11 @@ export default function Message({ data }) {
         dispatch(setReplyMessage(data))
     }
 
+    const executeHandleRemove = () => {
+        console.log(data)
+        // handleDeleteMessage(data._id)
+    }
+
     const setForwardMessage = () => {
         dispatch(setSelectedMessage(data))
         document.getElementById('ForwardModal').showModal()
@@ -40,6 +50,35 @@ export default function Message({ data }) {
     const showSelectedImage = (url) => {
         setSelectedImage(url)
     }
+
+
+
+    useEffect(() => {
+        if (option === "cancel") {
+            setOption('');
+            onClose('modalConfirm')
+        } else if (option === "confirm") {
+            executeHandleRemove()
+            
+            const newList = listMessage.map((e) => {
+                if (data._id === e._id) {
+                    return { ...e, content: "This message has been deleted", isDelete: true }
+                }
+                return e;
+            })
+
+            dispatch(setListMessage(newList))
+
+            socket.emit("message:delete", {
+                id: data._id,
+                conversation: currentConversation,
+            })
+
+            setOption('');
+            onClose('modalConfirm')
+        }
+    }, [option])
+
     return (
         <div
             onMouseEnter={onMouseEnter}
@@ -131,7 +170,7 @@ export default function Message({ data }) {
                     <div onClick={() => setForwardMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Forward">{icons.forward}</div>
                     <div onClick={() => setRepMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Reply">{icons.reply}</div>
                     {currentUser._id === data.sender._id &&
-                        <div className="p-1 hover:bg-red-100 rounded-md tooltip" data-tip="Remove">{icons.removeMessage}</div>
+                        <div className="p-1 hover:bg-red-100 rounded-md tooltip" data-tip="Remove" onClick={() => document.getElementById("modalConfirm").showModal()}>{icons.removeMessage}</div>
                     }
                 </div>
             </div>}
@@ -141,6 +180,9 @@ export default function Message({ data }) {
             </div>}
             <dialog id="ForwardModal" className="modal">
                 <ForwardModal onClose={onClose} />
+            </dialog>
+            <dialog id="modalConfirm" className="modal">
+                <ModalConfirm onClose={onClose} setOption={setOption} title={"Wanna remove this message"} type={'Warning'} />
             </dialog>
         </div>
     )

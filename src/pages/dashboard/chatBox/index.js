@@ -53,8 +53,8 @@ export default function ChatBox() {
                         </div>
                         <div className="flex flex-col w-full h-full bg-gray-200 overflow-auto overflow-y-visible p-2">
                             {/*Body */}
-                            {listMessage.map((message, index) => (
-                                <Message key={index} data={message} />
+                            {listMessage.map((message) => (
+                                <Message key={message._id} data={message} />
                             ))}
                             <div ref={messagesEndRef} />
                         </div>

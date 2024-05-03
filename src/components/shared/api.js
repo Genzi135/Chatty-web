@@ -375,3 +375,18 @@ export async function handleForwardMessage(conversation, message, dispatch) {
         console.log(err)
     }
 }
+
+//Delete message
+export async function handleDeleteMessage(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/messages/${id}`,
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${userToken}` }
+        })
+        console.log(response)
+        //return response.data.data
+    } catch (err) {
+        console.log(err)
+    }
+}

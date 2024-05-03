@@ -21,20 +21,26 @@ export default function Dashboard() {
                 //dispatch(updateConversationLastMessage(response.conversation._id, response));
                 dispatch(addMessage(response))
             }
-            else {
-                //dispatch(updateConversationLastMessage(response.conversation._id, response));
-            }
 
-            listConversation.map(conversation => {
+            const newList = listConversation.map(conversation => {
                 if (conversation._id === response.conversation._id) {
-                    conversation.lastMessage = response
+                    if (conversation._id === currentConversation._id) {
+                        return { ...conversation, lastMessage: response, isReadMessage: true };
+                    }
+                    return { ...conversation, lastMessage: response, isReadMessage: false };
                 }
-            })
+                return conversation;
+            });
 
-            console.log(listConversation)
-            dispatch(setListConversation(listConversation))
+            console.log(newList)
+
+            dispatch(setListConversation(newList))
         });
-    }, [currentConversation])
+
+        socket.on("message:delete", (response) => {
+            console.log(response)
+        })
+    }, [currentConversation]);
 
     return (
         <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center' }}>

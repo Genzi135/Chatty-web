@@ -13,7 +13,7 @@ export default function SubSideBar() {
 
     const dispatch = useDispatch();
 
-    var reduxListConversation = useSelector((state) => state.listConversation);
+    var listConversation = useSelector((state) => state.listConversation);
     const viewState = useSelector((state) => state.view);
     // console.log(viewState);
 
@@ -23,9 +23,8 @@ export default function SubSideBar() {
     const [dataSource, setDataSource] = useState([])
 
     useEffect(() => {
-        console.log(reduxListConversation)
-        setDataSource(reduxListConversation)
-    }, [reduxListConversation])
+        setDataSource(listConversation)
+    }, [listConversation])
 
     const setInputValue = (e) => {
         setInput(e.target.value)
@@ -38,7 +37,14 @@ export default function SubSideBar() {
     const onConversationClick = async (e) => {
         console.log(e);
         dispatch(setCurrentConversation(e))
+        const readUpdate = listConversation.map(conversation => {
+            if (conversation._id === e._id) {
+                return { ...conversation, isReadMessage: true }; 
+            }
+            return conversation
+        })
         getListMessageByConversation(e._id, dispatch)
+        dispatch(setListConversation(readUpdate))
     }
 
     const setViewList = (box) => {
@@ -55,7 +61,7 @@ export default function SubSideBar() {
 
     function searchUser() {
         let found = [];
-        reduxListConversation.map((e) => {
+        listConversation.map((e) => {
             console.log(inputValue)
             if (e.name.includes(inputValue)) {
                 found.push(e);
@@ -80,7 +86,7 @@ export default function SubSideBar() {
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto scroll-smooth">
-                    {!isLoading && dataSource ? (reduxListConversation.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
+                    {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
                         <ConversationCard props={e} />
                     </div>
                     ))) : (<ConversationSkeleton />)}
