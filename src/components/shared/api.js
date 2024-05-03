@@ -101,14 +101,73 @@ export async function handleGetGroupList() {
     }
 }
 
+//Get friend requests
+export async function handleGetFriendRequest() {
+    try {
+        const response = await axios({
+            url: BASE_URL + '/api/v1/friends/requests',
+            method: 'GET',
+            headers: { Authorization: `Bearer ${userToken}` },
+        })
+        console.log(response.data.data)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Send friend reuqest
+export async function handleSendFriendRequest(id) {
+    console.log(id)
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/friends/request/" + id,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Handle accept friend request
+export async function handleAcceptFriendRequest(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/friends/accept/" + `${id}`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Handle reject friend request
+export async function handleRejectFriendRequest(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/friends/cancel/" + `${id}`,
+            method: 'post',
+            headers: { Authorization: `Bearer ${userToken}` },
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 //Remove friend
 export async function handleRemoveFriend(id) {
     try {
         const response = await axios({
-            url: BASE_URL + "/api/v1/remove" + id,
-            method: 'POST',
-            headers: { Authorization: `Bearer ${userToken}` }
+            url: BASE_URL + "/api/v1/friends/remove/" + `${id}`,
+            method: 'post',
+            headers: { Authorization: `Bearer ${userToken}` },
         })
+        console.log(response)
     } catch (err) {
         console.log(err)
     }
@@ -128,6 +187,7 @@ export async function getListConversation(dispatch) {
     }
 }
 
+//Handle open conversation
 export async function handleOpenConversation(id, dispatch, listConversation) {
     try {
         const response = await axios({
@@ -232,6 +292,7 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
 
 //Send message
 export async function handleSendMessage(currentConversation, inputMessage, dispatch) {
+    console.log(inputMessage)
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendText`,
@@ -242,6 +303,8 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
             }
         });
         dispatch(addMessage(response.data.data))
+        console.log(response)
+        return response.data.data
     } catch (err) {
         console.log(err)
     }
@@ -257,7 +320,7 @@ export async function handleSendFile(currentConversation, formData, dispatch) {
             data: formData
         });
         dispatch(addMessage(response.data.data))
-        console.log(response)
+        return response.data.data
     } catch (err) {
         console.log(err)
     }
@@ -275,6 +338,7 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
             }
         });
         dispatch(addMessage(response.data.data))
+        return response.data.data
     } catch (err) {
         console.log(err)
     }
@@ -292,8 +356,8 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     files: message.attachments
                 }
             })
-            console.log(response.data.data)
             dispatch(addMessage(response.data.data))
+            return response.data.data
         } else {
             const response = await axios({
                 url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/sendText`,
@@ -303,8 +367,8 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     content: message.content
                 }
             })
-            console.log(response.data.data)
             dispatch(addMessage(response.data.data))
+            return response.data.data
         }
 
     } catch (err) {
