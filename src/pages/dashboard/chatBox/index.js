@@ -31,7 +31,7 @@ export default function ChatBox() {
             ) : (
                 <div style={{ width: '100%', height: '100%' }} className="bg-gray-100 flex justify-between">
                     <div className="flex flex-col justify-between items-center w-full h-full min-w-[500]">
-                        <div className="flex justify-between w-full h-44 p-3 items-center bg-pink-300 shadow-xl">
+                        <div className="flex justify-between w-full h-24 p-3 items-center bg-pink-300 shadow-xl">
                             {/*Header*/}
                             <div className="flex gap-5 items-center">
                                 <Avatar link={currentConversation.image} />
@@ -61,6 +61,7 @@ export default function ChatBox() {
                         <div className="w-full">
                             {/*Input */}
                             <ChatInput />
+
                         </div>
                     </div>
                     {isShowDrawer && <ConversationDrawer />}
