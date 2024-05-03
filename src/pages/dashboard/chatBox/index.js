@@ -12,7 +12,6 @@ export default function ChatBox() {
     const listMessage = useSelector((state) => state.listMessage);
 
     const [isShowDrawer, setShowDrawer] = useState(false);
-
     const messagesEndRef = useRef(null);
 
     useEffect(() => {

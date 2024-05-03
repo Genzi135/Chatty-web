@@ -15,7 +15,7 @@ export default function ChatInput() {
     const [inputFiles, setInputFiles] = useState(null);
     const [inputVideos, setInputVideos] = useState(null);
     const [inputMessage, setInputMessage] = useState('');
-    const {socket} = useSocket()
+    const { socket } = useSocket()
 
     const dispatch = useDispatch();
 
@@ -45,23 +45,19 @@ export default function ChatInput() {
         setInputFiles(newListFiles);
     }
 
-<<<<<<< HEAD
-    const handleSendText = async() => {
+    const handleSendText = async () => {
         console.log(inputMessage, currentConversation)
         handleSendMessage(currentConversation, inputMessage, dispatch)
             .then(response => {
                 socket.emit("message:send", {
                     ...response,
                     conversation: currentConversation
-                  })
+                })
             })
-    }
+        }
 
     async function SendMessage() {
         console.log(inputMessage)
-=======
-    const SendMessage = async () => {
->>>>>>> da0d65a13d37f89ff2dda09bdc8931cf6ed7eb9d
         if (replyMessage != null) {
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
@@ -83,7 +79,7 @@ export default function ChatInput() {
                     socket.emit("message:send", {
                         ...response,
                         conversation: currentConversation
-                      })
+                    })
                 })
         } else if (inputMessage !== '') {
             handleSendText()
