@@ -1,11 +1,10 @@
-import { useCallback, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
 import { formatTime } from "../../../helpers/formatDate";
 import { setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import ForwardModal from "./ForwardModal";
-import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 
 export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
@@ -40,8 +39,18 @@ export default function Message({ data }) {
     const showSelectedImage = (url) => {
         setSelectedImage(url)
     }
+
+    const messageRef = useRef(null);
+
+    const scrollToMessage = () => {
+        const parentId = data.parent?._id;
+        const parentElement = document.getElementById(parentId);
+        parentElement?.scrollIntoView({ behavior: "smooth" });
+    }
     return (
         <div
+            id={data._id}
+            ref={messageRef}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
             className={`${data.sender && currentUser._id == data.sender._id ? 'flex flex-row-reverse mb-2 pr-2' : 'flex mb-2 pl-2'}`}>
@@ -55,15 +64,15 @@ export default function Message({ data }) {
                 <div className="font-semibold p-2">
                     {data.name}
                 </div>
-                {data.parent && <div className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary">
+                {data.parent && <div onClick={scrollToMessage} className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary cursor-pointer">
                     <div>{data.parent.name}</div>
                     {data.parent.attachments && data.parent.attachments.length > 0 && data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
-                        {e.type === 'image' && <div className="flex gap-2">
+                        {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                             {icons.image} image
                             {/* <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" /> */}
                         </div>}
                         {e.type === 'application' &&
-                            <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-blue-100 p-1 rounded-lg">
+                            <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
                                 {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
                                 {e.url.split(".").pop() === 'doc' && <BsFiletypeDoc size={40} color='blue' />}
 
@@ -93,7 +102,7 @@ export default function Message({ data }) {
                     {data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
                         {e.type === 'image' && <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" />}
                         {e.type === 'application' &&
-                            <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-blue-100 p-1 rounded-lg">
+                            <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-100 p-1 rounded-lg">
                                 {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
                                 {e.url.split(".").pop() === 'doc' && <BsFiletypeDoc size={40} color='blue' />}
 
@@ -120,7 +129,7 @@ export default function Message({ data }) {
 
                 </div>
                 {data.content &&
-                    <div className={`${currentUser._id === data.sender._id ? 'bg-pink-200 rounded-lg w-full p-2' : 'bg-slate-100 rounded-lg w-full p-2'}`}>
+                    <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
                         {data.content}
                     </div>
                 }
