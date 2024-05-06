@@ -221,7 +221,6 @@ export async function getListMessageByConversation(id, dispatch) {
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        console.log(response);
         dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
         console.log(error);
@@ -371,6 +370,21 @@ export async function handleForwardMessage(conversation, message, dispatch) {
             return response.data.data
         }
 
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Delete message
+export async function handleDeleteMessage(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/messages/${id}`,
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${userToken}` }
+        })
+        console.log(response)
+        //return response.data.data
     } catch (err) {
         console.log(err)
     }

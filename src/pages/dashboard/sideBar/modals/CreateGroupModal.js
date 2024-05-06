@@ -12,6 +12,7 @@ export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
     const [selectedList, setSelectedList] = useState([])
     const [isShowSelectedList, setShowSelectedList] = useState(false)
+    const [isRefresh, setRefresh] = useState(false);
     const [option, setOption] = useState('');
     const [inputAva, setInputAva] = useState(null);
     const [name, setName] = useState('');
@@ -27,7 +28,7 @@ export default function CreateGroupModal({ onClose }) {
         setName(e.target.value)
     }
 
-    const setInputSearch = (e)=>{
+    const setInputSearch = (e) => {
         setSearch(e.target.value)
     }
 
@@ -91,24 +92,24 @@ export default function CreateGroupModal({ onClose }) {
         <div className="flex flex-col justify-between bg-white p-5 w-[500px] rounded-xl gap-4 max-h-[600px]">
             <HeaderModal name={"Create group"} />
             <div className="w-full h-auto flex justify-between items-center gap-2">
-            <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                    <input type="file" className="grow w-full" placeholder="Enter group name" onChange={(setAva)}/>
-                </div> 
-            </div>
-            <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                    <input type="text" className="grow w-full" placeholder="Enter group name" onChange={setInputName}/>
+                    <input type="file" className="grow w-full" placeholder="Enter group name" onChange={(setAva)} />
                 </div>
             </div>
             <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                    <input type="text" className="grow" placeholder="Search" onChange={(setInputSearch)} onKeyDown={keyPressed}/>
+                    <input type="text" className="grow w-full" placeholder="Enter group name" onChange={setInputName} />
                 </div>
-                <CustomButton name={'Search'} onClick={() => {searchUser()}}/>
+            </div>
+            <div className="w-full h-auto flex justify-between items-center gap-2">
+                <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                    <input type="text" className="grow" placeholder="Search" onChange={(setInputSearch)} onKeyDown={keyPressed} />
+                </div>
+                <CustomButton name={'Search'} onClick={() => { searchUser() }} />
             </div>
             <div className="overflow-auto w-full h-[auto] p-2 bg-gray-100">
                 {dataSource ? dataSource.map((e, index) => (<div key={index} onClick={() => onSelectedClick(e)}>
-                    <FriendCard props={e} />
+                    <FriendCard props={e} isRefresh={setRefresh} />
                 </div>))
                     : <ConversationSkeleton />
                 }

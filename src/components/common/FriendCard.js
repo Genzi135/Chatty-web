@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ModalConfirm from "./ModalConfirm";
 import { handleOpenConversation, handleRemoveFriend } from "../shared/api";
-import { checkExistChat } from "../../helpers/helperFunction";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function FriendCard({ props, optionButton, isRefresh }) {
