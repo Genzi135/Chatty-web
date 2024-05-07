@@ -50,6 +50,13 @@ export default function ChatInput() {
         if (replyMessage != null) {
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
+                    .then(response => {
+                        console.log(response)
+                        socket.emit("message:send", {
+                            ...response,
+                            conversation: currentConversation
+                        })
+                    })
                 dispatch(setReplyMessage(null))
             }
         } else if (inputFiles || inputVideos || inputImages) {
@@ -81,9 +88,9 @@ export default function ChatInput() {
                 })
         }
         document.getElementById('chatInput').value = ''
-        setInputFiles([])
-        setInputVideos([])
-        setInputImages([])
+        setInputFiles(null)
+        setInputVideos(null)
+        setInputImages(null)
     }
 
     return (

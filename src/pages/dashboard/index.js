@@ -5,13 +5,15 @@ import SubSideBar from "./sideBar/SubSideBar";
 import Contact from "./contact";
 import { useSocket } from "../../hooks/context/socket";
 import { useEffect } from "react";
-import { addMessage, setListConversation } from "../../hooks/redux/reducer";
+import { addMessage, setListConversation, setListMessage } from "../../hooks/redux/reducer";
+import ConversationSkeleton from "../../components/common/ConversationSkeleton";
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view)
     const {socket} = useSocket()
     const currentConversation = useSelector(state => state.currentConversation)
     const listConversation = useSelector(state => state.listConversation)
+    const listMessage = useSelector(state => state.listMessage)
 
     const dispatch = useDispatch()
 
@@ -32,15 +34,22 @@ export default function Dashboard() {
                 return conversation;
             });
 
-            console.log(newList)
-
             dispatch(setListConversation(newList))
         });
-
-        socket.on("message:delete", (response) => {
-            console.log(response)
-        })
     }, [currentConversation]);
+
+    useEffect(() => {
+        socket.on("message:deleted", (response) => {
+            console.log(response.id)
+            const newList = listMessage.map((e) => {
+                if (response.id === e._id) {
+                    return { ...e, content: "This message has been deleted", isDelete: true }
+                }
+                return e;
+            })
+            dispatch(setListMessage(newList))
+        })
+    }, [listMessage])
 
     return (
         <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center' }}>
