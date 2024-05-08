@@ -9,7 +9,7 @@ import { addMessage, setListConversation } from "../../hooks/redux/reducer";
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view)
-    const {socket} = useSocket()
+    const { socket } = useSocket()
     const currentConversation = useSelector(state => state.currentConversation)
     const listConversation = useSelector(state => state.listConversation)
 
