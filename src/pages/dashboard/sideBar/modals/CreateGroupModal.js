@@ -58,7 +58,6 @@ export default function CreateGroupModal({ onClose }) {
             onClose('createGroupModal');
         } else if (option === 'confirm') {
             handleCreateGroup(userData._id, selectedList, name, null)
-
             setOption('')
             onClose('createGroupModal');
         }

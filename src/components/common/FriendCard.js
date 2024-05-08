@@ -1,28 +1,30 @@
 import { useEffect, useState } from "react";
 import ModalConfirm from "./ModalConfirm";
-import { handleOpenConversation, handleRemoveFriend } from "../shared/api";
+import { handleGetFriendList, handleOpenConversation, handleRemoveFriend } from "../shared/api";
 import { useDispatch, useSelector } from "react-redux";
+import HeaderModal from "./HeaderModal";
 
-export default function FriendCard({ props, optionButton, isRefresh }) {
+export default function FriendCard({ props, optionButton, isRefresh, dataSource, userId }) {
     const reduxListConversation = useSelector((state) => state.listConversation);
     const [option, setOption] = useState('');
     const dispatch = useDispatch()
+
+    const Id = userId
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
     }
 
-    useEffect(() => {
-        if (option === "cancel") {
-            setOption('');
-            onClose('modalConfirm')
-        } else if (option === "confirm") {
-            handleRemoveFriend(props._id)
-            isRefresh(true)
-            setOption('');
-            onClose('modalConfirm')
-        }
-    }, [option])
+    const removeFriend = () => {
+        handleRemoveFriend(Id)
+            .then(() => {
+                handleGetFriendList()
+                    .then((response) => dataSource(response.data.data))
+                })
+        isRefresh(true)
+        setOption('');
+        onClose('modalConfirm')
+    }
 
     return (
         <div className="p-2 w-auto">
@@ -44,7 +46,18 @@ export default function FriendCard({ props, optionButton, isRefresh }) {
             </div>
 
             <dialog id="modalConfirm" className="modal">
-                <ModalConfirm onClose={onClose} setOption={setOption} title={"Wanna remove this friend"} type={'Warning'} />
+                <div className="w-[50%] h-auto flex flex-col justify-between bg-white rounded-lg p-5">
+                    <HeaderModal name={'warning'} />
+                    <div className="p-5 text-lg">
+                        {'Do you want to remove this message'}
+                    </div>
+                    <div className="flex items-center justify-end gap-2 mt-4">
+                        <form method="dialog">
+                            <button className="btn btn-outline">Cancel</button>
+                        </form>
+                        <button className="btn btn-secondary" onClick={() => { console.log(userId); removeFriend(userId) }}>Confirm</button>
+                    </div>
+                </div>
             </dialog>
         </div>
     )

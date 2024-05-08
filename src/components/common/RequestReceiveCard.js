@@ -1,8 +1,12 @@
 import { formatDate } from "../../helpers/formatDate";
-import { handleAcceptFriendRequest, handleRejectFriendRequest, handleRemoveFriend } from "../shared/api";
+import { handleAcceptFriendRequest, handleGetFriendRequest, handleRejectFriendRequest, handleRemoveFriend } from "../shared/api";
 
-export default function RequestReceiveCard({props}){
-    console.log(props)
+export default function RequestReceiveCard({props, dataSource}){
+    function refreshList() {
+        handleGetFriendRequest()
+            .then(response => dataSource(response.data.data))
+    }
+
     return(
         <div className="p-2 w-auto">
         <div className={`flex justify-between items-center p-4 gap-2 bg-white rounded-lg hover:bg-pink-100`}>
@@ -18,8 +22,8 @@ export default function RequestReceiveCard({props}){
             </div>
             </div>
             <div className="flex justify-center items-center gap-2">
-                <button className="btn btn-secondary text-white" onClick={() => handleAcceptFriendRequest(props._id)}>Accept</button>
-                <button className="btn btn-secondary btn-outline" onClick={() => handleRejectFriendRequest(props._id)}>Reject</button>
+                <button className="btn btn-secondary text-white" onClick={() => {handleAcceptFriendRequest(props._id); refreshList()}}>Accept</button>
+                <button className="btn btn-secondary btn-outline" onClick={() => {handleRejectFriendRequest(props._id); refreshList()}}>Reject</button>
             </div>
         </div>
     </div>
