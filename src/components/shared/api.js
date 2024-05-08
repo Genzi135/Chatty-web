@@ -69,6 +69,21 @@ export async function handleSearchFriendAPI(email) {
     }
 }
 
+//Search friend by ID
+export async function handleSearchFriendID(ID) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/" + ID,
+            headers: { Authorization: `Bearer ${userToken}` },
+            method: 'GET'
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 
 //Get friend list
 export async function handleGetFriendList() {
@@ -116,7 +131,7 @@ export async function handleGetFriendRequest() {
     }
 }
 
-//Send friend reuqest
+//Send friend request
 export async function handleSendFriendRequest(id) {
     console.log(id)
     try {
@@ -124,6 +139,20 @@ export async function handleSendFriendRequest(id) {
             url: BASE_URL + "/api/v1/friends/request/" + id,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+//Handle cancel friend request
+export async function handleCancelFriendRequest(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/friends/cancel/${id}`,
+            method: 'POST',
+            header: { Authorization: `Bearer ${userToken}` }
         })
         console.log(response)
     } catch (err) {
@@ -287,6 +316,28 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
         },
         data: { avatar: inputAva },
     })
+}
+
+//Add member
+export async function handleAddMember(conversation, yourId, Ids, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conversations/${conversation._id}/addMember`,
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userToken}`
+            },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                members: Ids
+
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 //Send message

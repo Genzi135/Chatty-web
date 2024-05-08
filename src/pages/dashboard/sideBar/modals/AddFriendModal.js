@@ -3,7 +3,7 @@ import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
 import ConversationSkeleton from "../../../../components/common/ConversationSkeleton";
 import CustomButton from "../../../../components/common/CustomButton";
-import { handleSearchFriendAPI } from "../../../../components/shared/api";
+import { handleSearchFriendAPI, handleSearchFriendID } from "../../../../components/shared/api";
 import AddFriendCard from "../../../../components/common/AddFriendCard";
 
 export default function AddFriendModal({ onClose }) {
@@ -25,6 +25,10 @@ export default function AddFriendModal({ onClose }) {
     function searchFriend() {
         handleSearchFriendAPI(email)
             .then((response) => {
+                handleSearchFriendID(response.data.data._id)
+                    .then(response => {
+                        console.log(response)
+                    })
                 setDataSource(response.data.data)
             })
         console.log(dataSource)
