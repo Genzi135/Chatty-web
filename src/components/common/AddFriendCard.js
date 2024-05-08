@@ -16,8 +16,15 @@ export default function AddFriendCard({ props }) {
                     <label className="font-semibold text-lg">{props && props.name}</label>
                 </div>
                 <div>
-                    <button className="btn btn-secondary text-white" onClick={() => handleSendFriendRequest(props._id)}>Add</button>
-                    <button className="btn btn-disabled">Cancel</button>
+                    {
+                        props.friend.status === 'pending' && <button className="btn btn-disabled">Cancel</button>
+                    }
+                    {
+                        props.friend === null && <button className="btn btn-secondary text-white" onClick={() => handleSendFriendRequest(props._id)}>Add</button>
+                    }
+                    {
+                        props.friend.status === 'accepted' && <div></div>
+                    }
                 </div>
             </div>
         </div>

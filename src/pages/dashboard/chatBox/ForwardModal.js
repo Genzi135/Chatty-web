@@ -9,17 +9,28 @@ import ConversationCard from '../../../components/common/ConversationCard'
 import Button from '../../../components/common/Button'
 import { useSocket } from '../../../hooks/context/socket'
 import { setListConversation } from '../../../hooks/redux/reducer'
-export default function ForwardModal( onClose ) {
+import ConversationForwardCard from '../../../components/common/ConversationForward'
+import { SelectedCard } from '../../../components/common/SelectedCard'
+export default function ForwardModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
     const [selectedList, setSelectedList] = useState([])
+    const [search, setSearch] = useState('');
     const selectedMessage = useSelector((state) => state.selectedMessage)
     const conversationList = useSelector((state) => state.listConversation)
     const currentConversation = useSelector((state) => state.currentConversation)
 
     const [option, setOption] = useState('');
 
-    const {socket} = useSocket()
+    const { socket } = useSocket()
     const dispatch = useDispatch()
+
+    const setInputSearch = (e) => {
+        setSearch(e.target.value)
+    }
+
+    const removeSelected = (e) => {
+
+    }
 
     useEffect(() => {
         setSelectedList([])
@@ -34,12 +45,13 @@ export default function ForwardModal( onClose ) {
     useEffect(() => {
         if (option === 'cancel') {
             setOption('')
-            //onClose('forwardModal');
+            setDataSource(conversationList)
+            onClose('ForwardModal');
         } else if (option === 'confirm') {
             forwardMessage()
-
+            setDataSource(conversationList)
             setOption('')
-            //onClose('forwardModal');
+            onClose('ForwardModal');
         }
     }, [option])
 
@@ -56,7 +68,7 @@ export default function ForwardModal( onClose ) {
                 return conversation;
             });
             dispatch(setListConversation(newList))
-            
+
             handleForwardMessage(e, selectedMessage, dispatch)
                 .then(response => {
                     console.log(response)
@@ -71,10 +83,23 @@ export default function ForwardModal( onClose ) {
     return (
         <div className='w-[400px] h-auto flex flex-col bg-white p-5'>
             <HeaderModal name={"Forward message"} />
+            <div className="w-full h-auto flex justify-between items-center gap-2">
+                <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                    <input type="text" className="grow" placeholder="Search" onChange={(setInputSearch)} />
+                </div>
+                <CustomButton name={'Search'} onClick={() => { }} />
+            </div>
+            {
+                selectedList && selectedList.length > 0 && <div className='w-full h-auto flex justify-start items-center gap-2'>
+                    {
+                        selectedList.map((e) => (<SelectedCard props={e} removeFromSelected={removeSelected} />))
+                    }
+                </div>
+            }
             {dataSource ? dataSource.map((e, index) => (<div key={index} onClick={() => onSelectedClick(e)}>
-                    <ConversationCard props={e} />
-                </div>))
-                    : <ConversationSkeleton />
+                <ConversationForwardCard props={e} />
+            </div>))
+                : <ConversationSkeleton />
             }
             <div className='flex justify-end items-center'><Button value={setOption} /></div>
         </div>
