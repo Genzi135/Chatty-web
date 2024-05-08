@@ -346,7 +346,7 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
 //Forawrd message
 export async function handleForwardMessage(conversation, message, dispatch) {
     try {
-        if (message.attachments) {
+        if (message.attachments.length !== 0) {
             const response = await axios({
                 url: BASE_URL + `/api/v1/conservations/${conversation._id}/forwardFiles`,
                 method: 'POST',
@@ -355,7 +355,6 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     files: message.attachments
                 }
             })
-            dispatch(addMessage(response.data.data))
             return response.data.data
         } else {
             const response = await axios({
@@ -366,7 +365,6 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     content: message.content
                 }
             })
-            dispatch(addMessage(response.data.data))
             return response.data.data
         }
 

@@ -7,14 +7,18 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import ConversationCard from '../../../components/common/ConversationCard'
 import Button from '../../../components/common/Button'
+import { useSocket } from '../../../hooks/context/socket'
+import { setListConversation } from '../../../hooks/redux/reducer'
 export default function ForwardModal( onClose ) {
     const [dataSource, setDataSource] = useState([])
     const [selectedList, setSelectedList] = useState([])
     const selectedMessage = useSelector((state) => state.selectedMessage)
     const conversationList = useSelector((state) => state.listConversation)
+    const currentConversation = useSelector((state) => state.currentConversation)
 
     const [option, setOption] = useState('');
 
+    const {socket} = useSocket()
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -40,10 +44,28 @@ export default function ForwardModal( onClose ) {
     }, [option])
 
     function forwardMessage() {
-        console.log(selectedMessage)
         selectedList.map((e) => {
+            var newList = conversationList.map(conversation => {
+                console.log(conversation._id === e._id)
+                if (conversation._id === e._id) {
+                    if (conversation._id === currentConversation._id) {
+                        return { ...conversation, lastMessage: selectedMessage, isReadMessage: true };
+                    }
+                    return { ...conversation, lastMessage: selectedMessage, isReadMessage: false };
+                }
+                return conversation;
+            });
+            dispatch(setListConversation(newList))
+            
             handleForwardMessage(e, selectedMessage, dispatch)
-        }) 
+                .then(response => {
+                    console.log(response)
+                    socket.emit("message:send", {
+                        ...response,
+                        conversation: e,
+                    })
+                })
+        })
     }
 
     return (

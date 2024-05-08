@@ -59,7 +59,6 @@ export default function Message({ data }) {
     }
 
     const executeHandleRemove = (id) => {
-        console.log(id);
         handleDeleteMessage(id);
         const newList = listMessage.map((e) => {
             if (id === e._id) {
@@ -72,7 +71,8 @@ export default function Message({ data }) {
         socket.emit("message:delete", {
             id: id,
             conversation: currentConversation,
-        })
+        }, (response) => {console.log(response)})
+
         setShowModalConfirm(false)
     }
     return (
