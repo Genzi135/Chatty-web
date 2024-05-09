@@ -46,7 +46,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                        {friendDataSource.map((e) => (<FriendCard props={e} isRefresh={setIsRefresh} optionButton={'ChatRemove'} key={e._id} dataSource={setFriendDataSource} userId={e._id}/>))}
+                        {friendDataSource.map((e) => (<FriendCard props={e} isRefresh={setIsRefresh} optionButton={'ChatRemove'} key={e._id} dataSource={setFriendDataSource} />))}
                     </div>
                 </div>
             </div>}

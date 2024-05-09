@@ -4,19 +4,19 @@ import { handleGetFriendList, handleOpenConversation, handleRemoveFriend } from 
 import { useDispatch, useSelector } from "react-redux";
 import HeaderModal from "./HeaderModal";
 
-export default function FriendCard({ props, optionButton, isRefresh, dataSource, userId }) {
+export default function FriendCard({ props, optionButton, isRefresh, dataSource }) {
     const reduxListConversation = useSelector((state) => state.listConversation);
     const [option, setOption] = useState('');
     const dispatch = useDispatch()
 
-    const Id = userId
+    console.log(props._id)
 
     const onClose = (id) => {
         id && document.getElementById(id).close();
     }
 
-    const removeFriend = () => {
-        handleRemoveFriend(Id)
+    let removeFriend = (friendId) => {
+        handleRemoveFriend(friendId)
             .then(() => {
                 handleGetFriendList()
                     .then((response) => dataSource(response.data.data))
@@ -24,6 +24,14 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource,
         isRefresh(true)
         setOption('');
         onClose('modalConfirm')
+    }
+
+    const openModal = (friendId) => {
+        document.getElementById("modalConfirm").showModal();
+        document.getElementById("confirmButton").addEventListener("click", () => {
+            removeFriend(friendId);
+        });
+        console.log(document.getElementById("confirmButton"))
     }
 
     return (
@@ -39,7 +47,7 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource,
                 </div>
                 {optionButton && optionButton === 'ChatRemove' && <div className="flex justify-center items-center gap-2">
                     <button className="btn btn-secondary text-white" onClick={() => { handleOpenConversation(props.userId, dispatch, reduxListConversation) }}>Chat</button>
-                    <button onClick={() => document.getElementById("modalConfirm").showModal()} className="btn btn-error text-white">Remove</button>
+                    <button onClick={() => {openModal(props._id)}} className="btn btn-error text-white">Remove</button>
                 </div>}
                 {optionButton && optionButton === 'Selected' && "Selected"}
                 {!optionButton && <div></div>}
@@ -55,7 +63,7 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource,
                         <form method="dialog">
                             <button className="btn btn-outline">Cancel</button>
                         </form>
-                        <button className="btn btn-secondary" onClick={() => { console.log(userId); removeFriend(userId) }}>Confirm</button>
+                        <button className="btn btn-secondary" id="confirmButton">Confirm</button>
                     </div>
                 </div>
             </dialog>
