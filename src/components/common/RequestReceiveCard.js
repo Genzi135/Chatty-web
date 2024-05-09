@@ -11,17 +11,7 @@ export default function RequestReceiveCard({props, dataSource}){
         handleGetFriendRequest()
             .then(response => dataSource(response.data.data))
     }
-
-    function openChat() {
-        console.log(props)
-        dispatch(setCurrentConversation(props))
-        dispatch(setViewState({
-            box: 'chat',
-            subSideBar: 'chat'
-        }))
-        getListMessageByConversation(props._id, dispatch)
-    }
-
+    
     function AcceptFriend() {
         handleAcceptFriendRequest(props._id)
         handleOpenConversation(props.userId, dispatch, listConversation)
