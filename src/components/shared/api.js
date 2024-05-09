@@ -219,6 +219,7 @@ export async function getListConversation(dispatch) {
 
 //Handle open conversation
 export async function handleOpenConversation(id, dispatch, listConversation) {
+    console.log("Call")
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/open/" + `${id}`,
