@@ -15,23 +15,20 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource 
         id && document.getElementById(id).close();
     }
 
-    let removeFriend = (friendId) => {
+    const removeFriend = (friendId) => {
         handleRemoveFriend(friendId)
             .then(() => {
                 handleGetFriendList()
                     .then((response) => dataSource(response.data.data))
                 })
         isRefresh(true)
-        setOption('');
+        setOption('')
         onClose('modalConfirm')
     }
 
     const openModal = (friendId) => {
-        document.getElementById("modalConfirm").showModal();
-        document.getElementById("confirmButton").addEventListener("click", () => {
-            removeFriend(friendId);
-        });
-        console.log(document.getElementById("confirmButton"))
+        document.getElementById("modalConfirm").showModal()
+        document.getElementById("confirmButton").addEventListener("click", () => removeFriend(friendId))
     }
 
     return (
