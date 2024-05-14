@@ -73,8 +73,8 @@ export default function SubSideBar() {
     }
 
     return (
-        <div style={{ width: 320, height: '100vh' }} >
-            {viewState && viewState.subSideBar === 'chat' && <div style={{ width: 320 }} className="bg-gray-100 flex flex-col">
+        <div style={{ width: 'auto', minWidth: '320px', height: '100%', maxHeight: '100vh', overflow: 'auto' }} >
+            {viewState && viewState.subSideBar === 'chat' && <div style={{ width: 320 }} className="bg-gray-100 flex flex-col w-full h-full">
                 <div className="w-full bg-white flex justify-between items-center gap-2 p-4">
                     <label className="w-48 h-10 bg-pink-100 input input-bordered flex items-center gap-2">
                         <input type="text" className="grow" placeholder="Search" onChange={setInputValue} onKeyDown={keyPressed} />
@@ -82,7 +82,7 @@ export default function SubSideBar() {
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
                 </div>
-                <div className="overflow-auto scroll-smooth">
+                <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
                     {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>
                         <ConversationCard props={e} />
                     </div>

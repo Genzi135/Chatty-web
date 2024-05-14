@@ -3,10 +3,10 @@ import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
 import ConversationSkeleton from "../../../../components/common/ConversationSkeleton";
 import CustomButton from "../../../../components/common/CustomButton";
-import { handleCreateGroup, handleGetFriendList } from "../../../../components/shared/api";
+import { getListConversation, handleCreateGroup, handleGetFriendList } from "../../../../components/shared/api";
 import FriendCard from "../../../../components/common/FriendCard";
 import icons from "../../../../components/shared/icon";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
@@ -17,6 +17,9 @@ export default function CreateGroupModal({ onClose }) {
     const [inputAva, setInputAva] = useState(null);
     const [name, setName] = useState('');
     const [search, setSearch] = useState('');
+    const [report, setReport] = useState('');
+
+    const dispatch = useDispatch();
 
     const userData = useSelector((state) => state.currentUser);
 
@@ -32,13 +35,13 @@ export default function CreateGroupModal({ onClose }) {
         setSearch(e.target.value)
     }
 
-    const onMouseEnter = useCallback(() => {
-        setShowSelectedList(true);
-    })
+    // const onMouseEnter = useCallback(() => {
+    //     setShowSelectedList(true);
+    // })
 
-    const onMouseLeave = useCallback(() => {
-        setShowSelectedList(false);
-    })
+    // const onMouseLeave = useCallback(() => {
+    //     setShowSelectedList(false);
+    // })
 
     const onSelectedClick = (e) => {
         setSelectedList([...selectedList, e]);
@@ -55,12 +58,27 @@ export default function CreateGroupModal({ onClose }) {
     useEffect(() => {
         if (option === 'cancel') {
             setOption('')
+            setReport('')
+            setSelectedList([])
+            handleGetFriendList().then(response => setDataSource(response.data.data))
             onClose('createGroupModal');
         } else if (option === 'confirm') {
-            handleCreateGroup(userData._id, selectedList, name, null)
-
-            setOption('')
-            onClose('createGroupModal');
+            if (name === "") {
+                setReport("Please enter the group name")
+                setOption('')
+                return
+            } else if (selectedList.length < 2) {
+                setReport("Need 2 or more members to create the group")
+                setOption('')
+                return
+            } else {
+                handleCreateGroup(userData._id, selectedList, name, null).then(() => getListConversation(dispatch))
+                setSelectedList([])
+                handleGetFriendList().then(response => setDataSource(response.data.data))
+                setOption('')
+                setReport('')
+                onClose('createGroupModal');
+            }
         }
     }, [option])
 
@@ -89,13 +107,13 @@ export default function CreateGroupModal({ onClose }) {
     }
 
     return (
-        <div className="flex flex-col justify-between bg-white p-5 w-[500px] rounded-xl gap-4 max-h-[600px]">
+        <div className="flex flex-col justify-between rounded-lg bg-white p-5 w-[500px] rounded-xl gap-4 max-h-[600px]">
             <HeaderModal name={"Create group"} />
-            <div className="w-full h-auto flex justify-between items-center gap-2">
+            {/* <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
                     <input type="file" className="grow w-full" placeholder="Enter group name" onChange={(setAva)} />
                 </div>
-            </div>
+            </div> */}
             <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
                     <input type="text" className="grow w-full" placeholder="Enter group name" onChange={setInputName} />
@@ -107,6 +125,18 @@ export default function CreateGroupModal({ onClose }) {
                 </div>
                 <CustomButton name={'Search'} onClick={() => { searchUser() }} />
             </div>
+            <div className="w-full h-auto">
+                {
+                    selectedList && selectedList.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
+                        {
+                            selectedList.map((e) => (<div key={e._id} className="w-auto h-12 p-2 text-nowrap flex gap-2 justify-between rounded-lg border-pink-500 border-2 text-secondary">
+                                {e.name}
+                                <div onClick={() => removeFromSelected(e)} className="hover:bg-pink-300 flex justify-center items-center p-1 rounded-full">{icons.xClose}</div>
+                            </div>))
+                        }
+                    </div>
+                }
+            </div>
             <div className="overflow-auto w-full h-[auto] p-2 bg-gray-100">
                 {dataSource ? dataSource.map((e, index) => (<div key={index} onClick={() => onSelectedClick(e)}>
                     <FriendCard props={e} isRefresh={setRefresh} />
@@ -114,20 +144,8 @@ export default function CreateGroupModal({ onClose }) {
                     : <ConversationSkeleton />
                 }
             </div>
-            <div className="flex justify-between items-center">
-                <div
-                    onMouseEnter={() => { onMouseEnter() }}
-                    onMouseLeave={() => { onMouseLeave() }}
-                    className="relative">
-                    {isShowSelectedList && <div className="w-auto h-auto absolute bottom-6 bg-white left-0 gap-1 flex flex-col">
-                        {selectedList.map((e, index,) => (<div key={e._id} className="w-auto h-12 p-2 text-nowrap flex gap-2 justify-between rounded-lg border-pink-500 border-2 text-secondary">
-                            {e.name}
-                            <div onClick={() => removeFromSelected(e)} className="hover:bg-pink-300 flex justify-center items-center p-1 rounded-full">{icons.xClose}</div>
-                        </div>))}
-                    </div>}
-                    <label
-                        className="cursor-pointer text-secondary font-semibold hover:bg-pink-100 p-1 rounded-lg">Show members {selectedList.length}</label>
-                </div>
+            <span className="text-sm text-error">{report}</span>
+            <div className="flex justify-end items-center">
                 <Button value={setOption} />
             </div>
         </div>

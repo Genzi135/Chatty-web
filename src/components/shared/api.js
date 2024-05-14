@@ -229,16 +229,17 @@ export async function getListMessageByConversation(id, dispatch) {
 
 //Create group
 export async function handleCreateGroup(id, member, groupName, groupImage) {
+    const newList = member.map(e => e.userId);
+    console.log(Array.isArray(newList));
+    console.log(newList);
     try {
         const response = await axios({
             url: BASE_URL + '/api/v1/conservations/createGroup',
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
-                creatorId: id,
-                members: member,
                 name: groupName,
-                image: groupImage
+                members: newList,
             }
         })
         console.log(response)
