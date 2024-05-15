@@ -40,7 +40,6 @@ export default function Dashboard() {
 
     useEffect(() => {
         socket.on("message:deleted", (response) => {
-            console.log(response.id)
             const newList = listMessage.map((e) => {
                 if (response.id === e._id) {
                     return { ...e, content: "This message has been deleted", isDelete: true }
@@ -53,8 +52,6 @@ export default function Dashboard() {
 
     useEffect(() => {
         socket.on("message:notification", (data) => {
-            console.log(data)
-            console.log(currentConversation._id)
             if (data) {
                 if (currentConversation._id === data.conversationId) {
                     console.log(data.conversation.members)
