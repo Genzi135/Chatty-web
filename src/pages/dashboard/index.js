@@ -75,11 +75,13 @@ export default function Dashboard() {
             }
             const newList = listConversationRef.current.filter(e => e._id !== data.conservationId);
             dispatch(setListConversation(newList));
+            toast(data.messages[0].content);
         };
 
         const handleNewConversation = (data) => {
             const newList = [data.conversation, ...listConversationRef.current];
             dispatch(setListConversation(newList));
+            toast(data.messages[0].content);
         };
 
         socket.on("message:receive", handleReceiveMessage);
