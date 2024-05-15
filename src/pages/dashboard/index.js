@@ -7,6 +7,8 @@ import { useSocket } from "../../hooks/context/socket";
 import { useEffect } from "react";
 import { addMessage, setListConversation, setListMessage } from "../../hooks/redux/reducer";
 import ConversationSkeleton from "../../components/common/ConversationSkeleton";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/ReactToastify.css'
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view)
@@ -61,11 +63,12 @@ export default function Dashboard() {
     })
 
     return (
-        <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center' }}>
+        <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', position: 'relative' }}>
             <SideBar />
             <SubSideBar />
             {viewState.subSideBar === 'chat' && <Chat />}
             {viewState.subSideBar === "contact" && <Contact />}
+            <div className="absolute bottom-2 right-2"><ToastContainer /></div>
         </div>
     )
 }

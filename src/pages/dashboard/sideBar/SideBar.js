@@ -31,6 +31,7 @@ export default function SideBar() {
         dispatch(setViewState(contactView));
     }
 
+
     return (
         <div style={{ width: 80, height: '100%' }} className="bg-pink-300 flex flex-col justify-between items-center pt-4 pb-2">
             <div className="flex flex-col gap-5 justify-center items-center">
@@ -49,7 +50,7 @@ export default function SideBar() {
                     {icons.setting}
                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
                         <li><a className="text-black disabled" onClick={() => document.getElementById('ProfileModal').showModal()}>Profile</a></li>
-                        <li><a className="text-black disabled">Language: ENGLISH</a></li>
+                        <li><a className="text-black disabled" >Language: ENGLISH</a></li>
                         <li><a className="text-red-500 font-semibold" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()); localStorage.removeItem("userToken"); dispatch(setListConversation([])); }}>Log out</a></li>
                     </ul>
                 </div>)}

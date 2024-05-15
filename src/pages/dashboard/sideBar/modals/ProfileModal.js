@@ -136,6 +136,7 @@ export default function ProfileModal() {
                         className="file-input file-input-bordered file-input-secondary w-full max-w-xs"
                         accept="image/png, image/gif, image/jpeg"
                         onChange={(e) => { handleFileChange(e) }}
+                    // value={avatar.name}
                     />
                 </div>
                 <div>
