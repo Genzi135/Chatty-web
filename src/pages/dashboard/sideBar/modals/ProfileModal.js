@@ -13,11 +13,41 @@ export default function ProfileModal() {
     const [userName, setUserName] = useState('');
     const [gender, setGender] = useState('');
     const [dob, setDob] = useState('');
-
+    //avatar
+    const [avatar, setAvatar] = useState(null);
+    const [displayAvatar, setDisplayAvatar] = useState(null);
+    //changePassword
+    const [password, setPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [isDisableChangePass, setDisableChangePass] = useState(true)
+    //current User data
     const userData = useSelector((state) => state.currentUser);
 
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatar(file);
+            setDisplayAvatar(URL.createObjectURL(file));
+        }
+    };
+
+    function onPasswordChange(e) {
+        setPassword(e.target.value)
+    }
+    function onNewPasswordChange(e) {
+        setNewPassword(e.target.value)
+    }
+    function onConfirmPasswordChange(e) {
+        setConfirmPassword(e.target.value)
+    }
+
+    function handlePasswordChange() {
+        console.log(password, newPassword, confirmPassword);
+    }
 
     useEffect(() => {
         if (option === 'cancel') {
@@ -41,7 +71,8 @@ export default function ProfileModal() {
                         <img src={userData.background} alt="bg-img" />
                     </div>
                     <div className="flex flex-row justify-center items-center w-full">
-                        <div className="avatar absolute bottom-0 left-3 flex justify-center items-center tooltip" data-tip="Click to change avatar">
+                        <div className="avatar absolute bottom-0 left-3 flex justify-center items-center tooltip" data-tip="Click to change avatar"
+                            onClick={() => { setViewStateProfile('changeAvatar') }}>
                             <div className="avatar rounded-full w-16 bg-black ">
                                 <img src={userData.avatar} alt="avatar" />
                             </div>
@@ -72,7 +103,7 @@ export default function ProfileModal() {
                     </div>
                 </div>
                 <div className="w-full flex justify-center items-center text-secondary font-semibold p-3 mt-2">
-                    <label className="cursor-pointer">Change password</label>
+                    <label className="cursor-pointer" onClick={() => setViewStateProfile('changePassword')}>Change password</label>
                 </div>
             </div>}
             {viewStateProfile === 'updateProfile' && <div>
@@ -97,6 +128,60 @@ export default function ProfileModal() {
                     </div>
                 </div>
                 <Button value={setOption} />
+            </div>}
+            {viewStateProfile === 'changeAvatar' && <div>
+                <div className="flex flex-col gap-2">
+                    <input
+                        type="file"
+                        className="file-input file-input-bordered file-input-secondary w-full max-w-xs"
+                        accept="image/png, image/gif, image/jpeg"
+                        onChange={(e) => { handleFileChange(e) }}
+                    />
+                </div>
+                <div>
+                    {displayAvatar && <div className="flex flex-col justify-center items-center p-2 gap-2">
+                        <div className="avatar">
+                            <div className="w-24 rounded-full">
+                                <img src={displayAvatar} alt="avatar" />
+                            </div>
+                            <label className="rounded-full bg-gray-200 hover:bg-gray-400 w-8 h-8 flex justify-center items-center"
+                                onClick={() => { setAvatar(null); setDisplayAvatar(null) }}
+                            >{icons.xClose}</label>
+                        </div>
+
+                    </div>}
+                </div>
+                <div className="flex justify-end items-center mt-2 gap-2">
+                    <button className="btn btn-outline" onClick={() => { setAvatar(null); setDisplayAvatar(null); setViewStateProfile('profile') }}>Cancel</button>
+                    <button className="btn btn-secondary">Confirm</button>
+                </div>
+            </div>}
+            {viewStateProfile === "changePassword" && <div className="w-full">
+                <div className="flex flex-col justify-between  gap-2">
+                    <label>Old password</label>
+                    <input type="text" placeholder="Enter old password" className="input input-bordered input-secondary w-full "
+                        onChange={(e) => { setPassword(e) }}
+                    />
+                    <button className="btn btn-secondary" onClick={() => { setDisableChangePass(!isDisableChangePass) }}>Check</button>
+                </div>
+                <div className="flex flex-col justify-between gap-2 mt-2">
+                    <label>New password</label>
+                    <input type="text" placeholder="Enter new password" className={`input input-bordered input-secondary w-full ${isDisableChangePass && 'input-disabled'}`}
+                        onChange={(e) => { setNewPassword(e) }}
+                        disabled={isDisableChangePass}
+                    />
+                </div>
+                <div className="flex flex-col justify-between  gap-2 mt-2">
+                    <label>Confirm password</label>
+                    <input type="text" placeholder="Confirm password" className={`input input-bordered input-secondary w-full  ${isDisableChangePass && 'input-disabled'}`}
+                        onChange={(e) => { setConfirmPassword(e) }}
+                        d disabled={isDisableChangePass}
+                    />
+                </div>
+                <div className="flex justify-end items-center mt-2 gap-2">
+                    <button className="btn btn-outline" onClick={() => { setPassword(''); setNewPassword(''); setConfirmPassword(''); setViewStateProfile('profile') }}>Cancel</button>
+                    <button className="btn btn-secondary" onClick={() => { handlePasswordChange() }}>Confirm</button>
+                </div>
             </div>}
         </div>
     )

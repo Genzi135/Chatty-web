@@ -63,22 +63,9 @@ export default function CreateGroupModal({ onClose }) {
             handleGetFriendList().then(response => setDataSource(response.data.data))
             onClose('createGroupModal');
         } else if (option === 'confirm') {
-            if (name === "") {
-                setReport("Please enter the group name")
-                setOption('')
-                return
-            } else if (selectedList.length < 2) {
-                setReport("Need 2 or more members to create the group")
-                setOption('')
-                return
-            } else {
-                handleCreateGroup(userData._id, selectedList, name, null).then(() => getListConversation(dispatch))
-                setSelectedList([])
-                handleGetFriendList().then(response => setDataSource(response.data.data))
-                setOption('')
-                setReport('')
-                onClose('createGroupModal');
-            }
+            handleCreateGroup(userData._id, selectedList, name, null)
+            setOption('')
+            onClose('createGroupModal');
         }
     }, [option])
 

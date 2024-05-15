@@ -82,7 +82,7 @@ export default function Message({ data }) {
             ref={messageRef}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
-            className={`${data.sender && currentUser._id == data.sender._id ? 'flex flex-row-reverse mb-2 pr-2' : 'flex mb-2 pl-2'}`}>
+            className={`${data.sender && currentUser._id === data.sender._id ? 'flex h-[auto] flex-row-reverse mb-2 pr-2' : 'h-[auto] flex mb-2 pl-2'}`}>
             {currentUser._id === data.sender._id ? <div>
                 {""}</div> : <div className="avatar">
                 <div className="avatar rounded-full w-8 h-8 mr-2">

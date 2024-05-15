@@ -44,8 +44,15 @@ export default function SideBar() {
                     {viewState.subSideBar === 'contact' ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.contactFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer" onClick={() => setContactView()}>{icons.contact}</div>)}
                 </div>
             </div>
-            <div className="p-2 text-white" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()); localStorage.removeItem("userToken"); dispatch(setListConversation([])); }}>
-                {isSettingSelected ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.settingFill}</div>) : (<div className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer">{icons.setting}</div>)}
+            <div className="p-2 text-white dropdown dropdown-top">
+                {isSettingSelected ? (<div className="bg-pink-500 p-3 rounded-xl cursor-pointer">{icons.settingFill}</div>) : (<div tabIndex={0} className="p-3 hover:bg-pink-400 rounded-xl cursor-pointer">
+                    {icons.setting}
+                    <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                        <li><a className="text-black disabled" onClick={() => document.getElementById('ProfileModal').showModal()}>Profile</a></li>
+                        <li><a className="text-black disabled">Language: ENGLISH</a></li>
+                        <li><a className="text-red-500 font-semibold" onClick={() => { setSettingSelected(!isSettingSelected); dispatch(setLogout()); localStorage.removeItem("userToken"); dispatch(setListConversation([])); }}>Log out</a></li>
+                    </ul>
+                </div>)}
             </div>
             <dialog id="ProfileModal" className="modal">
                 <ProfileModal />

@@ -29,7 +29,7 @@ export async function handleLogin(email, password, dispatch) {
         userToken = JSON.parse(localStorage.getItem("userToken"));
         dispatch(setLogin())
     } catch (err) {
-        console.log(err);
+        return err;
     }
 
     getListConversation(dispatch)
@@ -50,7 +50,7 @@ export async function handleRegisterAPI(email, password, name, gender, dob) {
             }
         })
     } catch (err) {
-        console.log(err);
+        return err;
     }
 }
 
@@ -65,7 +65,22 @@ export async function handleSearchFriendAPI(email) {
         console.log(response)
         return response
     } catch (err) {
-        console.log(err)
+        return err
+    }
+}
+
+//Search friend by ID
+export async function handleSearchFriendID(ID) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/" + ID,
+            headers: { Authorization: `Bearer ${userToken}` },
+            method: 'GET'
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        return err
     }
 }
 
@@ -79,9 +94,10 @@ export async function handleGetFriendList() {
             headers: { Authorization: `Bearer ${userToken}` },
             params: { type: 'private' }
         })
+        console.log(response.data.data)
         return response
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -97,7 +113,7 @@ export async function handleGetGroupList() {
         console.log(response.data.data)
         return response
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -112,11 +128,11 @@ export async function handleGetFriendRequest() {
         console.log(response.data.data)
         return response
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
-//Send friend reuqest
+//Send friend request
 export async function handleSendFriendRequest(id) {
     console.log(id)
     try {
@@ -127,7 +143,21 @@ export async function handleSendFriendRequest(id) {
         })
         console.log(response)
     } catch (err) {
-        console.log(err)
+        return err
+    }
+}
+
+//Handle cancel friend request
+export async function handleCancelFriendRequest(id) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/friends/cancel/${id}`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
     }
 }
 
@@ -141,7 +171,7 @@ export async function handleAcceptFriendRequest(id) {
         })
         console.log(response)
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -155,7 +185,7 @@ export async function handleRejectFriendRequest(id) {
         })
         console.log(response)
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -169,7 +199,7 @@ export async function handleRemoveFriend(id) {
         })
         console.log(response)
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -183,12 +213,13 @@ export async function getListConversation(dispatch) {
         })
         dispatch(setListConversation(response.data.data))
     } catch (error) {
-        console.log(error);
+        return error;
     }
 }
 
 //Handle open conversation
 export async function handleOpenConversation(id, dispatch, listConversation) {
+    console.log("Call")
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/open/" + `${id}`,
@@ -209,7 +240,7 @@ export async function handleOpenConversation(id, dispatch, listConversation) {
         getListMessageByConversation(response.data.data._id, dispatch)
 
     } catch (error) {
-        console.log(error)
+        return error
     }
 }
 
@@ -223,7 +254,7 @@ export async function getListMessageByConversation(id, dispatch) {
         })
         dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
-        console.log(error);
+        return error;
     }
 }
 
@@ -239,12 +270,12 @@ export async function handleCreateGroup(id, member, groupName, groupImage) {
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
                 name: groupName,
-                members: newList,
+                //image: groupImage
             }
         })
         console.log(response)
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -262,7 +293,7 @@ export async function handleUpdateAvatar(inputAva) {
     //         data: { avatar: inputAva },
     //     })
     // } catch (err) {
-    //     console.log(err)
+    //     return err
     // }
 
     await fetch(BASE_URL + '/api/v1/users/updateAvatar', {
@@ -275,7 +306,7 @@ export async function handleUpdateAvatar(inputAva) {
         data: { avatar: inputAva },
     })
         .then(response => console.log(response))
-        .catch(err => console.log(err))
+        .catch(err => { return err })
 }
 
 //Group avatar update
@@ -288,6 +319,143 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
         },
         data: { avatar: inputAva },
     })
+}
+
+//Add member
+export async function handleAddMember(conversation, yourId, Ids, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/addMember`,
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${userToken}`
+            },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                members: Ids
+
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Remove member
+export async function handleRemoveMemeber(conversation, yourId, Ids) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/removeMember`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                members: Ids
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Disband group
+export async function handleDisbandGroup(conversation, yourId) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservation/${conversation._id}/disband`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Leave group
+export async function handleRemoveGroup(conversation, yourId, name) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservation/${conversation._id}/leaveGroup`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                userName: name
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err;
+    }
+}
+
+//Change group name
+export async function handleChangeGroupName(conversation, yourId, yourName, groupName) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservation/${conversation._id}/changeName`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                userName: yourName,
+                name: groupName
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Change group avatar
+export async function handleChangeGroupAvatar(conversation, yourId, avatar, yourName) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservation/${conversation._id}/changeImageV2`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                image: avatar,
+                userName: yourName
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Transfer group leader
+export async function handleTransferGroupLeader(conversation, id, yourId) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservation/${conversation._id}/transfer/${id}`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                conversationId: conversation._id,
+                userId: yourId,
+                newLeaderId: id,
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
 }
 
 //Send message
@@ -306,7 +474,7 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
         console.log(response)
         return response.data.data
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -322,7 +490,7 @@ export async function handleSendFile(currentConversation, formData, dispatch) {
         dispatch(addMessage(response.data.data))
         return response.data.data
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -340,7 +508,7 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
         dispatch(addMessage(response.data.data))
         return response.data.data
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -370,7 +538,7 @@ export async function handleForwardMessage(conversation, message, dispatch) {
         }
 
     } catch (err) {
-        console.log(err)
+        return err
     }
 }
 
@@ -385,6 +553,6 @@ export async function handleDeleteMessage(id) {
         console.log(response)
         //return response.data.data
     } catch (err) {
-        console.log(err)
+        return err
     }
 }

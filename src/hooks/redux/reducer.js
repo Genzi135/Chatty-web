@@ -75,6 +75,8 @@ const reducer = (state = initialState, action) => {
         case 'SET_LOG_OUT':
             return {
                 ...state,
+                currentConversation: {},
+                currentUser: {},
                 login: false
             }
         case 'SET_CURRENT_USER':

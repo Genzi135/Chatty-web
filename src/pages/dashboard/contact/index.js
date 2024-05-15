@@ -33,6 +33,10 @@ export default function Contact() {
             .then((dataSource) => setRequestReceiveList(dataSource.data.data))
     }, [])
 
+    useEffect(() => {
+
+    }, [friendDataSource, groupDataSource, requestReceiveList])
+
     return (
         <div style={{ width: '100%', height: '100vh' }}>
             {viewState.box === 'contact' && <div className="flex flex-col gap-2">
@@ -42,7 +46,7 @@ export default function Contact() {
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                        {friendDataSource.map((e) => (<FriendCard props={e} isRefresh={setIsRefresh} optionButton={'ChatRemove'} key={e._id} />))}
+                        {friendDataSource.map((e) => (<FriendCard props={e} isRefresh={setIsRefresh} optionButton={'ChatRemove'} key={e._id} dataSource={setFriendDataSource} />))}
                     </div>
                 </div>
             </div>}
@@ -68,7 +72,7 @@ export default function Contact() {
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests recieved</label>
                             <div className="h-auto w-full p-2">
                                 <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                                    {requestReceiveList.map((e) => (<RequestReceiveCard props={e} key={e._id} />))}
+                                    {requestReceiveList.map((e) => (<RequestReceiveCard props={e} key={e._id} dataSource={setRequestReceiveList}/>))}
                                 </div>
                             </div>
                         </div>
