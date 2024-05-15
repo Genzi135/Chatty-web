@@ -37,7 +37,6 @@ export default function AddFriendModal({ onClose }) {
     }
 
     useEffect(() => {
-        console.log(dataSource)
         if (value === 'cancel') {
             handleRejectFriendRequest(dataSource._id)
                 .then(() => { searchFriend() })
