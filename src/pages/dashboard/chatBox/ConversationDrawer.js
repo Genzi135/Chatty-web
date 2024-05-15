@@ -6,7 +6,7 @@ import HeaderModal from "../../../components/common/HeaderModal";
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
     const currentUser = useSelector(state => state.currentUser);
-    // console.log(currentConversation);
+    console.log(currentConversation);
     // console.log(currentUser);
     return (
         <div className="w-[400px]">
