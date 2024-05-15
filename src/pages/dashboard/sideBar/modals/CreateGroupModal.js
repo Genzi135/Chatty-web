@@ -7,6 +7,7 @@ import { getListConversation, handleCreateGroup, handleGetFriendList } from "../
 import FriendCard from "../../../../components/common/FriendCard";
 import icons from "../../../../components/shared/icon";
 import { useDispatch, useSelector } from "react-redux";
+import { setCurrentConversation } from "../../../../hooks/redux/reducer";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
@@ -66,6 +67,9 @@ export default function CreateGroupModal({ onClose }) {
             handleCreateGroup(userData._id, selectedList, name, null)
                 .then(() => {
                     getListConversation(dispatch)
+                        .then((response) => {
+                            dispatch(setCurrentConversation(response.data.data[0]))
+                        })
                 })
             setOption('')
             onClose('createGroupModal');

@@ -5,6 +5,7 @@ import { addConversation, addMessage, setCurrentConversation, setCurrentUser, se
 import { useEffect } from 'react';
 import SubSideBar from '../../pages/dashboard/sideBar/SubSideBar';
 import { checkExist } from '../../helpers/helperFunction';
+import ConversationSkeleton from '../common/ConversationSkeleton';
 
 export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
 
@@ -28,11 +29,29 @@ export async function handleLogin(email, password, dispatch) {
         localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
         userToken = JSON.parse(localStorage.getItem("userToken"));
         dispatch(setLogin())
+        
     } catch (err) {
         return err;
     }
 
     getListConversation(dispatch)
+}
+
+//check login
+export async function checkLogin(email, password) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/auth/login",
+            method: "post",
+            data: {
+                email: email,
+                password: password
+            }
+        })
+        return response
+    } catch (err) {
+        return err
+    }
 }
 
 //Register
@@ -226,6 +245,8 @@ export async function getListConversation(dispatch) {
             headers: { Authorization: `Bearer ${userToken}` },
         })
         dispatch(setListConversation(response.data.data))
+        console.log(response)
+        return response
     } catch (error) {
         return error;
     }
@@ -296,32 +317,32 @@ export async function handleCreateGroup(id, member, groupName, groupImage) {
 
 //Profile avatar update
 export async function handleUpdateAvatar(inputAva) {
-    // try {
-    //     const response = await axios({
-    //         url: BASE_URL + "/api/v1/users/updateAvatar",
-    //         method: "PUT",
-    //         type: "application/json",
-    //         headers: {
-    //             Authorization: `Bearer ${userToken}`,
-    //             'Content-Type': 'multipart/form-data',
-    //         },
-    //         data: { avatar: inputAva },
-    //     })
-    // } catch (err) {
-    //     return err
-    // }
-
-    await fetch(BASE_URL + '/api/v1/users/updateAvatar', {
-        method: 'PUT',
-        type: 'application/json',
-        headers: {
-            Authorization: `Bearer ${userToken}`,
-            'Content-Type': 'multipart/form-data'
-        },
-        data: { avatar: inputAva },
-    })
-        .then(response => console.log(response))
-        .catch(err => { return err })
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/updateAvatarV2",
+            method: "PUT",
+            type: "application/json",
+            headers: {
+                Authorization: `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+            data: { avatar: inputAva },
+        })
+    } catch (err) {
+        return err
+    }
+    console.log(inputAva)
+    // await fetch(BASE_URL + '/api/v1/users/updateAvatarV2', {
+    //     method: 'PUT',
+    //     type: 'application/json',
+    //     headers: {
+    //         Authorization: `Bearer ${userToken}`,
+    //         'Content-Type': 'multipart/form-data'
+    //     },
+    //     data: { avatar: inputAva },
+    // })
+    //     .then(response => console.log(response))
+    //     .catch(err => { return err })
 }
 
 //Group avatar update
@@ -574,6 +595,57 @@ export async function handleDeleteMessage(id) {
         })
         console.log(response)
         //return response.data.data
+    } catch (err) {
+        return err
+    }
+}
+
+//Update profile
+export async function handleUpdateProfile(name, gender, dateOfBirth) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/users/updateMe`,
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                name: name,
+                gender: gender,
+                dateOfBirth: dateOfBirth
+            }
+        })
+        console.log(response)
+    } catch (err) {
+        return err
+    }
+}
+
+//Get infomation
+export async function handleGetMe() {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/users/getMe`,
+            method: 'GET',
+            headers: {Authorization: `Bearer ${userToken}`}
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle change password
+export async function handleChangePassword(old, newPassword) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/auth/changePassword`,
+            method: 'POST',
+            headers: {Authorization: `Bearer ${userToken}`},
+            data: {
+                oldPassword: old,
+                newPassword: newPassword
+            }
+        })
     } catch (err) {
         return err
     }

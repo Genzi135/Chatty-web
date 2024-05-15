@@ -5,7 +5,7 @@ import SubSideBar from "./sideBar/SubSideBar";
 import Contact from "./contact";
 import { useSocket } from "../../hooks/context/socket";
 import { useEffect } from "react";
-import { addMessage, setListConversation, setListMessage } from "../../hooks/redux/reducer";
+import { addMessage, setCurrentConversation, setListConversation, setListMessage } from "../../hooks/redux/reducer";
 import ConversationSkeleton from "../../components/common/ConversationSkeleton";
 
 export default function Dashboard() {
@@ -54,9 +54,30 @@ export default function Dashboard() {
         socket.on("message:notification", (data) => {
             if (data) {
                 if (currentConversation._id === data.conversationId) {
-                    console.log(data.conversation.members)
+                    console.log(data)
+                    dispatch(addMessage(data.messages[0]))
+                    dispatch(setCurrentConversation(data.conversation))
                 }
             }
+        })
+    })
+
+    useEffect(() => {
+        socket.on("conversation:disband", (data) => {
+            if (data.conservationId === currentConversation._id) {
+                dispatch(setCurrentConversation({}))
+            }
+            const newList = listConversation.filter(e => e._id !== data.conservationId)
+            console.log(newList)
+            dispatch(setListConversation(newList))
+        })
+    })
+
+    useEffect(() => {
+        socket.on("conversation:new", (data) => {
+            const newList = [data.conversation, ...listConversation]
+            console.log(listConversation)
+            dispatch(setListConversation(newList))
         })
     })
 

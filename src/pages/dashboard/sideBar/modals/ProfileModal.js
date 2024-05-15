@@ -3,8 +3,10 @@ import HeaderModal from "../../../../components/common/HeaderModal";
 import icons from "../../../../components/shared/icon";
 import Button from "../../../../components/common/Button";
 import InputDate from "../../../../components/common/InputDate";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../../helpers/formatDate";
+import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile } from "../../../../components/shared/api";
+import { setCurrentUser } from "../../../../hooks/redux/reducer";
 
 export default function ProfileModal() {
 
@@ -27,6 +29,8 @@ export default function ProfileModal() {
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
 
+    const dispatch = useDispatch()
+
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -46,7 +50,19 @@ export default function ProfileModal() {
     }
 
     function handlePasswordChange() {
-        console.log(password, newPassword, confirmPassword);
+        if (newPassword === confirmPassword) {
+            handlePasswordChange(password, newPassword);
+            return
+        }
+    }
+
+    function checkOldPassword() {
+        checkLogin(userData.email, password)
+            .then(response => {
+                if (response.status == 200) 
+                    setDisableChangePass(false)
+                else setDisableChangePass(true)
+            })
     }
 
     useEffect(() => {
@@ -54,7 +70,10 @@ export default function ProfileModal() {
             setViewStateProfile('profile')
             setOption('')
         } else if (option === 'confirm') {
-            console.log(userName, gender, dob);
+            handleUpdateProfile(userName, gender, dob);
+            handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
+            setViewStateProfile("profile")
+            setOption('')
         }
     }, [option])
 
@@ -153,28 +172,28 @@ export default function ProfileModal() {
                 </div>
                 <div className="flex justify-end items-center mt-2 gap-2">
                     <button className="btn btn-outline" onClick={() => { setAvatar(null); setDisplayAvatar(null); setViewStateProfile('profile') }}>Cancel</button>
-                    <button className="btn btn-secondary">Confirm</button>
+                    <button className="btn btn-secondary" onClick={() => {handleUpdateAvatar(avatar); setViewStateProfile("profile")}}>Confirm</button>
                 </div>
             </div>}
             {viewStateProfile === "changePassword" && <div className="w-full">
                 <div className="flex flex-col justify-between  gap-2">
                     <label>Old password</label>
-                    <input type="text" placeholder="Enter old password" className="input input-bordered input-secondary w-full "
-                        onChange={(e) => { setPassword(e) }}
+                    <input type="password" placeholder="Enter old password" className="input input-bordered input-secondary w-full "
+                        onChange={(e) => { onPasswordChange(e) }}
                     />
-                    <button className="btn btn-secondary" onClick={() => { setDisableChangePass(!isDisableChangePass) }}>Check</button>
+                    <button className="btn btn-secondary" onClick={() => { checkOldPassword() }}>Check</button>
                 </div>
                 <div className="flex flex-col justify-between gap-2 mt-2">
                     <label>New password</label>
-                    <input type="text" placeholder="Enter new password" className={`input input-bordered input-secondary w-full ${isDisableChangePass && 'input-disabled'}`}
-                        onChange={(e) => { setNewPassword(e) }}
+                    <input type="password" placeholder="Enter new password" className={`input input-bordered input-secondary w-full ${isDisableChangePass && 'input-disabled'}`}
+                        onChange={(e) => { onNewPasswordChange(e) }}
                         disabled={isDisableChangePass}
                     />
                 </div>
                 <div className="flex flex-col justify-between  gap-2 mt-2">
                     <label>Confirm password</label>
-                    <input type="text" placeholder="Confirm password" className={`input input-bordered input-secondary w-full  ${isDisableChangePass && 'input-disabled'}`}
-                        onChange={(e) => { setConfirmPassword(e) }}
+                    <input type="password" placeholder="Confirm password" className={`input input-bordered input-secondary w-full  ${isDisableChangePass && 'input-disabled'}`}
+                        onChange={(e) => { onConfirmPasswordChange(e) }}
                         d disabled={isDisableChangePass}
                     />
                 </div>
