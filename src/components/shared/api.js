@@ -94,7 +94,6 @@ export async function handleGetFriendList() {
             headers: { Authorization: `Bearer ${userToken}` },
             params: { type: 'private' }
         })
-        console.log(response.data.data)
         return response
     } catch (err) {
         return err
@@ -203,6 +202,21 @@ export async function handleRemoveFriend(id) {
     }
 }
 
+//Get conversation by id
+export async function getConversationById(conversationId) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversationId}`,
+            method: 'GET',
+            headers: { Authorization: `Bearer: ${userToken}` }
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 //Get list of conversation
 export async function getListConversation(dispatch) {
     try {
@@ -270,6 +284,7 @@ export async function handleCreateGroup(id, member, groupName, groupImage) {
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
                 name: groupName,
+                members: newList
                 //image: groupImage
             }
         })
@@ -323,17 +338,20 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
 
 //Add member
 export async function handleAddMember(conversation, yourId, Ids, dispatch) {
+    const newList = Ids.map(e => e.userId);
+    console.log(Array.isArray(newList));
+    console.log(newList);
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservations/${conversation._id}/addMember`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/addMembers`,
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${userToken}`
             },
             data: {
-                conversationId: conversation._id,
+                conservationId: conversation._id,
                 userId: yourId,
-                members: Ids
+                members: newList
 
             }
         })
@@ -366,7 +384,7 @@ export async function handleRemoveMemeber(conversation, yourId, Ids) {
 export async function handleDisbandGroup(conversation, yourId) {
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservation/${conversation._id}/disband`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/disband`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
@@ -374,23 +392,23 @@ export async function handleDisbandGroup(conversation, yourId) {
                 userId: yourId,
             }
         })
-        console.log(response)
+        return response
     } catch (err) {
         return err
     }
 }
 
 //Leave group
-export async function handleRemoveGroup(conversation, yourId, name) {
+export async function handleLeaveGroup(conversation, yourId, name) {
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservation/${conversation._id}/leaveGroup`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/leaveGroup`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
                 conversationId: conversation._id,
                 userId: yourId,
-                userName: name
+                // userName: name
             }
         })
         console.log(response)
@@ -441,9 +459,10 @@ export async function handleChangeGroupAvatar(conversation, yourId, avatar, your
 
 //Transfer group leader
 export async function handleTransferGroupLeader(conversation, id, yourId) {
+    console.log(id)
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservation/${conversation._id}/transfer/${id}`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/transfer/${id}`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {

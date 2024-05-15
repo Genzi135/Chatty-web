@@ -1,12 +1,157 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
 import HeaderModal from "../../../components/common/HeaderModal";
+import { getConversationById, getListConversation, handleAddMember, handleDisbandGroup, handleGetFriendList, handleLeaveGroup, handleTransferGroupLeader } from "../../../components/shared/api";
+import { useEffect, useState } from "react";
+import FriendCard from "../../../components/common/FriendCard";
+import { setCurrentConversation } from "../../../hooks/redux/reducer";
+import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
+import { current } from "@reduxjs/toolkit";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
     const currentUser = useSelector(state => state.currentUser);
-    console.log(currentConversation);
+    const [dataSource, setDataSource] = useState([])
+    const [isRefresh, setRefresh] = useState(false);
+    const [addMemberList, setAddMemberList] = useState([])
+    const [selectedList, setSelectedAddList] = useState([])
+    const memberIds = new Set(currentConversation.members.map(member => member._id));
+
+    const dispatch = useDispatch()
+
+    const onSelectedClick = (e) => {
+        setSelectedAddList([...selectedList, e]);
+    }
+
+    const removeFromSelected = (e) => {
+        const removeItem = e;
+        const newSelectedList = selectedList.filter(el => el !== e);
+        setSelectedAddList(newSelectedList);
+    }
+
+    console.log(selectedList)
+
+    const check = () => {
+        console.log(dataSource);
+        console.log(currentConversation.members);
+
+        const currentUserID = currentUser._id; // Giả sử bạn có một biến currentUser chứa thông tin của người dùng hiện tại
+
+        const differentObjects = [];
+
+        // Lọc ra các đối tượng khác nhau từ dataSource
+        dataSource.forEach(friend => {
+            if (friend.userId !== currentUserID && !currentConversation.members.some(member => member._id === friend.userId)) {
+                differentObjects.push(friend);
+            }
+        });
+
+        // Lọc ra các đối tượng khác nhau từ currentConversation.members
+        currentConversation.members.forEach(member => {
+            if (member._id !== currentUserID && !dataSource.some(friend => friend.userId === member._id)) {
+                differentObjects.push(member);
+            }
+        });
+
+        setAddMemberList(differentObjects)
+    };
+
+
+
+
+    useEffect(() => { check() }, [dataSource])
+
+    // console.log(currentConversation)
+
+    useEffect(() => {
+        handleGetFriendList().then(response => setDataSource(response.data.data))
+        console.log(dataSource)
+
+    }, [])
+
+    function IsMember(userId, conversationId) {
+        getConversationById(conversationId)
+            .then((response) => {
+                const memberList = response.data.data.members
+                if (Array.isArray(memberList)) {
+                    memberList.map(member => {
+                        if (member._id == userId) {
+                            return (<div></div>);
+                        }
+                        return (<FriendCard props={userId} />)
+                    })
+                }
+            }
+            )
+    }
+
+    const confirmDisbandGroup = () => {
+        handleDisbandGroup(currentConversation, currentUser._id)
+            .then((response) => {
+                console.log(response)
+                dispatch(setCurrentConversation({}))
+                getListConversation(dispatch)
+            })
+            .catch((err) => console.log(err))
+    }
+
+    const confirmLeaveGroup = () => {
+        if (currentConversation.leaders.map(leader =>
+            leader._id === currentUser._id
+        )) {
+            const newList = currentConversation.leaders.flatMap(leader => {
+                return currentConversation.members.filter(member =>
+                    member._id !== leader._id
+                );
+            });
+            handleTransferGroupLeader(currentConversation, newList[0]._id, currentUser._id)
+                .then(() => {
+                    handleLeaveGroup(currentConversation, currentUser._id)
+                        .then(() => {
+                            document.getElementById("leaveGroup").close()
+                            dispatch(setCurrentConversation({}))
+                            getListConversation(dispatch)
+                        })
+                })
+                .catch(err => console.log(err))
+        }
+        else {
+            handleLeaveGroup(currentConversation, currentUser._id)
+                .then(() => {
+                    document.getElementById("leaveGroup").close()
+                    dispatch(setCurrentConversation({}))
+                    getListConversation(dispatch)
+                })
+                .catch(err => console.log(err))
+        }
+    }
+
+    const openModal = (memberId) => {
+        document.getElementById('changeLeader').showModal()
+        console.log(document.getElementById("transferLeaderConfirm"))
+        document.getElementById("transferLeaderConfirm").addEventListener("click", () => {
+            handleTransferGroupLeader(currentConversation, memberId, currentUser._id)
+            document.getElementById('changeLeader').close()
+        })
+    }
+
+    const openAddMemberModal = () => {
+        document.getElementById("addToGroup").showModal()
+    }
+
+    const addMember = () => {
+        // selectedList.map(e => {
+        //     handleAddMember(currentConversation, currentUser._id, )
+        // })
+        handleAddMember(currentConversation, currentUser._id, selectedList)
+            .then(() => {
+                const currentConver = getConversationById(currentConversation._id)
+                dispatch(setCurrentConversation(currentConver))
+            })
+    }
+
+    // console.log(currentConversation);
     // console.log(currentUser);
     return (
         <div className="w-[400px]">
@@ -62,7 +207,7 @@ export default function ConversationDrawer() {
                     <label>{currentConversation.name}</label>
                     <div className="mt-4 flex justify-center items-center gap-2">
                         <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
-                            onClick={() => { document.getElementById("addToGroup").showModal() }}>{icons.addFriend}</label>
+                            onClick={() => { openAddMemberModal() }}>{icons.addFriend}</label>
 
                         {currentConversation && currentConversation.leaders.map((e) => (
                             currentUser._id === e._id && (<div key={e._id} className="flex justify-center items-center gap-2">
@@ -100,7 +245,7 @@ export default function ConversationDrawer() {
                                     {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
                                         e._id === currentUser._id && (<div>
                                             <button className="btn btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
-                                                onClick={() => { document.getElementById('changeLeader').showModal() }}>{icons.changeLeader}</button>
+                                                onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
                                         </div>)
                                     ))}
                                 </div>
@@ -122,10 +267,27 @@ export default function ConversationDrawer() {
             <dialog id="addToGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Add to group"} />
-                    <div><label>{"Do you want to add this group?"}</label></div>
+                    <div className="w-full h-auto">
+                        {
+                            selectedList && selectedList.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
+                                {
+                                    selectedList.map((e) => (<div key={e._id} className="w-auto h-12 p-2 text-nowrap flex gap-2 justify-between rounded-lg border-pink-500 border-2 text-secondary">
+                                        {e.name}
+                                        <div onClick={() => removeFromSelected(e)} className="hover:bg-pink-300 flex justify-center items-center p-1 rounded-full">{icons.xClose}</div>
+                                    </div>))
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        {addMemberList && addMemberList.length > 0 && addMemberList
+                            .map(friend => <div key={friend._id} onClick={() => onSelectedClick(friend)}><FriendCard props={friend} /></div>)
+
+                        }
+                    </div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => addMember()}>Confirm</button>
                     </div>
                 </div>
             </dialog>
@@ -145,7 +307,7 @@ export default function ConversationDrawer() {
                     <div><label>{"Do you want to leave this group?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => { confirmLeaveGroup() }}>Confirm</button>
                     </div>
                 </div>
             </dialog>
@@ -155,7 +317,7 @@ export default function ConversationDrawer() {
                     <div><label>{"Do you want to disband this group?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => confirmDisbandGroup()}>Confirm</button>
                     </div>
                 </div>
             </dialog>
@@ -165,7 +327,7 @@ export default function ConversationDrawer() {
                     <div><label>{"Do you want to change leader role?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <button className="btn btn-secondary" id="transferLeaderConfirm">Confirm</button>
                     </div>
                 </div>
             </dialog>

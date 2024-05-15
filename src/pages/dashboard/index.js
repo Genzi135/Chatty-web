@@ -51,6 +51,18 @@ export default function Dashboard() {
         })
     }, [listMessage])
 
+    useEffect(() => {
+        socket.on("message:notification", (data) => {
+            console.log(data)
+            console.log(currentConversation._id)
+            if (data) {
+                if (currentConversation._id === data.conversationId) {
+                    console.log(data.conversation.members)
+                }
+            }
+        })
+    })
+
     return (
         <div style={{ width: '100vw', height: '100vh', display: 'flex', alignItems: 'center' }}>
             <SideBar />
