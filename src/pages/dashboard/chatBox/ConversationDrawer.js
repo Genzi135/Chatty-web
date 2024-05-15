@@ -152,8 +152,8 @@ export default function ConversationDrawer() {
     const addMember = () => {
         handleAddMember(currentConversation, currentUser._id, selectedList)
             .then(() => {
-                getConversationById(currentConversation._id)
-                    .then(response => dispatch(setCurrentConversation(response.data.data)))
+                // getConversationById(currentConversation._id)
+                //     .then(response => dispatch(setCurrentConversation(response.data.data)))
             })
         document.getElementById("addToGroup").close()
         setSelectedAddList([])
