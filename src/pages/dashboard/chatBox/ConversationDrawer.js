@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
 import HeaderModal from "../../../components/common/HeaderModal";
-import { getConversationById, getListConversation, handleAddMember, handleDisbandGroup, handleGetFriendList, handleLeaveGroup, handleTransferGroupLeader } from "../../../components/shared/api";
+import { getConversationById, getListConversation, handleAddMember, handleDisbandGroup, handleGetFriendList, handleLeaveGroup, handleRemoveMemeber, handleTransferGroupLeader } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import FriendCard from "../../../components/common/FriendCard";
 import { setCurrentConversation } from "../../../hooks/redux/reducer";
@@ -16,12 +16,18 @@ export default function ConversationDrawer() {
     const [isRefresh, setRefresh] = useState(false);
     const [addMemberList, setAddMemberList] = useState([])
     const [selectedList, setSelectedAddList] = useState([])
-    const memberIds = new Set(currentConversation.members.map(member => member._id));
+    const [removeList, setRemoveList] = useState([])
 
     const dispatch = useDispatch()
 
     const onSelectedClick = (e) => {
+        if (selectedList.includes(e)) return
         setSelectedAddList([...selectedList, e]);
+    }
+
+    const onRemoveSelectedClick = (e) => {
+        if (removeList.includes(e)) return
+        setRemoveList([...removeList, e]);
     }
 
     const removeFromSelected = (e) => {
@@ -30,7 +36,11 @@ export default function ConversationDrawer() {
         setSelectedAddList(newSelectedList);
     }
 
-    console.log(selectedList)
+    const removeFromRemove = (e) => {
+        const removeItem = e;
+        const newSelectedList = removeList.filter(el => el !== e);
+        setRemoveList(newSelectedList);
+    }
 
     const check = () => {
         console.log(dataSource);
@@ -129,7 +139,6 @@ export default function ConversationDrawer() {
 
     const openModal = (memberId) => {
         document.getElementById('changeLeader').showModal()
-        console.log(document.getElementById("transferLeaderConfirm"))
         document.getElementById("transferLeaderConfirm").addEventListener("click", () => {
             handleTransferGroupLeader(currentConversation, memberId, currentUser._id)
             document.getElementById('changeLeader').close()
@@ -141,18 +150,29 @@ export default function ConversationDrawer() {
     }
 
     const addMember = () => {
-        // selectedList.map(e => {
-        //     handleAddMember(currentConversation, currentUser._id, )
-        // })
         handleAddMember(currentConversation, currentUser._id, selectedList)
             .then(() => {
-                const currentConver = getConversationById(currentConversation._id)
-                dispatch(setCurrentConversation(currentConver))
+                getConversationById(currentConversation._id)
+                    .then(response => dispatch(setCurrentConversation(response.data.data)))
             })
+        document.getElementById("addToGroup").close()
+        setSelectedAddList([])
     }
 
-    // console.log(currentConversation);
-    // console.log(currentUser);
+    const openRemoveMemberModal = () => {
+        document.getElementById("removeFromGroup").showModal()
+    }
+
+    const confirmRemove = () => {
+        handleRemoveMemeber(currentConversation, currentUser._id, removeList)
+            .then(() => {
+                getConversationById(currentConversation._id)
+                    .then(response => dispatch(setCurrentConversation(response.data.data)))
+            })
+        document.getElementById("removeFromGroup").close()
+        setRemoveList([])
+    }
+
     return (
         <div className="w-[400px]">
             {currentConversation && currentConversation.type === "private" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
@@ -212,7 +232,7 @@ export default function ConversationDrawer() {
                         {currentConversation && currentConversation.leaders.map((e) => (
                             currentUser._id === e._id && (<div key={e._id} className="flex justify-center items-center gap-2">
                                 <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Remove from group"
-                                    onClick={() => { document.getElementById("removeFromGroup").showModal() }}>{icons.removeFriend}</label>
+                                    onClick={() => { openRemoveMemberModal() }}>{icons.removeFriend}</label>
                                 <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Disband group"
                                     onClick={() => { document.getElementById("disbandGroup").showModal() }}>{icons.trash}</label>
                             </div>)
@@ -294,10 +314,24 @@ export default function ConversationDrawer() {
             <dialog id="removeFromGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Remove from group"} />
-                    <div><label>{"Do you want to remove this group?"}</label></div>
+                    <div className="w-full h-auto">
+                        {
+                            removeList && removeList.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
+                                {
+                                    removeList.map((e) => (<div key={e._id} className="w-auto h-12 p-2 text-nowrap flex gap-2 justify-between rounded-lg border-pink-500 border-2 text-secondary">
+                                        {e.name}
+                                        <div onClick={() => removeFromRemove(e)} className="hover:bg-pink-300 flex justify-center items-center p-1 rounded-full">{icons.xClose}</div>
+                                    </div>))
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div></div>
+                    <div>{currentConversation && currentConversation.members.map(e => e._id != currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
+
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <button className="btn btn-secondary" id="confirmRemoveMember" onClick={() => confirmRemove()}>Confirm</button>
                     </div>
                 </div>
             </dialog>

@@ -363,15 +363,18 @@ export async function handleAddMember(conversation, yourId, Ids, dispatch) {
 
 //Remove member
 export async function handleRemoveMemeber(conversation, yourId, Ids) {
+    const newList = Ids.map(e => e._id);
+    console.log(Array.isArray(newList));
+    console.log(newList);
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservations/${conversation._id}/removeMember`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/removeMembers`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
                 conversationId: conversation._id,
                 userId: yourId,
-                members: Ids
+                members: newList
             }
         })
         console.log(response)
