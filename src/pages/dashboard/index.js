@@ -7,7 +7,7 @@ import { useSocket } from "../../hooks/context/socket";
 import { useEffect } from "react";
 import { addMessage, setCurrentConversation, setListConversation, setListMessage } from "../../hooks/redux/reducer";
 import ConversationSkeleton from "../../components/common/ConversationSkeleton";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/ReactToastify.css'
 
 export default function Dashboard() {
@@ -54,11 +54,16 @@ export default function Dashboard() {
 
     useEffect(() => {
         socket.on("message:notification", (data) => {
-            if (data) {
-                if (currentConversation._id === data.conversationId) {
+            if (currentConversation._id) {
+                if (data) {
+                    //console.log(currentConversation._id.toString() === data.conversationId.toString())
                     console.log(data)
-                    dispatch(addMessage(data.messages[0]))
-                    dispatch(setCurrentConversation(data.conversation))
+                    console.log(currentConversation)
+                    if (currentConversation._id === data.conservationId) {
+                        dispatch(addMessage(data.messages[0]))
+                        toast(data.messages[0].content)
+                        dispatch(setCurrentConversation(data.conversation))
+                    }
                 }
             }
         })

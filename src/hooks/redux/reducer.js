@@ -121,6 +121,7 @@ const reducer = (state = initialState, action) => {
             }
         }
         case 'ADD_MESSAGE': {
+            if (state.listMessage.includes(action.payload)) return state
             return {
                 ...state,
                 listMessage: [...state.listMessage, action.payload]

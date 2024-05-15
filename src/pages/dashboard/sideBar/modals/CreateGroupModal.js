@@ -3,7 +3,7 @@ import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
 import ConversationSkeleton from "../../../../components/common/ConversationSkeleton";
 import CustomButton from "../../../../components/common/CustomButton";
-import { getListConversation, handleCreateGroup, handleGetFriendList } from "../../../../components/shared/api";
+import { getListConversation, getListMessageByConversation, handleCreateGroup, handleGetFriendList } from "../../../../components/shared/api";
 import FriendCard from "../../../../components/common/FriendCard";
 import icons from "../../../../components/shared/icon";
 import { useDispatch, useSelector } from "react-redux";
@@ -68,7 +68,9 @@ export default function CreateGroupModal({ onClose }) {
                 .then(() => {
                     getListConversation(dispatch)
                         .then((response) => {
+                            console.log(response)
                             dispatch(setCurrentConversation(response.data.data[0]))
+                            getListMessageByConversation(response.data.data[0]._id, dispatch)
                         })
                 })
             setOption('')
