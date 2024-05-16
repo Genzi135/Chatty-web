@@ -61,7 +61,6 @@ export default function Dashboard() {
         };
 
         const handleNotification = (data) => {
-            console.log(data);
 
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
@@ -98,6 +97,7 @@ export default function Dashboard() {
             }
             const newList = listConversationRef.current.filter(e => e._id !== data.conservationId);
             dispatch(setListConversation(newList));
+            toast("A conversation has been disband")
         };
 
         const handleNewConversation = (data) => {

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import icons from "../../../components/shared/icon";
 import { formatTime } from "../../../helpers/formatDate";
 import { setListMessage, setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
@@ -21,65 +21,64 @@ export default function Message({ data }) {
     const [isShowOption, setShowOption] = useState(false);
     const [option, setOption] = useState('');
 
-    const messageRef = useRef(null)
+    const messageRef = useRef(null);
 
-    const { socket } = useSocket()
+    const { socket } = useSocket();
 
     const dispatch = useDispatch();
 
     const onMouseEnter = useCallback(() => {
-        setShowOption(true)
-    })
+        setShowOption(true);
+    });
 
     const onMouseLeave = useCallback(() => {
-        setShowOption(false)
-    })
+        setShowOption(false);
+    });
 
     const setRepMessage = () => {
-        dispatch(setReplyMessage(data))
-    }
+        dispatch(setReplyMessage(data));
+    };
 
     const setForwardMessage = () => {
-        dispatch(setSelectedMessage(data))
-        document.getElementById('ForwardModal').showModal()
-    }
+        dispatch(setSelectedMessage(data));
+        document.getElementById('ForwardModal').showModal();
+    };
 
     const onClose = (id) => {
-        console.log(id);
         id && document.getElementById(id).close();
-    }
+    };
 
     const showSelectedImage = (url) => {
-        setSelectedImage(url)
-    }
+        setSelectedImage(url);
+    };
 
     const onClickAttachments = () => {
         const parentID = data.parent?._id;
         const parentElement = document.getElementById(parentID);
-        parentElement?.scrollIntoView({ behavior: 'smooth' })
-    }
+        parentElement?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     const executeHandleRemove = (id) => {
         handleDeleteMessage(id);
         const newList = listMessage.map((e) => {
             if (id === e._id) {
-                return { ...e, content: "This message has been deleted", isDelete: true }
+                return { ...e, content: "This message has been deleted", isDelete: true };
             }
             return e;
-        })
-        dispatch(setListMessage(newList))
+        });
+        dispatch(setListMessage(newList));
 
         socket.emit("message:delete", {
             id: id,
             conversation: currentConversation,
-        }, (response) => { console.log(response) })
+        }, (response) => { console.log(response) });
 
-        setShowModalConfirm(false)
-    }
+        setShowModalConfirm(false);
+    };
 
     if (data && data.type === 'notification') {
         return (
-            <div className="flex justify-center items-center gap-2 text-black mb-2 mt-2" >
+            <div className="flex justify-center items-center gap-2 text-black mb-2 mt-2">
                 <div className="flex justify-center items-center gap-2 text-black p-2 rounded-full" style={{ backgroundColor: 'rgba(169, 169, 169, 0.2)' }}>
                     <div className="avatar">
                         <div className="avatar w-6 h-6 rounded-full mr-2">
@@ -91,7 +90,7 @@ export default function Message({ data }) {
                     </div>
                 </div>
             </div>
-        )
+        );
     } else {
         return (
             <div
@@ -100,8 +99,7 @@ export default function Message({ data }) {
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
                 className={`${data.sender && currentUser._id === data.sender._id ? 'flex h-[auto] flex-row-reverse mb-2 pr-2' : 'h-[auto] flex mb-2 pl-2'}`}>
-                {currentUser._id === data.sender._id ? <div>
-                    {""}</div> : <div className="avatar">
+                {currentUser._id === data.sender._id ? <div>{""}</div> : <div className="avatar">
                     <div className="avatar rounded-full w-8 h-8 mr-2">
                         <img src={data.avatar} alt="avatar" />
                     </div>
@@ -144,7 +142,7 @@ export default function Message({ data }) {
                         </div>))) : (<div><label>This message has been deleted</label></div>)}
 
                     </div>}
-                    <div className=" flex flex-col gap-2">
+                    <div className="flex flex-col gap-2">
                         {data.content !== "This message has been deleted" && data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
                             {e.type === 'image' && <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" />}
                             {e.type === 'application' &&
@@ -163,7 +161,7 @@ export default function Message({ data }) {
                                     {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
 
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
-                                    <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
+                                    <label className="text-ellipsis whitespace-nowrap w-24">{e.url.split(".").pop()}</label>
                                 </div>
                             }
                             {e.type === 'video' && <div>
@@ -182,16 +180,17 @@ export default function Message({ data }) {
                     <div className="text-xs p-1">{formatTime(data.createdAt)}</div>
                 </div>
                 {isShowOption && <div className="ml-1 mr-1 h-auto flex justify-center items-center w-auto gap-1 p-1">
-                    <div className="flex bg-white rounded-md p-1">
-                        <div onClick={() => setForwardMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Forward">{icons.forward}</div>
-                        <div onClick={() => setRepMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Reply">{icons.reply}</div>
-                        {currentUser._id === data.sender._id && data.content !== "This message has been deleted" &&
-                            <div div className="p-1 hover:bg-red-100 rounded-md tooltip" data-tip="Remove" onClick={() => {
-                                setSelectedMessageId(data._id);
-                                setShowModalConfirm(true);
-                            }}>{icons.removeMessage}</div>
-                        }
-                    </div>
+                    {data.content !== "This message has been deleted" &&
+                        <div className="flex bg-white rounded-md p-1">
+                            <div onClick={() => setForwardMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Forward">{icons.forward}</div>
+                            <div onClick={() => setRepMessage()} className="p-1 hover:bg-gray-300 rounded-md tooltip" data-tip="Reply">{icons.reply}</div>
+                            {currentUser._id === data.sender._id && data.content !== "This message has been deleted" &&
+                                <div className="p-1 hover:bg-red-100 rounded-md tooltip" data-tip="Remove" onClick={() => {
+                                    setSelectedMessageId(data._id);
+                                    setShowModalConfirm(true);
+                                }}>{icons.removeMessage}</div>
+                            }
+                        </div>}
                 </div>}
                 {
                     selectedImage && <div className="fixed bg-black bg-opacity-75 top-0 left-0 w-full h-full flex justify-center items-center z-50">
@@ -217,6 +216,6 @@ export default function Message({ data }) {
                     </div>
                 </dialog>
             </div>
-        )
+        );
     }
 }

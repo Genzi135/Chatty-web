@@ -29,7 +29,7 @@ export async function handleLogin(email, password, dispatch) {
         localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
         userToken = JSON.parse(localStorage.getItem("userToken"));
         dispatch(setLogin())
-        
+
     } catch (err) {
         return err;
     }
@@ -502,8 +502,7 @@ export async function handleTransferGroupLeader(conversation, id, yourId) {
 }
 
 //Send message
-export async function handleSendMessage(currentConversation, inputMessage, dispatch) {
-    console.log(inputMessage)
+export async function handleSendMessage(listConversation, currentConversation, inputMessage, dispatch) {
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendText`,
@@ -514,7 +513,13 @@ export async function handleSendMessage(currentConversation, inputMessage, dispa
             }
         });
         dispatch(addMessage(response.data.data))
-        console.log(response)
+        const newList = listConversation.map((e) => {
+            if (e._id === currentConversation._id) {
+                return { ...e, lastMessage: { content: inputMessage } }
+            }
+            return e
+        })
+        dispatch(setListConversation(newList))
         return response.data.data
     } catch (err) {
         return err
@@ -625,7 +630,7 @@ export async function handleGetMe() {
         const response = await axios({
             url: BASE_URL + `/api/v1/users/getMe`,
             method: 'GET',
-            headers: {Authorization: `Bearer ${userToken}`}
+            headers: { Authorization: `Bearer ${userToken}` }
         })
         console.log(response)
         return response
@@ -640,7 +645,7 @@ export async function handleChangePassword(old, newPassword) {
         const response = await axios({
             url: BASE_URL + `/api/v1/auth/changePassword`,
             method: 'POST',
-            headers: {Authorization: `Bearer ${userToken}`},
+            headers: { Authorization: `Bearer ${userToken}` },
             data: {
                 oldPassword: old,
                 newPassword: newPassword

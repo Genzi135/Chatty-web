@@ -1,14 +1,16 @@
 import { useDispatch, useSelector } from "react-redux";
 import icons from "../../../components/shared/icon";
 import { setReplyMessage } from "../../../hooks/redux/reducer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatInput() {
     const replyMessage = useSelector((state) => state.replyMessage);
+    const listConversation = useSelector((state) => state.listConversation)
     const currentConversation = useSelector((state) => state.currentConversation)
+
 
     const [showImages, setShowImages] = useState(null);
     const [inputImages, setInputImages] = useState(null);
@@ -78,13 +80,13 @@ export default function ChatInput() {
                     })
                 })
         } else if (inputMessage !== '') {
-            handleSendMessage(currentConversation, inputMessage, dispatch)
+            handleSendMessage(listConversation, currentConversation, inputMessage, dispatch)
                 .then(response => {
                     console.log(response)
                     socket.emit("message:send", {
                         ...response,
                         conversation: currentConversation
-                      })
+                    })
                 })
         }
         document.getElementById('chatInput').value = ''
@@ -222,7 +224,7 @@ export default function ChatInput() {
                         className="absolute w-full h-full opacity-0" />
                 </div>
                 {replyMessage && <div className="flex justify-center items-center bg-white rounded-lg p-1 gap-1 max-w-[300]">
-                    <label className="text-secondary font-semibold">Message:</label>{replyMessage.content}<label className="text-gray-500">{replyMessage.attachments ? <div className="flex justify-center items-center ml-2">{icons.attachments}<label>files</label></div> : ''}</label>
+                    <label className="text-secondary font-semibold">Message:</label>{replyMessage.content}<label className="text-gray-500">{replyMessage.attachments && replyMessage.attachments.length > 0 ? <div className="flex justify-center items-center ml-2">{icons.attachments}<label>files</label></div> : ''}</label>
                     <div onClick={() => { dispatch(setReplyMessage(null)) }} className="flex justify-center items-center p-1 rounded-full bg-gray-100 hover:bg-gray-300 ml-2">{icons.xClose}</div>
                 </div>}
             </div>

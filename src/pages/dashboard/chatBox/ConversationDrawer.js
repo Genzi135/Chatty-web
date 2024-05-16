@@ -255,7 +255,7 @@ export default function ConversationDrawer() {
                                         </div>
                                     </div>
                                     {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
-                                        e._id === currentUser._id && (<div>
+                                        e._id === currentUser._id && (<div key={e._id}>
                                             <button className="btn btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
                                                 onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
                                         </div>)
