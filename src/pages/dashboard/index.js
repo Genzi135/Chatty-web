@@ -75,13 +75,13 @@ export default function Dashboard() {
             }
             const newList = listConversationRef.current.filter(e => e._id !== data.conservationId);
             dispatch(setListConversation(newList));
-            toast(data.messages[0].content);
+            toast("Group had been disbanded");
         };
 
         const handleNewConversation = (data) => {
             const newList = [data.conversation, ...listConversationRef.current];
             dispatch(setListConversation(newList));
-            toast(data.messages[0].content);
+            toast("Create new group successful")
         };
 
         socket.on("message:receive", handleReceiveMessage);
