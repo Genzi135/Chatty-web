@@ -8,6 +8,7 @@ import FriendCard from "../../../../components/common/FriendCard";
 import icons from "../../../../components/shared/icon";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation } from "../../../../hooks/redux/reducer";
+import { toast } from "react-toastify";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
@@ -66,6 +67,7 @@ export default function CreateGroupModal({ onClose }) {
         } else if (option === 'confirm') {
             handleCreateGroup(userData._id, selectedList, name, null)
                 .then(() => {
+                    toast("Create group success");
                     getListConversation(dispatch)
                         .then((response) => {
                             console.log(response)

@@ -8,6 +8,7 @@ import FriendCard from "../../../components/common/FriendCard";
 import { setCurrentConversation } from "../../../hooks/redux/reducer";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 import { current } from "@reduxjs/toolkit";
+import Chatty from "../../../components/common/Chatty";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -70,14 +71,12 @@ export default function ConversationDrawer() {
 
 
 
-    useEffect(() => { check() }, [dataSource])
+    useEffect(() => { check() }, [dataSource, currentConversation.members])
 
     // console.log(currentConversation)
 
     useEffect(() => {
         handleGetFriendList().then(response => setDataSource(response.data.data))
-        console.log(dataSource)
-
     }, [])
 
     function IsMember(userId, conversationId) {
@@ -186,6 +185,9 @@ export default function ConversationDrawer() {
                             onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>
                     </div>
                 </div>
+                <div>
+                    <Chatty />
+                </div>
             </div>}
 
 
@@ -210,17 +212,6 @@ export default function ConversationDrawer() {
                 </div>
             </dialog>
 
-
-
-
-
-
-
-
-
-
-
-
             {currentConversation && currentConversation.type === "group" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
                 <div className="flex flex-col justify-center items-center">
                     <Avatar link={currentConversation.image} />
@@ -237,9 +228,10 @@ export default function ConversationDrawer() {
                                     onClick={() => { document.getElementById("disbandGroup").showModal() }}>{icons.trash}</label>
                             </div>)
                         ))}
+
                     </div>
                 </div>
-                <div>
+                <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
                     {currentConversation && currentConversation.members && currentConversation.members.map((props) => (
                         <div key={props._id}>
                             <div className="p-2 w-auto">
