@@ -104,7 +104,7 @@ export default function SubSideBar() {
                         <input type="text" className="grow" placeholder="Search" />
                     </label>
                     <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
-                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer">{icons.createGroup}</div>
+                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
                 </div>
                 <div className="overflow-auto flex flex-col scroll-smooth mt-2 gap-2 p-2">
                     {/* body */}
@@ -128,6 +128,9 @@ export default function SubSideBar() {
 
                 <dialog id="addFriendModal" className="modal">
                     <AddFriendModal onClose={onClose} />
+                </dialog>
+                <dialog id="createGroupModal" className="modal">
+                    <CreateGroupModal onClose={onClose} />
                 </dialog>
             </div>}
         </div>

@@ -11,6 +11,7 @@ import 'react-toastify/ReactToastify.css';
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view);
+    const currentUser = useSelector(state => state.currentUser)
     const { socket } = useSocket();
     const currentConversation = useSelector(state => state.currentConversation);
     const listConversation = useSelector(state => state.listConversation);
@@ -21,12 +22,14 @@ export default function Dashboard() {
     const currentConversationRef = useRef(currentConversation);
     const listConversationRef = useRef(listConversation);
     const listMessageRef = useRef(listMessage);
+    const currentUserRef = useRef(currentUser);
 
     useEffect(() => {
+        currentUserRef.current = currentUser;
         currentConversationRef.current = currentConversation;
         listConversationRef.current = listConversation;
         listMessageRef.current = listMessage;
-    }, [currentConversation, listConversation, listMessage]);
+    }, [currentConversation, listConversation, listMessage, currentUser]);
 
     useEffect(() => {
         const handleReceiveMessage = (response) => {
@@ -58,16 +61,36 @@ export default function Dashboard() {
         };
 
         const handleNotification = (data) => {
-            if (currentConversationRef.current._id) {
-                if (data) {
-                    if (currentConversationRef.current._id === data.conservationId) {
-                        dispatch(addMessage(data.messages[0]));
-                        toast(data.messages[0].content);
-                        dispatch(setCurrentConversation(data.conversation));
+            console.log(data);
+
+            if (data) {
+                if (currentConversationRef.current._id === data.conservationId) {
+                    dispatch(addMessage(data.messages[0]));
+                    toast(data.messages[0].content);
+                    dispatch(setCurrentConversation(data.conversation));
+                } else if (currentConversationRef.current._id !== data.conservationId) {
+                    console.log(1);
+                    if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
+                        const newList = [data.conversation, ...listConversationRef.current]
+                        toast("New conversation!")
+                        dispatch(setListConversation(newList))
                     }
                 }
             }
+
         };
+
+        const handleRemoveMember = (data) => {
+            if (data.members.includes(currentUserRef.current._id)) {
+                const newList = listConversationRef.current.filter((e) => e._id !== data.conservationId)
+                console.log(newList);
+                toast("Removed from a conversation")
+                dispatch(setListConversation(newList))
+                if (currentConversationRef.current._id === data.conservationId) {
+                    dispatch(setCurrentConversation({}))
+                }
+            }
+        }
 
         const handleDisbandConversation = (data) => {
             if (data.conservationId === currentConversationRef.current._id) {
@@ -89,6 +112,7 @@ export default function Dashboard() {
         socket.on("message:notification", handleNotification);
         socket.on("conversation:disband", handleDisbandConversation);
         socket.on("conversation:new", handleNewConversation);
+        socket.on('conversation:removeMembers', handleRemoveMember);
 
         return () => {
             socket.off("message:receive", handleReceiveMessage);
@@ -96,6 +120,7 @@ export default function Dashboard() {
             socket.off("message:notification", handleNotification);
             socket.off("conversation:disband", handleDisbandConversation);
             socket.off("conversation:new", handleNewConversation);
+            socket.off('conversation:removeMembers', handleRemoveMember);
         };
     }, [socket, dispatch]);
 

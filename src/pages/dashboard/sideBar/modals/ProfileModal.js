@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../../helpers/formatDate";
 import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile } from "../../../../components/shared/api";
 import { setCurrentUser } from "../../../../hooks/redux/reducer";
+import { toast } from "react-toastify";
 
 export default function ProfileModal() {
 
@@ -59,7 +60,7 @@ export default function ProfileModal() {
     function checkOldPassword() {
         checkLogin(userData.email, password)
             .then(response => {
-                if (response.status == 200) 
+                if (response.status == 200)
                     setDisableChangePass(false)
                 else setDisableChangePass(true)
             })
@@ -70,7 +71,7 @@ export default function ProfileModal() {
             setViewStateProfile('profile')
             setOption('')
         } else if (option === 'confirm') {
-            handleUpdateProfile(userName, gender, dob);
+            handleUpdateProfile(userName, gender, dob).then(() => { toast("Change information success") });
             handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
             setViewStateProfile("profile")
             setOption('')
@@ -173,7 +174,7 @@ export default function ProfileModal() {
                 </div>
                 <div className="flex justify-end items-center mt-2 gap-2">
                     <button className="btn btn-outline" onClick={() => { setAvatar(null); setDisplayAvatar(null); setViewStateProfile('profile') }}>Cancel</button>
-                    <button className="btn btn-secondary" onClick={() => {handleUpdateAvatar(avatar); setViewStateProfile("profile")}}>Confirm</button>
+                    <button className="btn btn-secondary" onClick={() => { handleUpdateAvatar(avatar); setViewStateProfile("profile") }}>Confirm</button>
                 </div>
             </div>}
             {viewStateProfile === "changePassword" && <div className="w-full">
