@@ -27,13 +27,14 @@ export default function AddFriendModal({ onClose }) {
         if (!email) return
         handleSearchFriendAPI(email)
             .then((response) => {
-                handleSearchFriendID(response.data.data._id)
+                if (response.status == 200) {
+                    handleSearchFriendID(response.data.data._id)
                     .then(response => {
                         console.log(response)
                         setDataSource(response.data.data)
                     })
+                }
             })
-        console.log(dataSource)
     }
 
     useEffect(() => {

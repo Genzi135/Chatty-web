@@ -2,13 +2,14 @@ import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
 import HeaderModal from "../../../components/common/HeaderModal";
-import { getConversationById, getListConversation, handleAddMember, handleDisbandGroup, handleGetFriendList, handleLeaveGroup, handleRemoveMemeber, handleTransferGroupLeader } from "../../../components/shared/api";
+import { getConversationById, getListConversation, handleAddMember, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleTransferGroupLeader } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import FriendCard from "../../../components/common/FriendCard";
 import { setCurrentConversation } from "../../../hooks/redux/reducer";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 import { current } from "@reduxjs/toolkit";
 import Chatty from "../../../components/common/Chatty";
+import ConversationCard from "../../../components/common/ConversationCard";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -18,8 +19,29 @@ export default function ConversationDrawer() {
     const [addMemberList, setAddMemberList] = useState([])
     const [selectedList, setSelectedAddList] = useState([])
     const [removeList, setRemoveList] = useState([])
+    const [groupList, setGroupList] = useState([])
+    const [groupSelect, setGroupSelect] = useState([])
 
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        handleGetGroupList()
+        .then(response => {
+            console.log(response.data.data)
+            let newList = []
+            response.data.data.map(group => {
+                let found = false
+                group.members.map(member => {
+                    if (member._id === currentConversation.members[1]._id) {
+                        found = true
+                    }
+                })
+                if (!found) newList = [...newList, group]
+            })
+            console.log(newList)
+            setGroupList(newList)
+        })
+    }, [currentConversation])
 
     const onSelectedClick = (e) => {
         if (selectedList.includes(e)) return
@@ -29,6 +51,11 @@ export default function ConversationDrawer() {
     const onRemoveSelectedClick = (e) => {
         if (removeList.includes(e)) return
         setRemoveList([...removeList, e]);
+    }
+
+    const onGroupSelectedClick = (e) => {
+        if (groupSelect.includes(e)) return
+        setGroupSelect([...groupSelect, e]);
     }
 
     const removeFromSelected = (e) => {
@@ -41,6 +68,12 @@ export default function ConversationDrawer() {
         const removeItem = e;
         const newSelectedList = removeList.filter(el => el !== e);
         setRemoveList(newSelectedList);
+    }
+
+    const removeFromGroup = (e) => {
+        const removeItem = e;
+        const newSelectedList = groupList.filter(el => el !== e);
+        setGroupSelect(newSelectedList);
     }
 
     const check = () => {
@@ -68,8 +101,13 @@ export default function ConversationDrawer() {
         setAddMemberList(differentObjects)
     };
 
-
-
+    function handleAddGroup() {
+        groupSelect.map(group => {
+            handleAddMember(group, currentUser._id, currentConversation.members[1])
+        })
+        setGroupSelect([])
+        document.getElementById("AddFriendToGroup").close()
+    }
 
     useEffect(() => { check() }, [dataSource, currentConversation.members])
 
@@ -194,10 +232,26 @@ export default function ConversationDrawer() {
             <dialog id="addFriendToGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Add friend to Group"} />
-                    <div><label>{"Add a friend to group"}</label></div>
+                    <div>
+                        {
+                            groupSelect && groupSelect.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
+                                {
+                                    groupSelect.map((e) => (<div key={e._id} className="w-auto h-12 p-2 text-nowrap flex gap-2 justify-between rounded-lg border-pink-500 border-2 text-secondary">
+                                        {e.name}
+                                        <div onClick={() => removeFromGroup(e)} className="hover:bg-pink-300 flex justify-center items-center p-1 rounded-full">{icons.xClose}</div>
+                                    </div>))
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div>
+                        {groupList && groupList.length > 0 && groupList
+                            .map(friend => <div key={friend._id} onClick={() => onGroupSelectedClick(friend)}><ConversationCard props={friend} /></div>)
+                        }
+                    </div>
                     <div className="flex justify-end items-center gap-2 mt-5">
-                        <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <form method="dialog"><button className="btn btn-outline" onClick={() => setGroupSelect([])}>Cancel</button></form>
+                        <button className="btn btn-secondary" onClick={() => handleAddGroup()}>Confirm</button>
                     </div>
                 </div>
             </dialog>
@@ -206,8 +260,8 @@ export default function ConversationDrawer() {
                     <HeaderModal name={"Warning"} />
                     <div><label>{"Do you want to remove this friend?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
-                        <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
-                        <button className="btn btn-secondary">Confirm</button>
+                        <form method="dialog"><button className="btn btn-outline" onClick={() => {document.getElementById("removeFriend").close()}}>Cancel</button></form>
+                        <button className="btn btn-secondary" onClick={() => {handleRemoveFriend(currentConversation.members[1]._id)}}>Confirm</button>
                     </div>
                 </div>
             </dialog>

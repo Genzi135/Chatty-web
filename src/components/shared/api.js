@@ -359,9 +359,12 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
 
 //Add member
 export async function handleAddMember(conversation, yourId, Ids, dispatch) {
-    const newList = Ids.map(e => e.userId);
-    console.log(Array.isArray(newList));
-    console.log(newList);
+    let newList = []
+    if (Array.isArray(Ids)) {
+        newList = Ids.map(e => e.userId);
+    }
+    else newList = [...newList, Ids._id]
+
     try {
         const response = await axios({
             url: BASE_URL + `/api/v1/conservations/${conversation._id}/addMembers`,
@@ -646,6 +649,56 @@ export async function handleChangePassword(old, newPassword) {
                 newPassword: newPassword
             }
         })
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle send OTP
+export async function handleSendOTP(email) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/forgetPassword",
+            method: 'post',
+            data: { email: email }
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle check OTP
+export async function handleCheckOTP(email, OTP) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/verifyForgetPasswordOTP",
+            method: 'post',
+            data: {
+                email: email,
+                otp: OTP
+            }
+        })
+        console.log(response)
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle reset password
+export async function handleResetPassword(email, password) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/resetPassword",
+            method: 'post',
+            data: {
+                email: email,
+                password: password
+            }
+        })
+        return response
     } catch (err) {
         return err
     }
