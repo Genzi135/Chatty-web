@@ -81,7 +81,6 @@ export async function handleSearchFriendAPI(email) {
             headers: { Authorization: `Bearer ${userToken}` },
             method: 'GET'
         })
-        console.log(response)
         return response
     } catch (err) {
         return err
@@ -96,7 +95,6 @@ export async function handleSearchFriendID(ID) {
             headers: { Authorization: `Bearer ${userToken}` },
             method: 'GET'
         })
-        console.log(response)
         return response
     } catch (err) {
         return err
@@ -128,7 +126,6 @@ export async function handleGetGroupList() {
             headers: { Authorization: `Bearer ${userToken}` },
             params: { type: 'group' }
         })
-        console.log(response.data.data)
         return response
     } catch (err) {
         return err
@@ -143,7 +140,6 @@ export async function handleGetFriendRequest() {
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response.data.data)
         return response
     } catch (err) {
         return err
@@ -152,14 +148,12 @@ export async function handleGetFriendRequest() {
 
 //Send friend request
 export async function handleSendFriendRequest(id) {
-    console.log(id)
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/friends/request/" + id,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -173,7 +167,6 @@ export async function handleCancelFriendRequest(id) {
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -187,7 +180,6 @@ export async function handleAcceptFriendRequest(id) {
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -201,7 +193,6 @@ export async function handleRejectFriendRequest(id) {
             method: 'post',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -215,7 +206,6 @@ export async function handleRemoveFriend(id) {
             method: 'post',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -229,8 +219,7 @@ export async function getConversationById(conversationId) {
             method: 'GET',
             headers: { Authorization: `Bearer: ${userToken}` }
         })
-        console.log(response)
-        return response
+        return response.data.data
     } catch (err) {
         console.log(err)
     }
@@ -245,7 +234,6 @@ export async function getListConversation(dispatch) {
             headers: { Authorization: `Bearer ${userToken}` },
         })
         dispatch(setListConversation(response.data.data))
-        console.log(response)
         return response
     } catch (error) {
         return error;
@@ -254,7 +242,6 @@ export async function getListConversation(dispatch) {
 
 //Handle open conversation
 export async function handleOpenConversation(id, dispatch, listConversation) {
-    console.log("Call")
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/open/" + `${id}`,
@@ -268,7 +255,6 @@ export async function handleOpenConversation(id, dispatch, listConversation) {
             subSideBar: 'chat'
         }))
 
-        console.log(checkExist(listConversation, response.data.data._id))
         if (!checkExist(listConversation, response.data.data._id)) {
             dispatch(addConversation(response.data.data))
         }
@@ -296,8 +282,6 @@ export async function getListMessageByConversation(id, dispatch) {
 //Create group
 export async function handleCreateGroup(id, member, groupName, groupImage) {
     const newList = member.map(e => e.userId);
-    console.log(Array.isArray(newList));
-    console.log(newList);
     try {
         const response = await axios({
             url: BASE_URL + '/api/v1/conservations/createGroup',
@@ -309,7 +293,6 @@ export async function handleCreateGroup(id, member, groupName, groupImage) {
                 //image: groupImage
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -331,7 +314,6 @@ export async function handleUpdateAvatar(inputAva) {
     } catch (err) {
         return err
     }
-    console.log(inputAva)
     // await fetch(BASE_URL + '/api/v1/users/updateAvatarV2', {
     //     method: 'PUT',
     //     type: 'application/json',
@@ -359,9 +341,12 @@ export async function handleUpdateGroupAvatar(conversation, inputAva) {
 
 //Add member
 export async function handleAddMember(conversation, yourId, Ids, dispatch) {
-    const newList = Ids.map(e => e.userId);
-    console.log(Array.isArray(newList));
-    console.log(newList);
+    let newList = []
+    if (Array.isArray(Ids)) {
+        newList = Ids.map(e => e.userId);
+    }
+    else newList = [...newList, Ids._id]
+
     try {
         const response = await axios({
             url: BASE_URL + `/api/v1/conservations/${conversation._id}/addMembers`,
@@ -376,7 +361,6 @@ export async function handleAddMember(conversation, yourId, Ids, dispatch) {
 
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -385,8 +369,6 @@ export async function handleAddMember(conversation, yourId, Ids, dispatch) {
 //Remove member
 export async function handleRemoveMemeber(conversation, yourId, Ids) {
     const newList = Ids.map(e => e._id);
-    console.log(Array.isArray(newList));
-    console.log(newList);
     try {
         const response = await axios({
             url: BASE_URL + `/api/v1/conservations/${conversation._id}/removeMembers`,
@@ -398,7 +380,6 @@ export async function handleRemoveMemeber(conversation, yourId, Ids) {
                 members: newList
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -435,7 +416,6 @@ export async function handleLeaveGroup(conversation, yourId, name) {
                 // userName: name
             }
         })
-        console.log(response)
     } catch (err) {
         return err;
     }
@@ -445,7 +425,7 @@ export async function handleLeaveGroup(conversation, yourId, name) {
 export async function handleChangeGroupName(conversation, yourId, yourName, groupName) {
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservation/${conversation._id}/changeName`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/changeName`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
@@ -455,7 +435,7 @@ export async function handleChangeGroupName(conversation, yourId, yourName, grou
                 name: groupName
             }
         })
-        console.log(response)
+        return response
     } catch (err) {
         return err
     }
@@ -465,7 +445,7 @@ export async function handleChangeGroupName(conversation, yourId, yourName, grou
 export async function handleChangeGroupAvatar(conversation, yourId, avatar, yourName) {
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservation/${conversation._id}/changeImageV2`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/changeImageV2`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
@@ -475,7 +455,6 @@ export async function handleChangeGroupAvatar(conversation, yourId, avatar, your
                 userName: yourName
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -483,7 +462,6 @@ export async function handleChangeGroupAvatar(conversation, yourId, avatar, your
 
 //Transfer group leader
 export async function handleTransferGroupLeader(conversation, id, yourId) {
-    console.log(id)
     try {
         const response = await axios({
             url: BASE_URL + `/api/v1/conservations/${conversation._id}/transfer/${id}`,
@@ -495,7 +473,6 @@ export async function handleTransferGroupLeader(conversation, id, yourId) {
                 newLeaderId: id,
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -527,7 +504,7 @@ export async function handleSendMessage(listConversation, currentConversation, i
 }
 
 //Send files
-export async function handleSendFile(currentConversation, formData, dispatch) {
+export async function handleSendFile(listConversation, currentConversation, formData, dispatch) {
     try {
         const response = await axios({
             url: BASE_URL + "/api/v1/conservations/" + `${currentConversation._id}/messages/sendFiles`,
@@ -536,6 +513,16 @@ export async function handleSendFile(currentConversation, formData, dispatch) {
             data: formData
         });
         dispatch(addMessage(response.data.data))
+        const newList = listConversation.map((e) => {
+            if (e._id === currentConversation._id) {
+                return { ...e, lastMessage: response.data.data }
+            }
+            return e;
+        })
+        console.log(newList);
+        console.log(response.data.data);
+
+        dispatch(setListConversation(newList))
         return response.data.data
     } catch (err) {
         return err
@@ -598,7 +585,6 @@ export async function handleDeleteMessage(id) {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        console.log(response)
         //return response.data.data
     } catch (err) {
         return err
@@ -618,7 +604,6 @@ export async function handleUpdateProfile(name, gender, dateOfBirth) {
                 dateOfBirth: dateOfBirth
             }
         })
-        console.log(response)
     } catch (err) {
         return err
     }
@@ -632,7 +617,6 @@ export async function handleGetMe() {
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        console.log(response)
         return response
     } catch (err) {
         return err
@@ -651,6 +635,54 @@ export async function handleChangePassword(old, newPassword) {
                 newPassword: newPassword
             }
         })
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle send OTP
+export async function handleSendOTP(email) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/forgetPassword",
+            method: 'post',
+            data: { email: email }
+        })
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle check OTP
+export async function handleCheckOTP(email, OTP) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/verifyForgetPasswordOTP",
+            method: 'post',
+            data: {
+                email: email,
+                otp: OTP
+            }
+        })
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle reset password
+export async function handleResetPassword(email, password) {
+    try {
+        const response = await axios({
+            url: BASE_URL + "/api/v1/users/resetPassword",
+            method: 'post',
+            data: {
+                email: email,
+                password: password
+            }
+        })
+        return response
     } catch (err) {
         return err
     }

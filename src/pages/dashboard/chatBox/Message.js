@@ -211,7 +211,7 @@ export default function Message({ data }) {
                             <form method="dialog">
                                 <button className="btn btn-outline">Cancel</button>
                             </form>
-                            <button className="btn btn-secondary" onClick={() => { console.log(data._id); executeHandleRemove(data._id) }}>Confirm</button>
+                            <button className="btn btn-secondary" onClick={() => { executeHandleRemove(data._id) }}>Confirm</button>
                         </div>
                     </div>
                 </dialog>

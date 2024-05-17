@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { BASE_URL, handleLogin } from "../../../components/shared/api";
+import { BASE_URL, handleCheckOTP, handleLogin, handleResetPassword, handleSendOTP } from "../../../components/shared/api";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, setLogin } from "../../../hooks/redux/reducer";
+import { toast } from "react-toastify";
 
 function Login({ state }) {
-
+    const [viewState, setViewState] = useState('LOGIN');
     const [isShowPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,38 +22,63 @@ function Login({ state }) {
         setPassword(e.target.value)
     }
 
-    // const handleLogin = async () => {
-    //     console.log(email);
-    //     console.log(password);
-    //     try {
-    //         const response = await axios({
-    //             url: BASE_URL + "/api/v1/auth/login",
-    //             method: "post",
-    //             data: {
-    //                 email: email,
-    //                 password: password
-    //             }
-    //         })
-    //         if (response.data.status === "success")
-    //             setReport('');
-    //         dispatch(setCurrentUser(response.data.data.user))
-    //         localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
-    //         dispatch(setLogin())
-    //     } catch (error) {
-    //         console.log(error)
-    //         if (error.response.data.message === 'Bad credentials.') {
-    //             setReport('Phone or password is not correct')
-    //         } else {
-    //             setReport(error.response.data.message)
-    //         }
-    //     }
-    // }
+    const [OTP, setOTP] = useState('')
+    const [confirm, setConfirm] = useState('')
+    const [isDisableChangePass, setDisable] = useState(true)
+    const [isDisableOTP, setOTPDisable] = useState(true)
 
-    
+    const handleInputEmailf = (e) => {
+        setEmail(e.target.value)
+    }
+
+    const handleSetOTP = (e) => {
+        setOTP(e.target.value)
+    }
+
+    const handleSetPassword = (e) => {
+        setPassword(e.target.value)
+    }
+
+    const handleSetConfirm = (e) => {
+        setConfirm(e.target.value)
+    }
+
+    function handleGetOTP() {
+        if (email === "") {
+            toast("Email can not be empty")
+            return
+        } else {
+            handleSendOTP(email)
+            setOTPDisable(false)
+        }
+    }
+
+    function handleVerifyOTP() {
+        handleCheckOTP(email, OTP)
+            .then(response => {
+                if (response.status === 200) {
+                    setDisable(false)
+                }
+            })
+    }
+
+    function handleChangePassword() {
+        if (password === confirm) {
+            handleResetPassword(email, password)
+                .then((response) => {
+                    if (response.status == 200) {
+                        setViewState('LOGIN')
+                        toast("Successfully")
+                    }
+                })
+        } else {
+            toast("Confirm password does not match")
+        }
+    }
 
     return (
         <div className="card shadow-2xl p-8">
-            <div className="flex flex-col justify-between text-black gap-4">
+            {viewState === 'LOGIN' && <div className="flex flex-col justify-between text-black gap-4">
                 <div className="flex justify-center items-center font-medium text-2xl">
                     <h1>LOGIN</h1>
                 </div>
@@ -82,10 +108,54 @@ function Login({ state }) {
                     </div>
                 </form>
                 <div className="flex justify-center items-center text-red-500">{report}</div>
+                <div className="flex justify-center items-center font-medium">
+                    <label className="text-secondary cursor-pointer" onClick={() => { setViewState('FORGOT') }}>Forgot password ?</label>
+                </div>
                 <div className="flex justify-center items-center">
                     <button className="btn btn-secondary text-white" onClick={() => { handleLogin(email, password, dispatch) }}>LOGIN</button>
                 </div>
-            </div>
+            </div>}
+
+
+
+
+            {viewState === 'FORGOT' && <div className="flex flex-col justify-between text-black gap-4">
+                <label>Back to <label className="text-secondary font-semibold cursor-pointer" onClick={() => setViewState('LOGIN')}>Login</label></label>
+                <div className="flex justify-center items-center font-medium text-2xl">
+                    <h1>FORGOT PASSWORD</h1>
+                </div>
+                <div className="flex flex-col gap-4 w-80">
+                    <div>
+                        <label className="text-gray-500">Email</label>
+                        <label className="input input-bordered flex items-center gap-2 bg-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg>
+                            <input type="text" className="grow" placeholder="Email" value={email} onChange={handleInputEmail} />
+                        </label>
+                    </div>
+                    <button className="btn btn-secondary text-white" onClick={() => { handleGetOTP() }}>Send OTP</button>
+                    <div>
+                        <label className="text-gray-500">OTP</label>
+                        <label className="input input-bordered flex items-center gap-2 bg-white">
+                            {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg> */}
+                            <input type="text" className={`grow ${isDisableOTP && 'input-disabled'}`} placeholder="OTP" disabled={isDisableOTP} onChange={handleSetOTP} />
+                        </label>
+                    </div>
+                    <button className="btn btn-secondary text-white" onClick={() => { handleVerifyOTP() }}>Verify OTP</button>
+                    <div>
+                        <label className="text-gray-500">Password</label>
+                        <label className="input input-bordered flex items-center gap-2 bg-white">
+                            {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg> */}
+                            <input type="password" className={`grow ${isDisableChangePass && 'input-disabled'}`} placeholder="Password" disabled={isDisableChangePass} onChange={handleSetPassword} />
+                        </label>
+                        <label className="text-gray-500">Confirm password</label>
+                        <label className="input input-bordered flex items-center gap-2 bg-white">
+                            {/* <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg> */}
+                            <input type="password" className={`grow ${isDisableChangePass && 'input-disabled'}`} placeholder="Confirm password" disabled={isDisableChangePass} onChange={handleSetConfirm} />
+                        </label>
+                    </div>
+                    <button className="btn btn-secondary text-white" onClick={() => { handleChangePassword() }}>Change</button>
+                </div>
+            </div>}
         </div>
     )
 }

@@ -34,6 +34,7 @@ export default function SubSideBar() {
     }
 
     const onConversationClick = async (e) => {
+        console.log(e);
         dispatch(setCurrentConversation(e))
         const readUpdate = listConversation.map(conversation => {
             if (conversation._id === e._id) {

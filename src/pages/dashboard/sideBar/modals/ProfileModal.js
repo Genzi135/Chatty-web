@@ -113,12 +113,12 @@ export default function ProfileModal() {
                         <div className="flex flex-col gap-2">
                             <label>Gender</label>
                             <label>Birthday</label>
-                            <label>Phone number</label>
+                            <label>Email</label>
                         </div>
                         <div className="flex flex-col gap-2">
                             <label>{userData.gender}</label>
                             <label>{formatDate(userData.dateOfBirth)}</label>
-                            <label>{userData.phone}</label>
+                            <label>{userData.email}</label>
                         </div>
                     </div>
                 </div>

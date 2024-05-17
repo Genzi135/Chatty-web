@@ -72,7 +72,7 @@ export default function ChatInput() {
             if (inputImages) {
                 inputImages.map(e => formData.append('files', e))
             }
-            handleSendFile(currentConversation, formData, dispatch)
+            handleSendFile(listConversation, currentConversation, formData, dispatch)
                 .then(response => {
                     socket.emit("message:send", {
                         ...response,
