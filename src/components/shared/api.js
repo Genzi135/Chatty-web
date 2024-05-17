@@ -236,6 +236,7 @@ export async function getListConversation(dispatch) {
             headers: { Authorization: `Bearer ${userToken}` },
         })
         dispatch(setListConversation(response.data.data))
+        console.log(response)
         return response
     } catch (error) {
         return error;
@@ -596,7 +597,7 @@ export async function handleDeleteMessage(id) {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        //return response.data.data
+        return response.data.data
     } catch (err) {
         return err
     }

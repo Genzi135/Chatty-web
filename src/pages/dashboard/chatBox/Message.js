@@ -6,7 +6,7 @@ import { setListMessage, setReplyMessage, setSelectedMessage } from "../../../ho
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import ForwardModal from "./ForwardModal";
 import ModalConfirm from "../../../components/common/ModalConfirm";
-import { handleDeleteMessage } from "../../../components/shared/api";
+import { getListConversation, handleDeleteMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 import HeaderModal from "../../../components/common/HeaderModal";
 import Button from "../../../components/common/Button";
@@ -59,14 +59,17 @@ export default function Message({ data }) {
     };
 
     const executeHandleRemove = (id) => {
-        handleDeleteMessage(id);
-        const newList = listMessage.map((e) => {
-            if (id === e._id) {
-                return { ...e, content: "This message has been deleted", isDelete: true };
-            }
-            return e;
-        });
-        dispatch(setListMessage(newList));
+        handleDeleteMessage(id)
+            .then(() => {
+                const newList = listMessage.map((e) => {
+                    if (id === e._id) {
+                        return { ...e, content: "This message has been deleted", isDelete: true };
+                    }
+                    return e;
+                });
+                dispatch(setListMessage(newList));
+                getListConversation(dispatch)
+            })
 
         socket.emit("message:delete", {
             id: id,

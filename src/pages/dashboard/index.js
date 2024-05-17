@@ -8,6 +8,8 @@ import { useEffect, useRef } from "react";
 import { addMessage, setCurrentConversation, setListConversation, setListMessage } from "../../hooks/redux/reducer";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/ReactToastify.css';
+import { MdViewList } from "react-icons/md";
+import { getListConversation } from "../../components/shared/api";
 
 export default function Dashboard() {
     const viewState = useSelector(state => state.view);
@@ -59,6 +61,9 @@ export default function Dashboard() {
                 return e;
             });
             dispatch(setListMessage(newList));
+            if (newList[newList.length - 1]._id === response.id) {
+                getListConversation(dispatch)
+            }
         };
 
         const handleNotification = (data) => {

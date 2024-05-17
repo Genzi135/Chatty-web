@@ -65,6 +65,7 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        if (currentConversation.type == 'group') return
         handleGetGroupList()
             .then(response => {
                 let newList = []
@@ -232,15 +233,13 @@ export default function ConversationDrawer() {
     }
 
     const confirmRemove = () => {
-        if (removeList.length == currentConversation.members.length - 1) {
-            confirmDisbandGroup()
-        } else {
-            handleRemoveMemeber(currentConversation, currentUser._id, removeList)
+        handleRemoveMemeber(currentConversation, currentUser._id, removeList)
             .then(() => {
                 getConversationById(currentConversation._id)
-                    .then(response => dispatch(setCurrentConversation(response.data.data)))
+                    .then(response => {
+                        dispatch(setCurrentConversation(response))
+                    })
             })
-        }
         document.getElementById("removeFromGroup").close()
         setRemoveList([])
     }

@@ -72,7 +72,6 @@ export default function CreateGroupModal({ onClose }) {
             } else {
                 handleCreateGroup(userData._id, selectedList, name, null)
                 .then(() => {
-                    toast("Create group success");
                     getListConversation(dispatch)
                         .then((response) => {
                             console.log(response)
