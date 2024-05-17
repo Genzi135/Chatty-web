@@ -234,7 +234,7 @@ export default function ConversationDrawer() {
         handleRemoveMemeber(currentConversation, currentUser._id, removeList)
             .then(() => {
                 getConversationById(currentConversation._id)
-                    .then(response => dispatch(setCurrentConversation(response.data.data)))
+                    .then(response => { dispatch(setCurrentConversation(response.data.data)); console.log(response.data.data); })
             })
         document.getElementById("removeFromGroup").close()
         setRemoveList([])
@@ -330,7 +330,7 @@ export default function ConversationDrawer() {
                         <div key={props._id} >
                             <div className="p-2 w-auto">
                                 {currentConversation && currentConversation.leaders.map((e) => (
-                                    e._id === props._id && (<div className="flex justify-start items-center gap-2">
+                                    e._id === props._id && (<div key={e._id} className="flex justify-start items-center gap-2">
                                         <label className="text-yellow-500">{icons.leaderStar}</label>
                                         <label className="text-black">Leader</label>
                                     </div>)
