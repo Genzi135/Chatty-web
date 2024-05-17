@@ -328,15 +328,42 @@ export async function handleUpdateAvatar(inputAva) {
 }
 
 //Group avatar update
-export async function handleUpdateGroupAvatar(conversation, inputAva) {
-    await fetch(BASE_URL + `/api/v1/${conversation._id}/changeImageV2`, {
-        method: 'POST',
-        headers: {
-            Authorization: `Bearer ${userToken}`,
-            'Content-Type': 'multipart/form-data'
-        },
-        data: { avatar: inputAva },
-    })
+export async function handleUpdateGroupAvatar(conversation, inputAva, yourId, userName) {
+    // await fetch(BASE_URL + `/api/v1/conservations/${conversation._id}/changeImageV2`, {
+    //     method: 'POST',
+    //     type: "application/json",
+    //     headers: {
+    //         Authorization: `Bearer ${userToken}`,
+    //         'Content-Type': 'multipart/form-data'
+    //     },
+    //     data: {
+    //         conservationId: conversation._id,
+    //         userId: yourId,
+    //         image: inputAva,
+    //         userName: userName
+    //     }
+    // })
+
+    try {
+        const repsonse = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/changeImageV2`,
+            method: 'POST',
+            type: 'application/json',
+            headers: {
+                Authorization: `Bearer ${userToken}`,
+                'Content-Type': 'multipart/form-data',
+            },
+            data: {
+                conservationId: conversation._id,
+                userId: yourId,
+                image: inputAva,
+                userName: userName
+            }
+        })
+        console.log(repsonse)
+    } catch (err) {
+        return err
+    }
 }
 
 //Add member
@@ -436,25 +463,6 @@ export async function handleChangeGroupName(conversation, yourId, yourName, grou
             }
         })
         return response
-    } catch (err) {
-        return err
-    }
-}
-
-//Change group avatar
-export async function handleChangeGroupAvatar(conversation, yourId, avatar, yourName) {
-    try {
-        const response = await axios({
-            url: BASE_URL + `/api/v1/conservations/${conversation._id}/changeImageV2`,
-            method: 'POST',
-            headers: { Authorization: `Bearer ${userToken}` },
-            data: {
-                conversationId: conversation._id,
-                userId: yourId,
-                image: avatar,
-                userName: yourName
-            }
-        })
     } catch (err) {
         return err
     }

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
 import HeaderModal from "../../../components/common/HeaderModal";
-import { getConversationById, getListConversation, handleAddMember, handleChangeGroupAvatar, handleChangeGroupName, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleSearchFriendID, handleTransferGroupLeader } from "../../../components/shared/api";
+import { getConversationById, getListConversation, handleAddMember, handleChangeGroupAvatar, handleChangeGroupName, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleSearchFriendID, handleTransferGroupLeader, handleUpdateGroupAvatar } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import FriendCard from "../../../components/common/FriendCard";
 import { setCurrentConversation, setListConversation, setSelectedUser } from "../../../hooks/redux/reducer";
@@ -56,8 +56,6 @@ export default function ConversationDrawer() {
                     })
                     dispatch(setListConversation(newList))
                 })
-
-
         })
     }
 
@@ -362,7 +360,6 @@ export default function ConversationDrawer() {
                                         </div>)
                                     ))}
                                 </div>
-
                             </div>
                         </div>
                     ))}
@@ -575,7 +572,7 @@ export default function ConversationDrawer() {
                     </div>
                     <div className="flex justify-end items-center mt-2 gap-2">
                         <button className="btn btn-outline" onClick={() => { setAvatar(null); setDisplayAvatar(null); document.getElementById('changeAvatarGroup').close() }}>Cancel</button>
-                        <button className="btn btn-secondary" onClick={() => { handleChangeGroupAvatar(avatar); document.getElementById('changeAvatarGroup').close() }}>Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => { handleUpdateGroupAvatar(currentConversation, avatar, currentUser._id, currentUser.name); getConversationById(currentConversation._id).then(response => dispatch(response)); document.getElementById('changeAvatarGroup').close() }}>Confirm</button>
                     </div>
                 </div>
             </dialog>
