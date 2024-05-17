@@ -5,8 +5,8 @@ import Button from "../../../../components/common/Button";
 import InputDate from "../../../../components/common/InputDate";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../../helpers/formatDate";
-import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile } from "../../../../components/shared/api";
-import { setCurrentUser } from "../../../../hooks/redux/reducer";
+import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile, handleChangePassword } from "../../../../components/shared/api";
+import { setCurrentUser, setViewState } from "../../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
 
 export default function ProfileModal() {
@@ -52,7 +52,14 @@ export default function ProfileModal() {
 
     function handlePasswordChange() {
         if (newPassword === confirmPassword) {
-            handlePasswordChange(password, newPassword);
+            handleChangePassword(password, newPassword)
+                .then(response => {
+                    if (response.status == 200) {
+                        toast("Password change successfully")
+                    }
+                    else toast("Password change failed")
+                    setViewStateProfile('profile')
+                })
             return
         }
     }
@@ -66,12 +73,24 @@ export default function ProfileModal() {
             })
     }
 
+    function handleChangeAvatar() {
+        handleUpdateAvatar(userData._id, avatar)
+            .then(response => {
+                if (response.status == 200) {
+                    toast("Change avatar successfully")
+                    handleGetMe().then(response => dispatch(setCurrentUser(response.data.data)))
+                }
+                else toast("Change avatar failed")
+                setViewStateProfile('profile')
+            })
+    }
+
     useEffect(() => {
         if (option === 'cancel') {
             setViewStateProfile('profile')
             setOption('')
         } else if (option === 'confirm') {
-            handleUpdateProfile(userName, gender, dob).then(() => { toast("Change information success") });
+            handleUpdateProfile(userName, gender, dob).then((response) => { if (response.status == 200) toast("Change profile successfully"); else toast("Change profile failed")});
             handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
             setViewStateProfile("profile")
             setOption('')
@@ -174,7 +193,7 @@ export default function ProfileModal() {
                 </div>
                 <div className="flex justify-end items-center mt-2 gap-2">
                     <button className="btn btn-outline" onClick={() => { setAvatar(null); setDisplayAvatar(null); setViewStateProfile('profile') }}>Cancel</button>
-                    <button className="btn btn-secondary" onClick={() => { handleUpdateAvatar(avatar); setViewStateProfile("profile") }}>Confirm</button>
+                    <button className="btn btn-secondary" onClick={() => { handleChangeAvatar() }}>Confirm</button>
                 </div>
             </div>}
             {viewStateProfile === "changePassword" && <div className="w-full">

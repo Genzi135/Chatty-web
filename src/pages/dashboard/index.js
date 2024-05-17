@@ -16,6 +16,7 @@ export default function Dashboard() {
     const currentConversation = useSelector(state => state.currentConversation);
     const listConversation = useSelector(state => state.listConversation);
     const listMessage = useSelector(state => state.listMessage);
+    const requestList = useSelector(state => state.request)
 
     const dispatch = useDispatch();
 
