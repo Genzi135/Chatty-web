@@ -48,7 +48,6 @@ export default function ChatInput() {
     }
 
     async function SendMessage() {
-        console.log(inputMessage)
         if (replyMessage != null) {
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)

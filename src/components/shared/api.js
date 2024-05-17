@@ -29,7 +29,7 @@ export async function handleLogin(email, password, dispatch) {
         localStorage.setItem("userToken", JSON.stringify(response.data.data.token.access_token))
         userToken = JSON.parse(localStorage.getItem("userToken"));
         dispatch(setLogin())
-
+        return response
     } catch (err) {
         return err;
     }
@@ -68,6 +68,7 @@ export async function handleRegisterAPI(email, password, name, gender, dob) {
                 dateOfBirth: dob
             }
         })
+        return response
     } catch (err) {
         return err;
     }
@@ -167,6 +168,7 @@ export async function handleCancelFriendRequest(id) {
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` }
         })
+        console.log(response)
     } catch (err) {
         return err
     }
@@ -189,7 +191,7 @@ export async function handleAcceptFriendRequest(id) {
 export async function handleRejectFriendRequest(id) {
     try {
         const response = await axios({
-            url: BASE_URL + "/api/v1/friends/cancel/" + `${id}`,
+            url: BASE_URL + "/api/v1/friends/reject/" + `${id}`,
             method: 'post',
             headers: { Authorization: `Bearer ${userToken}` },
         })
@@ -234,6 +236,7 @@ export async function getListConversation(dispatch) {
             headers: { Authorization: `Bearer ${userToken}` },
         })
         dispatch(setListConversation(response.data.data))
+        console.log(response)
         return response
     } catch (error) {
         return error;
@@ -299,11 +302,11 @@ export async function handleCreateGroup(id, member, groupName, groupImage) {
 }
 
 //Profile avatar update
-export async function handleUpdateAvatar(inputAva) {
+export async function handleUpdateAvatar(yourId, inputAva) {
     try {
         const response = await axios({
-            url: BASE_URL + "/api/v1/users/updateAvatarV2",
-            method: "PUT",
+            url: BASE_URL + "/api/v1/users/updateAvatar",
+            method: "put",
             type: "application/json",
             headers: {
                 Authorization: `Bearer ${userToken}`,
@@ -311,6 +314,7 @@ export async function handleUpdateAvatar(inputAva) {
             },
             data: { avatar: inputAva },
         })
+        return response
     } catch (err) {
         return err
     }
@@ -593,7 +597,7 @@ export async function handleDeleteMessage(id) {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        //return response.data.data
+        return response.data.data
     } catch (err) {
         return err
     }
@@ -612,6 +616,7 @@ export async function handleUpdateProfile(name, gender, dateOfBirth) {
                 dateOfBirth: dateOfBirth
             }
         })
+        return response
     } catch (err) {
         return err
     }
@@ -643,6 +648,7 @@ export async function handleChangePassword(old, newPassword) {
                 newPassword: newPassword
             }
         })
+        return response
     } catch (err) {
         return err
     }

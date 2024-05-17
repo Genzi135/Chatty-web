@@ -11,6 +11,7 @@ import { current } from "@reduxjs/toolkit";
 import Chatty from "../../../components/common/Chatty";
 import ConversationCard from "../../../components/common/ConversationCard";
 import { formatDate } from "../../../helpers/formatDate";
+import { toast } from "react-toastify";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -64,6 +65,7 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
+        if (currentConversation.type == 'group') return
         handleGetGroupList()
             .then(response => {
                 let newList = []
@@ -234,7 +236,9 @@ export default function ConversationDrawer() {
         handleRemoveMemeber(currentConversation, currentUser._id, removeList)
             .then(() => {
                 getConversationById(currentConversation._id)
-                    .then(response => { dispatch(setCurrentConversation(response.data.data)); console.log(response.data.data); })
+                    .then(response => {
+                        dispatch(setCurrentConversation(response))
+                    })
             })
         document.getElementById("removeFromGroup").close()
         setRemoveList([])

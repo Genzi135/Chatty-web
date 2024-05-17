@@ -11,6 +11,7 @@ function Login({ state }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [report, setReport] = useState('');
+    const [change, setChange] = useState(true)
 
     const dispatch = useDispatch();
 
@@ -43,6 +44,16 @@ function Login({ state }) {
         setConfirm(e.target.value)
     }
 
+    function checkEmail() {
+        if (email === "") {
+            setReport("Email can not be empty")
+        }
+        else {
+            setReport("")
+            setViewState('FORGOT')
+        }
+    }
+
     function handleGetOTP() {
         if (email === "") {
             toast("Email can not be empty")
@@ -56,8 +67,17 @@ function Login({ state }) {
     function handleVerifyOTP() {
         handleCheckOTP(email, OTP)
             .then(response => {
+                console.log(response)
                 if (response.status === 200) {
                     setDisable(false)
+                    setOTPDisable(true)
+                    setChange(false)
+                    setReport("")
+                    setOTP("")
+                }
+                else {
+                    setReport("Incorrect OTP")
+                    setOTP("")
                 }
             })
     }
@@ -67,13 +87,31 @@ function Login({ state }) {
             handleResetPassword(email, password)
                 .then((response) => {
                     if (response.status == 200) {
+                        document.getElementById("sendOTP").disabled = false
                         setViewState('LOGIN')
-                        toast("Successfully")
+                        setChange(true)
+                        setOTPDisable(true)
+                        setPassword("")
+                        setEmail("")
+                        setReport("")
+                        clearTimeout(callTimeOut)
                     }
                 })
         } else {
-            toast("Confirm password does not match")
+            setReport("Confirm password does not match")
         }
+    }
+
+    function handleOTP() {
+        handleGetOTP()
+        document.getElementById("sendOTP").disabled = true;
+        callTimeOut()
+    }
+
+    const callTimeOut = () => {
+        setTimeout(() => {
+            document.getElementById("sendOTP").disabled = false
+        }, 60000)
     }
 
     return (
@@ -109,10 +147,10 @@ function Login({ state }) {
                 </form>
                 <div className="flex justify-center items-center text-red-500">{report}</div>
                 <div className="flex justify-center items-center font-medium">
-                    <label className="text-secondary cursor-pointer" onClick={() => { setViewState('FORGOT') }}>Forgot password ?</label>
+                    <label className="text-secondary cursor-pointer" onClick={() => { checkEmail() }}>Forgot password ?</label>
                 </div>
                 <div className="flex justify-center items-center">
-                    <button className="btn btn-secondary text-white" onClick={() => { handleLogin(email, password, dispatch) }}>LOGIN</button>
+                    <button className="btn btn-secondary text-white" onClick={() => { handleLogin(email, password, dispatch).then(response => {if (response.status != 200) {setReport("Incorrect email or password")} else {setReport("")}}) }}>LOGIN</button>
                 </div>
             </div>}
 
@@ -132,7 +170,7 @@ function Login({ state }) {
                             <input type="text" className="grow" placeholder="Email" value={email} onChange={handleInputEmail} />
                         </label>
                     </div>
-                    <button className="btn btn-secondary text-white" onClick={() => { handleGetOTP() }}>Send OTP</button>
+                    <button className="btn btn-secondary text-white" id="sendOTP" onClick={() => { handleOTP() }}>Send OTP</button>
                     <div>
                         <label className="text-gray-500">OTP</label>
                         <label className="input input-bordered flex items-center gap-2 bg-white">
@@ -140,7 +178,7 @@ function Login({ state }) {
                             <input type="text" className={`grow ${isDisableOTP && 'input-disabled'}`} placeholder="OTP" disabled={isDisableOTP} onChange={handleSetOTP} />
                         </label>
                     </div>
-                    <button className="btn btn-secondary text-white" onClick={() => { handleVerifyOTP() }}>Verify OTP</button>
+                    <button className="btn btn-secondary text-white" id="verifyOTP" value={OTP} disabled={isDisableOTP} onClick={() => handleVerifyOTP() }>Verify OTP</button>
                     <div>
                         <label className="text-gray-500">Password</label>
                         <label className="input input-bordered flex items-center gap-2 bg-white">
@@ -153,7 +191,8 @@ function Login({ state }) {
                             <input type="password" className={`grow ${isDisableChangePass && 'input-disabled'}`} placeholder="Confirm password" disabled={isDisableChangePass} onChange={handleSetConfirm} />
                         </label>
                     </div>
-                    <button className="btn btn-secondary text-white" onClick={() => { handleChangePassword() }}>Change</button>
+                    <div className="flex justify-center items-center text-red-500">{report}</div>
+                    <button className="btn btn-secondary text-white" disabled={change} onClick={() => { handleChangePassword() }}>Change</button>
                 </div>
             </div>}
         </div>

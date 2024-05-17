@@ -7,6 +7,7 @@ import FriendCard from "../../../components/common/FriendCard";
 import GroupCard from "../../../components/common/GroupCard";
 import RequestReceiveCard from "../../../components/common/RequestReceiveCard";
 import ModalConfirm from "../../../components/common/ModalConfirm";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function Contact() {
     const viewState = useSelector(state => state.view)
@@ -14,6 +15,8 @@ export default function Contact() {
     const [groupDataSource, setGroupDataSource] = useState([]);
     const [requestReceiveList, setRequestReceiveList] = useState([]);
     const [isRefresh, setIsRefresh] = useState(false);
+
+    const {socket} = useSocket()
 
     useEffect(() => {
         console.log(isRefresh)
@@ -36,6 +39,42 @@ export default function Contact() {
     useEffect(() => {
 
     }, [friendDataSource, groupDataSource, requestReceiveList])
+
+    useEffect(() => {
+        const handleRequest = (data) => {
+            handleGetFriendRequest()
+                .then((dataSource) => setRequestReceiveList(dataSource.data.data))
+        }
+
+        const handleReject = (data) => {
+            handleGetFriendRequest()
+                .then((dataSource) => setRequestReceiveList(dataSource.data.data))
+        }
+
+        const handleAccept = (data) => {
+            handleGetFriendRequest()
+                .then((dataSource) => setRequestReceiveList(dataSource.data.data))
+            handleGetFriendList()
+                .then((dataSource) => setFriendDataSource(dataSource.data.data))
+        }
+
+        const handleCancel = (data) => {
+            handleGetFriendRequest()
+                .then((dataSource) => setRequestReceiveList(dataSource.data.data))
+        }
+
+        socket.on('friend:request', handleRequest)
+        socket.on('friend:reject', handleReject)
+        socket.on('friend:accept', handleAccept)
+        socket.on('friend:cancel', handleCancel)
+
+        return () => {
+            socket.off('friend:request', handleRequest)
+            socket.off('friend:reject', handleReject)
+            socket.off('friend:accept', handleAccept)
+            socket.off('friend:cancel', handleCancel)
+        }
+    }, [socket])
 
     return (
         <div style={{ width: '100%', height: '100vh' }}>
