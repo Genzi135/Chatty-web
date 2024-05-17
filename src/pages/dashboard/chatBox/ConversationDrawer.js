@@ -143,7 +143,6 @@ export default function ConversationDrawer() {
             handleAddMember(group, currentUser._id, currentConversation.members[1])
         })
         setGroupSelect([])
-        document.getElementById("AddFriendToGroup").close()
     }
 
     useEffect(() => { check() }, [dataSource, currentConversation.members])
@@ -286,7 +285,7 @@ export default function ConversationDrawer() {
                     </div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline" onClick={() => setGroupSelect([])}>Cancel</button></form>
-                        <button className="btn btn-secondary" onClick={() => handleAddGroup()}>Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => {handleAddGroup(); document.getElementById("addFriendToGroup").close()}}>Confirm</button>
                     </div>
                 </div>
             </dialog>
