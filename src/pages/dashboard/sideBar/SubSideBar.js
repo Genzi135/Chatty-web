@@ -3,7 +3,7 @@ import ConversationCard from "../../../components/common/ConversationCard";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
 import icons from "../../../components/shared/icon";
 import AddFriendModal from "./modals/AddFriendModal";
-import { BASE_URL, getListConversation, getListMessageByConversation, userToken } from "../../../components/shared/api";
+import { BASE_URL, getConversationById, getListConversation, getListMessageByConversation, userToken } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation, setListConversation, setListMessage, setViewState } from "../../../hooks/redux/reducer";
@@ -36,15 +36,18 @@ export default function SubSideBar() {
     }
 
     const onConversationClick = async (e) => {
-        dispatch(setCurrentConversation(e))
-        const readUpdate = listConversation.map(conversation => {
-            if (conversation._id === e._id) {
-                return { ...conversation, isReadMessage: true };
-            }
-            return conversation
-        })
-        getListMessageByConversation(e._id, dispatch)
-        dispatch(setListConversation(readUpdate))
+        getConversationById(e._id)
+            .then(response => {
+                dispatch(setCurrentConversation(response))
+                const readUpdate = listConversation.map(conversation => {
+                    if (conversation._id === e._id) {
+                        return { ...conversation, isReadMessage: true };
+                    }
+                    return conversation
+                })
+                getListMessageByConversation(e._id, dispatch)
+                dispatch(setListConversation(readUpdate))
+            })
     }
 
     const setViewList = (box) => {
