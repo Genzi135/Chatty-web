@@ -127,7 +127,7 @@ export default function CreateGroupModal({ onClose }) {
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
                     <input type="text" className="grow" placeholder="Search" onChange={(setInputSearch)} onKeyDown={keyPressed} />
                 </div>
-                <CustomButton name={'Search'} onClick={() => { searchUser() }} />
+                <button className="btn btn-secondary" onClick={() => { searchUser() }}>Search</button>
             </div>
             <div className="w-full h-auto">
                 {

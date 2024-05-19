@@ -155,6 +155,7 @@ export async function handleSendFriendRequest(id) {
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
         })
+        return response
     } catch (err) {
         return err
     }
@@ -555,6 +556,22 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
         });
         dispatch(addMessage(response.data.data))
         return response.data.data
+    } catch (err) {
+        return err
+    }
+}
+
+//Reply file
+export async function handleReplyFile(conversation, message, inputMessage, file, dispatch) {
+    try {
+        const response = await axios({
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/replyFile/${message._id}`,
+            method: 'POST',
+            headers: { Authorization: `Bearer ${userToken}` },
+            data: {
+                content: inputMessage
+            }
+        })
     } catch (err) {
         return err
     }

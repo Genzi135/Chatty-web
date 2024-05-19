@@ -44,6 +44,8 @@ export default function Contact() {
             .then((dataSource) => setRequestReceiveList(dataSource.data.data))
     }, [])
 
+    console.log(requestReceiveList)
+
     useEffect(() => {
 
     }, [friendDataSource, groupDataSource, requestReceiveList])
@@ -64,7 +66,7 @@ export default function Contact() {
                 .then((dataSource) => setRequestReceiveList(dataSource.data.data))
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
-            getListConversation(dispatch)
+            
         }
 
         const handleCancel = (data) => {
@@ -72,16 +74,23 @@ export default function Contact() {
                 .then((dataSource) => setRequestReceiveList(dataSource.data.data))
         }
 
+        const handleRemove = (data) => {
+            handleGetFriendList()
+                .then((dataSource) => setFriendDataSource(dataSource.data.data))
+        }
+
         socket.on('friend:request', handleRequest)
         socket.on('friend:reject', handleReject)
         socket.on('friend:accept', handleAccept)
         socket.on('friend:cancel', handleCancel)
+        socket.on('friend:remove', handleRemove)
 
         return () => {
             socket.off('friend:request', handleRequest)
             socket.off('friend:reject', handleReject)
             socket.off('friend:accept', handleAccept)
             socket.off('friend:cancel', handleCancel)
+            socket.off('friend:remove', handleRemove)
         }
     }, [socket])
 
@@ -170,12 +179,12 @@ export default function Contact() {
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full h-auto flex flex-col ">
+                        {/* <div className="w-full h-auto flex flex-col ">
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests sent</label>
                             <div className="h-auto w-full p-2">
 
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>}
