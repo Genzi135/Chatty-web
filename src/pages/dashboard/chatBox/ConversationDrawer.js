@@ -172,11 +172,11 @@ export default function ConversationDrawer() {
         });
 
         // Lọc ra các đối tượng khác nhau từ currentConversation.members
-        currentConversation.members.forEach(member => {
-            if (member._id !== currentUserID && !dataSource.some(friend => friend.userId === member._id)) {
-                differentObjects.push(member);
-            }
-        });
+        // currentConversation.members.forEach(member => {
+        //     if (member._id !== currentUserID && !dataSource.some(friend => friend.userId === member._id)) {
+        //         differentObjects.push(member);
+        //     }
+        // });
 
         setAddMemberList(differentObjects)
     };
