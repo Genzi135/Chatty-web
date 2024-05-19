@@ -1,22 +1,30 @@
 import { useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
 import { handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ConversationCard from "../../../components/common/ConversationCard";
 import FriendCard from "../../../components/common/FriendCard";
 import GroupCard from "../../../components/common/GroupCard";
 import RequestReceiveCard from "../../../components/common/RequestReceiveCard";
 import ModalConfirm from "../../../components/common/ModalConfirm";
 import { useSocket } from "../../../hooks/context/socket";
+import { toast } from "react-toastify";
 
 export default function Contact() {
     const viewState = useSelector(state => state.view)
+    const currentUser = useSelector((state) => state.currentUser);
     const [friendDataSource, setFriendDataSource] = useState([]);
     const [groupDataSource, setGroupDataSource] = useState([]);
     const [requestReceiveList, setRequestReceiveList] = useState([]);
     const [isRefresh, setIsRefresh] = useState(false);
 
-    const {socket} = useSocket()
+    const { socket } = useSocket();
+
+    const currentUserRef = useRef(currentUser);
+
+    useEffect(() => {
+        currentUserRef.current = currentUser;
+    }, [currentUser])
 
     useEffect(() => {
         console.log(isRefresh)
@@ -111,7 +119,7 @@ export default function Contact() {
                             <label className="text-lg font-semibold bg-pink-300 p-2 rounded-lg">Requests recieved</label>
                             <div className="h-auto w-full p-2">
                                 <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
-                                    {requestReceiveList.map((e) => (<RequestReceiveCard props={e} key={e._id} dataSource={setRequestReceiveList}/>))}
+                                    {requestReceiveList.map((e) => (<RequestReceiveCard props={e} key={e._id} dataSource={setRequestReceiveList} />))}
                                 </div>
                             </div>
                         </div>

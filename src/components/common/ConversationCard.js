@@ -4,7 +4,6 @@ import icons from "../shared/icon";
 export default function ConversationCard({ props }) {
     const currentConversation = useSelector((state) => state.currentConversation);
     const isCurrent = currentConversation._id === props._id;
-    console.log(props.lastMessage)
     return (
         <div className="p-2 w-auto">
             <div className={`flex justify-start items-center p-4 ${isCurrent ? "bg-pink-300" : 'bg-white'} rounded-lg ${isCurrent ? " shadow-2xl" : 'shadow-sm'} gap-3 w-full   ${isCurrent ? "" : 'hover:bg-pink-100'}`}>

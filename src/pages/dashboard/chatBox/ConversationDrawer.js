@@ -65,7 +65,7 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (currentConversation.type == 'group') return
+        if (currentConversation.type === 'group') return
         handleGetGroupList()
             .then(response => {
                 let newList = []
@@ -143,7 +143,7 @@ export default function ConversationDrawer() {
             handleAddMember(group, currentUser._id, currentConversation.members[1])
         })
         setGroupSelect([])
-        document.getElementById("AddFriendToGroup").close()
+        document.getElementById("addFriendToGroup").close()
     }
 
     useEffect(() => { check() }, [dataSource, currentConversation.members])
@@ -199,6 +199,7 @@ export default function ConversationDrawer() {
             handleLeaveGroup(currentConversation, currentUser._id)
                 .then(() => {
                     document.getElementById("leaveGroup").close()
+
                     dispatch(setCurrentConversation({}))
                     getListConversation(dispatch)
                 })
@@ -220,9 +221,8 @@ export default function ConversationDrawer() {
 
     const addMember = () => {
         handleAddMember(currentConversation, currentUser._id, selectedList)
-            .then(() => {
-                // getConversationById(currentConversation._id)
-                //     .then(response => dispatch(setCurrentConversation(response.data.data)))
+            .then((response) => {
+                console.log(response);
             })
         document.getElementById("addToGroup").close()
         setSelectedAddList([])
@@ -237,6 +237,13 @@ export default function ConversationDrawer() {
             .then(() => {
                 getConversationById(currentConversation._id)
                     .then(response => {
+                        const newList = listConversation.map((e) => {
+                            if (e._id === response._id) {
+                                return { ...e, members: response.members }
+                            }
+                            return e
+                        })
+                        dispatch(setListConversation(newList))
                         dispatch(setCurrentConversation(response))
                     })
             })
@@ -420,8 +427,7 @@ export default function ConversationDrawer() {
                             </div>
                         }
                     </div>
-                    <div></div>
-                    <div>{currentConversation && currentConversation.members.map(e => e._id != currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
+                    <div>{currentConversation && currentConversation.members.map(e => e._id !== currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div key={e._id}></div>)}</div>
 
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
@@ -443,7 +449,7 @@ export default function ConversationDrawer() {
                     {currentConversation.leaders.map((e) => {
                         if (e._id === currentUser._id) {
                             return (
-                                <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
+                                <div key={e._id} className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
                                     <div><label>{"You are leader!"}</label></div>
                                     <div><label>{"Please choose sone one become a new leader"}</label></div>
                                     {currentConversation && currentConversation.members && currentConversation.members.map((props) => {

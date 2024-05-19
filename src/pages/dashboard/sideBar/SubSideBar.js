@@ -21,6 +21,8 @@ export default function SubSideBar() {
     const [inputValue, setInput] = useState((''))
     const [dataSource, setDataSource] = useState([])
 
+    const [filterTag, setFilterTag] = useState('All')
+
     useEffect(() => {
         setDataSource(listConversation)
     }, [listConversation])
@@ -34,7 +36,6 @@ export default function SubSideBar() {
     }
 
     const onConversationClick = async (e) => {
-        console.log(e);
         dispatch(setCurrentConversation(e))
         const readUpdate = listConversation.map(conversation => {
             if (conversation._id === e._id) {
@@ -73,15 +74,67 @@ export default function SubSideBar() {
             searchUser()
     }
 
+    // const onFilterTagClick = () => {
+    //     if (filterTag === 'all') {
+    //         setDataSource(listConversation)
+    //     } else if (filterTag === 'Provate') {
+    //         const newList = listConversation.map(e => {
+    //             if (e.type === 'private') {
+    //                 return e;
+    //             }
+    //             return e
+    //         })
+    //         setDataSource(newList)
+    //     } else if (filterTag === 'Group') {
+    //         const newList = listConversation.map(e => {
+    //             if (e.type === 'Group') {
+    //                 return e;
+    //             }
+    //             return e
+    //         })
+    //         setDataSource(newList)
+    //     }
+    // }
+
+    useEffect(() => {
+        if (filterTag === 'All') {
+            setDataSource(listConversation)
+        } else if (filterTag === 'Private') {
+            const newList = []
+            listConversation.map(e => {
+                if (e.type === 'private') {
+                    return newList.push(e)
+                }
+            })
+            setDataSource(newList)
+        } else if (filterTag === 'Group') {
+            const newList = []
+            listConversation.map(e => {
+                if (e.type === 'group') {
+                    return newList.push(e)
+                }
+                return e
+            })
+            setDataSource(newList)
+        }
+    }, [filterTag, listConversation])
+
     return (
         <div style={{ width: 'auto', minWidth: '320px', height: '100%', maxHeight: '100vh', overflow: 'auto' }} >
             {viewState && viewState.subSideBar === 'chat' && <div style={{ width: 320 }} className="bg-gray-100 flex flex-col w-full h-full">
-                <div className="w-full bg-white flex justify-between items-center gap-2 p-4">
-                    <label className="w-48 h-10 bg-pink-100 input input-bordered flex items-center gap-2">
-                        <input type="text" className="grow" placeholder="Search" onChange={setInputValue} onKeyDown={keyPressed} />
-                    </label>
-                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
-                    <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
+                <div className="flex flex-col w-full h-auto">
+                    <div className="w-full bg-white flex justify-between items-center gap-2 p-4">
+                        <label className="w-48 h-10 bg-pink-100 input input-bordered flex items-center gap-2">
+                            <input type="text" className="grow" placeholder="Search" onChange={setInputValue} onKeyDown={keyPressed} />
+                        </label>
+                        <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("addFriendModal").showModal()}>{icons.addFriend}</div>
+                        <div className="text-black hover:bg-pink-200 p-2 rounded-lg cursor-pointer" onClick={() => document.getElementById("createGroupModal").showModal()}>{icons.createGroup}</div>
+                    </div>
+                    <div className="flex gap-4 bg-white pl-2">
+                        <label className={`cursor-pointer ${filterTag === 'All' ? 'text-secondary font-semibold border-b-4 border-secondary' : ''}`} onClick={() => { setFilterTag('All') }}>All</label>
+                        <label className={`cursor-pointer ${filterTag === 'Private' ? 'text-secondary font-semibold border-b-4 border-secondary' : ''}`} onClick={() => { setFilterTag('Private') }}>Private</label>
+                        <label className={`cursor-pointer ${filterTag === 'Group' ? 'text-secondary font-semibold border-b-4 border-secondary' : ''}`} onClick={() => { setFilterTag('Group') }}>Group</label>
+                    </div>
                 </div>
                 <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
                     {!isLoading && dataSource ? (dataSource.map((e) => (<div key={e._id} onClick={() => onConversationClick(e)}>

@@ -67,13 +67,20 @@ export default function Dashboard() {
         };
 
         const handleNotification = (data) => {
-
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
                     dispatch(addMessage(data.messages[0]));
                     toast(data.messages[0].content);
+                    const newList = listConversationRef.current.map(e => {
+                        if (e._id === data.conservationId) {
+                            return { ...e, members: data.conversation.members }
+                        }
+                        return e
+                    })
+                    dispatch(setListConversation(newList))
                     dispatch(setCurrentConversation(data.conversation));
                 } else if (currentConversationRef.current._id !== data.conservationId) {
+                    console.log(3);
                     if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
                         const newList = [data.conversation, ...listConversationRef.current]
                         toast("New conversation!")
@@ -97,19 +104,54 @@ export default function Dashboard() {
         }
 
         const handleDisbandConversation = (data) => {
-            if (data.conservationId === currentConversationRef.current._id) {
-                dispatch(setCurrentConversation({}));
+            if (listConversationRef.current.some(e => e._id === data.conservationId)) {
+                if (data.conservationId === currentConversationRef.current._id) {
+                    dispatch(setCurrentConversation({}));
+                }
+                const newList = listConversationRef.current.filter(e => e._id !== data.conservationId);
+                dispatch(setListConversation(newList));
+                toast("Group has been disbanded");
+            } else {
+                console.log(" ");
             }
-            const newList = listConversationRef.current.filter(e => e._id !== data.conservationId);
-            dispatch(setListConversation(newList));
-            toast("Group has been disbanded");
         };
 
         const handleNewConversation = (data) => {
-            const newList = [data.conversation, ...listConversationRef.current];
-            dispatch(setListConversation(newList));
-            toast("Create new group successful")
+            if (data.conversation.members.some(e => e._id === currentUserRef.current._id)) {
+                const newList = [data.conversation, ...listConversationRef.current];
+                dispatch(setListConversation(newList));
+                toast("Create new group successful")
+            } else {
+                console.log('nothing');
+            }
+
         };
+
+        const handleRequest = (data) => {
+            console.log("request Data:", data);
+            if (currentUserRef.current._id === data.userId) {
+                toast("New friend request")
+            }
+        }
+
+        const handleReject = (data) => {
+            console.log("request reject:", data);
+            if (currentUserRef.current._id === data.userId) {
+                toast(`${data.userInfo.name} rejected friend request`)
+            }
+        }
+
+        const handleAccept = (data) => {
+            console.log("request accept:", data);
+            if (currentUserRef.current._id === data.userId) {
+                toast(`${data.userInfo.name} accepted friend request`)
+            }
+        }
+
+        const handleCancel = (data) => {
+            console.log("cancel Data:", data);
+        }
+
 
         socket.on("message:receive", handleReceiveMessage);
         socket.on("message:deleted", handleDeleteMessage);
@@ -118,6 +160,11 @@ export default function Dashboard() {
         socket.on("conversation:new", handleNewConversation);
         socket.on('conversation:removeMembers', handleRemoveMember);
 
+        socket.on('friend:request', handleRequest)
+        socket.on('friend:reject', handleReject)
+        socket.on('friend:accept', handleAccept)
+        socket.on('friend:cancel', handleCancel)
+
         return () => {
             socket.off("message:receive", handleReceiveMessage);
             socket.off("message:deleted", handleDeleteMessage);
@@ -125,6 +172,11 @@ export default function Dashboard() {
             socket.off("conversation:disband", handleDisbandConversation);
             socket.off("conversation:new", handleNewConversation);
             socket.off('conversation:removeMembers', handleRemoveMember);
+
+            socket.off('friend:request', handleRequest)
+            socket.off('friend:reject', handleReject)
+            socket.off('friend:accept', handleAccept)
+            socket.off('friend:cancel', handleCancel)
         };
     }, [socket, dispatch]);
 

@@ -236,7 +236,6 @@ export async function getListConversation(dispatch) {
             headers: { Authorization: `Bearer ${userToken}` },
         })
         dispatch(setListConversation(response.data.data))
-        console.log(response)
         return response
     } catch (error) {
         return error;
@@ -392,6 +391,7 @@ export async function handleAddMember(conversation, yourId, Ids, dispatch) {
 
             }
         })
+        return response
     } catch (err) {
         return err
     }
@@ -446,6 +446,7 @@ export async function handleLeaveGroup(conversation, yourId, name) {
                 userId: yourId,
                 // userName: name
             }
+
         })
     } catch (err) {
         return err;
