@@ -406,7 +406,7 @@ export default function ConversationDrawer() {
                     <div className="mt-4 flex justify-center items-center gap-2">
                         <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>
                         {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
-                            onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addFriend}</label>}
+                            onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addToGroup}</label>}
                         {/* {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
                             onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>} */}
                         {!isFriend && <label className="tooltip p-1 hover:bg-gray-200 rounded-md cursor-pointer" data-tip="Add friend"
