@@ -9,6 +9,7 @@ import icons from "../../../../components/shared/icon";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation } from "../../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
+import { useSocket } from "../../../../hooks/context/socket";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
@@ -24,6 +25,9 @@ export default function CreateGroupModal({ onClose }) {
     const dispatch = useDispatch();
 
     const userData = useSelector((state) => state.currentUser);
+    const listConversation = useSelector((state) => state.listConversation)
+
+    const {socket} = useSocket()
 
     const setAva = (e) => {
         setInputAva(e.target.files[0])
@@ -56,6 +60,26 @@ export default function CreateGroupModal({ onClose }) {
         setSelectedList(newSelectedList);
         setDataSource([...dataSource, e])
     }
+
+    useEffect(() => {
+        const refreshList = (data) => {
+            handleGetFriendList().then(response => setDataSource(response.data.data))
+        }
+
+        socket.on('friend:request', refreshList)
+        socket.on('friend:reject', refreshList)
+        socket.on('friend:accept', refreshList)
+        socket.on('friend:cancel', refreshList)
+        socket.on('friend:remove', refreshList)
+
+        return () => {
+            socket.off('friend:request', refreshList)
+            socket.off('friend:reject', refreshList)
+            socket.off('friend:accept', refreshList)
+            socket.off('friend:cancel', refreshList)
+            socket.off('friend:remove', refreshList)
+        }
+    }, [socket])
 
     useEffect(() => {
         if (option === 'cancel') {

@@ -565,13 +565,16 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
 export async function handleReplyFile(conversation, message, inputMessage, file, dispatch) {
     try {
         const response = await axios({
-            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/replyFile/${message._id}`,
+            url: BASE_URL + `/api/v1/conservations/${conversation._id}/messages/replyFiles/${message._id}`,
             method: 'POST',
             headers: { Authorization: `Bearer ${userToken}` },
             data: {
-                content: inputMessage
+                content: inputMessage,
+                files: file
             }
         })
+        dispatch(addMessage(response.data.data))
+        return response.data.data
     } catch (err) {
         return err
     }

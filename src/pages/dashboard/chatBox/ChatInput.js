@@ -3,7 +3,7 @@ import icons from "../../../components/shared/icon";
 import { setReplyMessage } from "../../../hooks/redux/reducer";
 import { useEffect, useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
-import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
+import { handleReplyFile, handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatInput() {
@@ -49,6 +49,26 @@ export default function ChatInput() {
 
     async function SendMessage() {
         if (replyMessage != null) {
+            // if (inputFiles || inputVideos || inputImages) {
+            //     let formData = new FormData()
+            //     if (inputFiles) {
+            //         inputFiles.map(e => formData.append('files', e))
+            //     }
+            //     if (inputVideos) {
+            //         inputVideos.map(e => formData.append('files', e))
+            //     }
+            //     if (inputImages) {
+            //         inputImages.map(e => formData.append('files', e))
+            //     }
+            //     handleReplyFile(currentConversation, replyMessage, inputMessage, formData, dispatch)
+            //         .then(response => {
+            //             socket.emit("message:send", {
+            //                 ...response,
+            //                 conversation: currentConversation
+            //             })
+            //         })
+            //         dispatch(setReplyMessage(null))
+            //     }
             if (typeof replyMessage === 'object' && Object.keys(replyMessage).length !== 0) {
                 handleReplyMessage(currentConversation, replyMessage, inputMessage, dispatch)
                     .then(response => {
@@ -92,6 +112,7 @@ export default function ChatInput() {
         setInputFiles(null)
         setInputVideos(null)
         setInputImages(null)
+        setShowImages(null)
     }
 
     return (
