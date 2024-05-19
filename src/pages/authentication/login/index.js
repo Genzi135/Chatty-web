@@ -120,6 +120,10 @@ function Login({ state }) {
             setReport('Incorrect email')
             return
         }
+        else if (!checkRegex(password, 'password')) {
+            setReport('Password need at least 8 characters')
+            return
+        }   
         handleLogin(email, password, dispatch)
             .then(response => {
                 if (response.status != 200) {
@@ -137,12 +141,12 @@ function Login({ state }) {
                     <h1>LOGIN</h1>
                 </div>
                 <div className="text-sm">
-                    <label>If you do not have any account </label><label className="text-secondary cursor-pointer font-semibold" onClick={() => { state('Register') }}>Sign in</label>
+                    <label>If you do not have any account </label><label className="text-secondary cursor-pointer font-semibold" onClick={() => { state('Register') }}>Sign up</label>
                 </div>
                 <form className="flex flex-col gap-4 w-80">
 
                     <div>
-                        <label className="text-gray-500">Phone/Email</label>
+                        <label className="text-gray-500">Email</label>
                         <label className="input input-bordered flex items-center gap-2 bg-white">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-70"><path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" /><path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" /></svg>
                             <input type="text" className="grow" placeholder="Email" value={email} onChange={handleInputEmail} />

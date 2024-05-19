@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
 import HeaderModal from "../../../components/common/HeaderModal";
-import { getConversationById, getListConversation, handleAddMember, handleChangeGroupAvatar, handleChangeGroupName, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleSearchFriendID, handleTransferGroupLeader, handleUpdateGroupAvatar } from "../../../components/shared/api";
+import { getConversationById, getListConversation, handleAddMember, handleChangeGroupAvatar, handleChangeGroupName, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleSearchFriendID, handleSendFile, handleSendFriendRequest, handleTransferGroupLeader, handleUpdateGroupAvatar } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import FriendCard from "../../../components/common/FriendCard";
 import { setCurrentConversation, setListConversation, setSelectedUser } from "../../../hooks/redux/reducer";
@@ -12,6 +12,7 @@ import Chatty from "../../../components/common/Chatty";
 import ConversationCard from "../../../components/common/ConversationCard";
 import { formatDate } from "../../../helpers/formatDate";
 import { toast } from "react-toastify";
+import CustomButton from "../../../components/common/CustomButton";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -32,6 +33,14 @@ export default function ConversationDrawer() {
     const [newName, setNewName] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [displayAvatar, setDisplayAvatar] = useState(null);
+    const [memberList, setMemberList] = useState([])
+
+    const [search, setSearch] = useState('')
+    const [isFriend, setIsFriend] = useState(false)
+
+    const setInputSearch = (e) => {
+        setSearch(e.target.value)
+    }
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -40,6 +49,31 @@ export default function ConversationDrawer() {
             setDisplayAvatar(URL.createObjectURL(file));
         }
     };
+
+    useEffect(() => {
+        if (currentConversation.type == 'group') {
+            setIsFriend(true)
+            return
+        }
+        else if (Object.keys(currentConversation) == 0) {
+            return
+        }
+        handleGetFriendList()
+            .then((response) => {
+                let found = false;
+                response.data.data.map(friend => {
+                    if (friend.userId === currentConversation.members[1]._id) {
+                        found = true
+                        return
+                    }
+                })
+                if (found) {
+                    setIsFriend(true)
+                }
+                else
+                    setIsFriend(false)
+            })
+    }, [currentConversation])
 
     const onNewNameChange = (e) => { setNewName(e.target.value) };
 
@@ -80,6 +114,10 @@ export default function ConversationDrawer() {
                 })
                 setGroupList(newList)
             })
+    }, [currentConversation])
+
+    useEffect(() => {
+        setMemberList(currentConversation.members)
     }, [currentConversation])
 
     const onSelectedClick = (e) => {
@@ -243,6 +281,59 @@ export default function ConversationDrawer() {
         setRemoveList([])
     }
 
+    function searchGroup() {
+        if (search == "") {
+            handleGetGroupList()
+            .then(response => {
+                let newList = []
+                response.data.data.map(group => {
+                    let found = false
+                    group.members.map(member => {
+                        if (member._id === currentConversation.members[1]._id) {
+                            found = true
+                        }
+                    })
+                    if (!found) newList = [...newList, group]
+                })
+                setGroupList(newList)
+            })
+        }
+        let found = []
+        groupList.map(group => {
+            if (group.name.includes(search))
+                found.push(group)
+        })
+        setGroupList(found)
+        setSearch("")
+        document.getElementById('searchGroup').value = ""
+    }
+
+    function searchFriend() {
+        if (search == '') {
+            check()
+            return
+        }
+        let found = []
+        addMemberList.map(member => {
+            if (member.name.includes(search))
+                found.push(member)
+        })
+        setAddMemberList(found)
+        setSearch("")
+        document.getElementById("searchFriend").value = ""
+    }
+
+    function searchMember() {
+        let found = []
+        currentConversation.members.map(member => {
+            if (member.name.includes(search))
+                found.push(member)
+        })
+        setMemberList(found)
+        setSearch("")
+        document.getElementById("searchMember").value = ""
+    }
+
     return (
         <div className="w-[400px]">
             {currentConversation && currentConversation.type === "private" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
@@ -251,10 +342,12 @@ export default function ConversationDrawer() {
                     <label>{currentConversation.name}</label>
                     <div className="mt-4 flex justify-center items-center gap-2">
                         <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>
-                        <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
-                            onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addFriend}</label>
-                        <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
-                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>
+                        {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
+                            onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addFriend}</label>}
+                        {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
+                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>}
+                        {!isFriend && <label className="tooltip p-1 hover:bg-gray-200 rounded-md cursor-pointer" data-tip="Add friend"
+                            onClick={() => {handleSendFriendRequest(currentConversation.members[1]._id)}}>{icons.addFriend}</label>}
                     </div>
                 </div>
                 <div>
@@ -266,6 +359,12 @@ export default function ConversationDrawer() {
             <dialog id="addFriendToGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Add friend to Group"} />
+                    <div className="w-full h-auto flex justify-between items-center gap-2">
+                        <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                            <input type="text" className="grow" id='searchGroup' placeholder="Search" onChange={(setInputSearch)}/>
+                        </div>
+                        <button className="btn btn-secondary" value={search} onClick={() => { searchGroup() }}>Search</button>
+                    </div>
                     <div>
                         {
                             groupSelect && groupSelect.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
@@ -279,8 +378,9 @@ export default function ConversationDrawer() {
                         }
                     </div>
                     <div>
-                        {groupList && groupList.length > 0 && groupList
+                        {groupList && groupList.length > 0 ? groupList
                             .map(friend => <div key={friend._id} onClick={() => onGroupSelectedClick(friend)}><ConversationCard props={friend} /></div>)
+                            : <div>This friend is a member of your every group</div>
                         }
                     </div>
                     <div className="flex justify-end items-center gap-2 mt-5">
@@ -380,6 +480,12 @@ export default function ConversationDrawer() {
             <dialog id="addToGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Add to group"} />
+                    <div className="w-full h-auto flex justify-between items-center gap-2">
+                        <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                            <input type="text" className="grow" id='searchFriend' placeholder="Search" onChange={(setInputSearch)}/>
+                        </div>
+                        <button className="btn btn-secondary" onClick={() => { searchFriend() }}>Search</button>
+                    </div>
                     <div className="w-full h-auto">
                         {
                             selectedList && selectedList.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
@@ -393,9 +499,9 @@ export default function ConversationDrawer() {
                         }
                     </div>
                     <div>
-                        {addMemberList && addMemberList.length > 0 && addMemberList
+                        {addMemberList && addMemberList.length > 0 ? addMemberList
                             .map(friend => <div key={friend._id} onClick={() => onSelectedClick(friend)}><FriendCard props={friend} /></div>)
-
+                            : <div>All of your friends are members of this group</div>
                         }
                     </div>
                     <div className="flex justify-end items-center gap-2 mt-5">
@@ -407,6 +513,12 @@ export default function ConversationDrawer() {
             <dialog id="removeFromGroup" className="modal">
                 <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Remove from group"} />
+                    <div className="w-full h-auto flex justify-between items-center gap-2">
+                        <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                            <input type="text" className="grow" id='searchMember' placeholder="Search" onChange={(setInputSearch)}/>
+                        </div>
+                        <button className="btn btn-secondary" onClick={() => { searchMember() }}>Search</button>
+                    </div>
                     <div className="w-full h-auto">
                         {
                             removeList && removeList.length > 0 && <div className='w-full h-auto max-h-[20] flex justify-start items-center gap-2 p-2 whitespace-nowrap text-ellipsis overflow-x-auto overflow-y-hidden'>
@@ -420,7 +532,7 @@ export default function ConversationDrawer() {
                         }
                     </div>
                     <div></div>
-                    <div>{currentConversation && currentConversation.members.map(e => e._id != currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
+                    <div>{memberList && memberList.map(e => e._id != currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
 
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>

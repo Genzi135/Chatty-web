@@ -7,6 +7,7 @@ import ChatInput from "./ChatInput";
 import LandingPage from "../../../components/common/LandingPage";
 import Message from "./Message";
 import { formatDate } from "../../../helpers/formatDate";
+import { handleGetFriendList } from "../../../components/shared/api";
 
 export default function ChatBox() {
     const currentConversation = useSelector((state) => state.currentConversation);
@@ -14,6 +15,8 @@ export default function ChatBox() {
 
     const [isShowDrawer, setShowDrawer] = useState(false);
     const messagesEndRef = useRef(null);
+
+    const [isFriend, setIsFriend] = useState(false)
 
     useEffect(() => {
         scrollToBottom();
@@ -25,6 +28,30 @@ export default function ChatBox() {
         }
     };
 
+    useEffect(() => {
+        if (currentConversation.type == 'group') {
+            setIsFriend(true)
+            return
+        }
+        else if (Object.keys(currentConversation) == 0) {
+            return
+        }
+        handleGetFriendList()
+            .then((response) => {
+                let found = false;
+                response.data.data.map(friend => {
+                    if (friend.userId === currentConversation.members[1]._id) {
+                        found = true
+                        return
+                    }
+                })
+                if (found) {
+                    setIsFriend(true)
+                }
+                else
+                    setIsFriend(false)
+            })
+    }, [currentConversation])
 
     let prevDate = null;
 
@@ -79,7 +106,7 @@ export default function ChatBox() {
                         </div>
                         <div className="w-full">
                             {/*Input */}
-                            <ChatInput />
+                            {isFriend && <ChatInput />}
 
                         </div>
                     </div>

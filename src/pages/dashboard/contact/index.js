@@ -15,8 +15,13 @@ export default function Contact() {
     const [groupDataSource, setGroupDataSource] = useState([]);
     const [requestReceiveList, setRequestReceiveList] = useState([]);
     const [isRefresh, setIsRefresh] = useState(false);
+    const [search, setSearch] = useState('')
 
     const {socket} = useSocket()
+
+    const setInputSearch = (e) => {
+        setSearch(e.target.value)
+    }
 
     useEffect(() => {
         console.log(isRefresh)
@@ -76,12 +81,52 @@ export default function Contact() {
         }
     }, [socket])
 
+    function searchFriend() {
+        if (search == '') {
+            handleGetFriendList()
+                .then((dataSource) => setFriendDataSource(dataSource.data.data))
+            return
+        }
+        let found = []
+        friendDataSource.map(friend => {
+            if (friend.name.includes(search))
+                found.push(friend)
+        })
+        setFriendDataSource(found)
+        setSearch("")
+        document.getElementById('searchFriend').value = ''
+    }
+
+    function searchGroup() {
+        if (search == '') {
+            handleGetGroupList()
+                .then((dataSource) => setGroupDataSource(dataSource.data.data))
+            return 
+        }
+        let found = []
+        groupDataSource.map(group => {
+            if (group.name.includes(search))
+                found.push(group)
+        })
+        setGroupDataSource(found)
+        setSearch('')
+        document.getElementById('searchGroup').value = ''
+    }
+
     return (
         <div style={{ width: '100%', height: '100vh' }}>
-            {viewState.box === 'contact' && <div className="flex flex-col gap-2">
-                <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
-                    {icons.listFriend}
-                    <label className="font-semibold text-xl">Friend list</label>
+            {viewState.box === 'contact' && <div className="flex flex-col item-center gap-2">
+                    <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
+                        {icons.listFriend}
+                        <label className="font-semibold text-xl">Friend list</label>
+                    </div>
+                    <div style={{width: '90%'}}>
+                    <div className="w-full h-auto flex justify-between items-center gap-2">
+                        <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                            <input type="text" className="grow" id='searchFriend' placeholder="Search" onChange={(setInputSearch)}/>
+                        </div>
+                        <button className="btn btn-secondary" onClick={() => { searchFriend() }}>Search</button>
+                    </div>
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
@@ -93,6 +138,12 @@ export default function Contact() {
                 <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
                     {icons.listGroup}
                     <label className="font-semibold text-xl">Group list</label>
+                </div>
+                <div className="w-full h-auto flex justify-between items-center gap-2">
+                    <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
+                        <input type="text" className="grow" id='searchGroup' placeholder="Search" onChange={(setInputSearch)}/>
+                    </div>
+                    <button className="btn btn-secondary" onClick={() => { searchGroup() }}>Search</button>
                 </div>
                 <div className="h-full w-full p-2">
                     <div className="bg-gray-100 h-full w-full p-2 flex flex-col">
