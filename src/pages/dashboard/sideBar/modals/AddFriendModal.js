@@ -6,6 +6,7 @@ import CustomButton from "../../../../components/common/CustomButton";
 import { handleCancelFriendRequest, handleRejectFriendRequest, handleSearchFriendAPI, handleSearchFriendID, handleSendFriendRequest } from "../../../../components/shared/api";
 import AddFriendCard from "../../../../components/common/AddFriendCard";
 import { useSocket } from "../../../../hooks/context/socket";
+import { checkRegex } from "../../../../helpers/regex";
 
 export default function AddFriendModal({ onClose }) {
     const [option, setOption] = useState('');
@@ -13,6 +14,7 @@ export default function AddFriendModal({ onClose }) {
     const [dataSource, setDataSource] = useState(null)
     const [value, setValue] = useState('')
     const [report, setReport] = useState('')
+    const [request, setRequest] = useState({})
 
     const {socket} = useSocket()
 
@@ -32,13 +34,20 @@ export default function AddFriendModal({ onClose }) {
             setReport("Email cannot be empty")
             return;
         }
+        else if (!checkRegex(email, 'email')) {
+            setReport("Incorrect email")
+            return
+        }
         handleSearchFriendAPI(email)
             .then((response) => {
                 if (response.status == 200) {
                     handleSearchFriendID(response.data.data._id)
                         .then(response => {
                             setDataSource(response.data.data)
+                            setRequest(response.data.data.friend)
                             setReport('')
+                        })
+                        .then(() => {
                         })
                 }
                 else {
@@ -49,12 +58,15 @@ export default function AddFriendModal({ onClose }) {
 
     useEffect(() => {
         if (value === 'cancel') {
-            handleCancelFriendRequest(dataSource._id)
-                .then(() => { searchFriend() })
+            handleCancelFriendRequest(request._id)
+                .then(() => { searchFriend(); })
         } else if (value === 'confirm') {
             console.log(dataSource._id)
             handleSendFriendRequest(dataSource._id)
-                .then(() => searchFriend())
+                .then((response) => {
+                    searchFriend()
+                    setRequest(response.data.data)
+                })
         }
         setValue('')
     }, [value])

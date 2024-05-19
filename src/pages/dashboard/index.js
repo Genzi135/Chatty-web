@@ -137,7 +137,7 @@ export default function Dashboard() {
         const handleReject = (data) => {
             console.log("request reject:", data);
             if (currentUserRef.current._id === data.userId) {
-                toast(`${data.userInfo.name} rejected friend request`)
+                toast(`A friend had been rejected`)
             }
         }
 
@@ -146,6 +146,7 @@ export default function Dashboard() {
             if (currentUserRef.current._id === data.userId) {
                 toast(`${data.userInfo.name} accepted friend request`)
             }
+            getListConversation(dispatch)
         }
 
         const handleCancel = (data) => {
