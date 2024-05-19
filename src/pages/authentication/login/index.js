@@ -4,6 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setCurrentUser, setLogin } from "../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
+import { checkRegex } from "../../../helpers/regex";
 
 function Login({ state }) {
     const [viewState, setViewState] = useState('LOGIN');
@@ -114,6 +115,21 @@ function Login({ state }) {
         }, 60000)
     }
 
+    function login() {
+        if (!checkRegex(email, 'email')) {
+            setReport('Incorrect email')
+            return
+        }
+        handleLogin(email, password, dispatch)
+            .then(response => {
+                if (response.status != 200) {
+                    setReport("Incorrect email or password")
+                } else {
+                    setReport("")
+                }
+            }) 
+        }
+
     return (
         <div className="card shadow-2xl p-8">
             {viewState === 'LOGIN' && <div className="flex flex-col justify-between text-black gap-4">
@@ -150,7 +166,7 @@ function Login({ state }) {
                     <label className="text-secondary cursor-pointer" onClick={() => { checkEmail() }}>Forgot password ?</label>
                 </div>
                 <div className="flex justify-center items-center">
-                    <button className="btn btn-secondary text-white" onClick={() => { handleLogin(email, password, dispatch).then(response => {if (response.status != 200) {setReport("Incorrect email or password")} else {setReport("")}}) }}>LOGIN</button>
+                    <button className="btn btn-secondary text-white" onClick={() => { login() }}>LOGIN</button>
                 </div>
             </div>}
 

@@ -3,6 +3,7 @@ import InputDate from "../../../components/common/InputDate";
 import {handleCheckOTP, handleLogin, handleRegisterAPI, handleSearchFriendAPI, handleSendOTP} from '../../../components/shared/api';
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { checkRegex } from "../../../helpers/regex";
 
 function Register({ state }) {
 
@@ -29,6 +30,10 @@ function Register({ state }) {
     const dispatch = useDispatch();
 
     function getOTP() {
+        if (!checkRegex(email, 'email')) {
+            setReport("Incorrect email")
+            return
+        }
         handleSearchFriendAPI(email)
             .then(response => {
                 console.log(response)
