@@ -40,6 +40,7 @@ const icons = {
     viewProfile: <BsEyeFill size={20} />,
     xCancel: <BsX size={20} />,
     vCheck: <BsCheck size={20} />,
+    addToGroup: <BsPeople size={20} />,
 }
 
 export default icons;

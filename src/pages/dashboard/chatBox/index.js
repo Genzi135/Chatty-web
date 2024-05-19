@@ -19,8 +19,13 @@ export default function ChatBox() {
 
     const [isFriend, setIsFriend] = useState(false)
 
-    const {socket} = useSocket()
+    const { socket } = useSocket()
 
+    const currentConversationRef = useRef(currentConversation);
+
+    useEffect(() => {
+        currentConversationRef.current = currentConversation
+    }, [currentConversation])
     useEffect(() => {
         scrollToBottom();
     }, [listMessage]);
@@ -33,8 +38,8 @@ export default function ChatBox() {
 
     useEffect(() => {
         const handleAccept = (data) => {
-            if (currentConversation.type === 'private') {
-                let Ids = currentConversation.members.map(e => e._id)
+            if (currentConversationRef.current.type === 'private') {
+                let Ids = currentConversationRef.current.members.map(e => e._id)
                 if (Ids.includes(data.userInfo._id)) {
                     setIsFriend(true)
                 }
@@ -42,12 +47,9 @@ export default function ChatBox() {
         }
 
         const handleRemove = (data) => {
-            if (currentConversation.type === 'private') {
-                console.log(data, currentConversation.members)
-                let Ids = currentConversation.members.map(e => e._id)
-                // console.log(data)
-                console.log(Ids, data)
-                if (Ids.includes(data.userId)) {
+            if (currentConversationRef.current.type === 'private') {
+
+                if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
                     setIsFriend(false)
                 }
             }
