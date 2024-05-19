@@ -7,7 +7,8 @@ import ChatInput from "./ChatInput";
 import LandingPage from "../../../components/common/LandingPage";
 import Message from "./Message";
 import { formatDate } from "../../../helpers/formatDate";
-import { handleGetFriendList } from "../../../components/shared/api";
+import { handleGetFriendList, handleGetFriendRequest } from "../../../components/shared/api";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatBox() {
     const currentConversation = useSelector((state) => state.currentConversation);
@@ -18,6 +19,13 @@ export default function ChatBox() {
 
     const [isFriend, setIsFriend] = useState(false)
 
+    const { socket } = useSocket()
+
+    const currentConversationRef = useRef(currentConversation);
+
+    useEffect(() => {
+        currentConversationRef.current = currentConversation
+    }, [currentConversation])
     useEffect(() => {
         scrollToBottom();
     }, [listMessage]);
@@ -29,6 +37,34 @@ export default function ChatBox() {
     };
 
     useEffect(() => {
+        const handleAccept = (data) => {
+            if (currentConversationRef.current.type === 'private') {
+                let Ids = currentConversationRef.current.members.map(e => e._id)
+                if (Ids.includes(data.userInfo._id)) {
+                    setIsFriend(true)
+                }
+            }
+        }
+
+        const handleRemove = (data) => {
+            if (currentConversationRef.current.type === 'private') {
+
+                if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
+                    setIsFriend(false)
+                }
+            }
+        }
+
+        socket.on('friend:accept', handleAccept)
+        socket.on('friend:remove', handleRemove)
+
+        return () => {
+            socket.off('friend:accept', handleAccept)
+            socket.off('friend:remove', handleRemove)
+        }
+    }, [socket])
+
+    useEffect(() => {
         if (currentConversation.type == 'group') {
             setIsFriend(true)
             return
@@ -38,18 +74,12 @@ export default function ChatBox() {
         }
         handleGetFriendList()
             .then((response) => {
-                let found = false;
-                response.data.data.map(friend => {
-                    if (friend.userId === currentConversation.members[1]._id) {
-                        found = true
-                        return
-                    }
-                })
-                if (found) {
-                    setIsFriend(true)
+                let Ids = currentConversation.members.map(e => e._id)
+                if (response.data.data.some(friend => Ids.includes(friend.userId))) {
+                    setIsFriend(true);
+                } else {
+                    setIsFriend(false);
                 }
-                else
-                    setIsFriend(false)
             })
     }, [currentConversation])
 

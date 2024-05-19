@@ -13,6 +13,7 @@ import ConversationCard from "../../../components/common/ConversationCard";
 import { formatDate } from "../../../helpers/formatDate";
 import { toast } from "react-toastify";
 import CustomButton from "../../../components/common/CustomButton";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -37,6 +38,8 @@ export default function ConversationDrawer() {
 
     const [search, setSearch] = useState('')
     const [isFriend, setIsFriend] = useState(false)
+
+    const { socket } = useSocket()
 
     const setInputSearch = (e) => {
         setSearch(e.target.value)
@@ -99,20 +102,22 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (currentConversation.type === 'group') return
-        handleGetGroupList()
-            .then(response => {
-                let newList = []
-                response.data.data.map(group => {
-                    let found = false
-                    group.members.map(member => {
-                        if (member._id === currentConversation.members[1]._id) {
-                            found = true
-                        }
-                    })
-                    if (!found) newList = [...newList, group]
-                })
-                setGroupList(newList)
+        if (currentConversation.type == 'group') {
+            setIsFriend(true)
+            return
+        }
+        else if (Object.keys(currentConversation) == 0) {
+            return
+        }
+        handleGetFriendList()
+            .then((response) => {
+                let found = false;
+                let Ids = currentConversation.members.map(e => e._id)
+                if (response.data.data.some(friend => Ids.includes(friend.userId))) {
+                    setIsFriend(true);
+                } else {
+                    setIsFriend(false);
+                }
             })
     }, [currentConversation])
 
@@ -155,11 +160,10 @@ export default function ConversationDrawer() {
 
     const check = () => {
 
-        const currentUserID = currentUser._id; // Giả sử bạn có một biến currentUser chứa thông tin của người dùng hiện tại
+        const currentUserID = currentUser._id;
 
         const differentObjects = [];
 
-        // Lọc ra các đối tượng khác nhau từ dataSource
         dataSource.forEach(friend => {
             if (friend.userId !== currentUserID && !currentConversation.members.some(member => member._id === friend.userId)) {
                 differentObjects.push(friend);
@@ -167,11 +171,11 @@ export default function ConversationDrawer() {
         });
 
         // Lọc ra các đối tượng khác nhau từ currentConversation.members
-        currentConversation.members.forEach(member => {
-            if (member._id !== currentUserID && !dataSource.some(friend => friend.userId === member._id)) {
-                differentObjects.push(member);
-            }
-        });
+        // currentConversation.members.forEach(member => {
+        //     if (member._id !== currentUserID && !dataSource.some(friend => friend.userId === member._id)) {
+        //         differentObjects.push(member);
+        //     }
+        // });
 
         setAddMemberList(differentObjects)
     };
@@ -316,7 +320,7 @@ export default function ConversationDrawer() {
     }
 
     function searchFriend() {
-        if (search == '') {
+        if (search === '') {
             check()
             return
         }
@@ -341,6 +345,58 @@ export default function ConversationDrawer() {
         document.getElementById("searchMember").value = ""
     }
 
+    function removeFriend() {
+        if (currentConversation.type == 'private') {
+            let Ids = currentConversation.members.map(member => member._id)
+            console.log(currentConversation.members, currentUser._id)
+            Ids.map(Id => {
+                if (Id != currentUser._id) {
+                    console.log(Id)
+                    handleRemoveFriend(Id)
+                }
+            })
+        }
+    }
+
+    useEffect(() => {
+        const handleAccept = (data) => {
+            if (currentConversation.type === 'private') {
+                let Ids = currentConversation.members.map(e => e._id)
+                if (Ids.includes(data.userInfo._id)) {
+                    setIsFriend(true)
+                }
+            }
+        }
+
+        const handleRemove = (data) => {
+            if (currentConversation.type === 'private') {
+                console.log(data, currentConversation.members)
+                let Ids = currentConversation.members.map(e => e._id)
+                // console.log(data)
+                console.log(Ids, data)
+                if (Ids.includes(data.userId)) {
+                    setIsFriend(false)
+                }
+            }
+        }
+
+        socket.on('friend:accept', handleAccept)
+        socket.on('friend:remove', handleRemove)
+
+        return () => {
+            socket.off('friend:accept', handleAccept)
+            socket.off('friend:remove', handleRemove)
+        }
+    }, [socket])
+
+    function sendFriendRequest() {
+        currentConversation.members.map(member => {
+            if (member._id != currentUser._id) {
+                handleSendFriendRequest(member._id)
+            }
+        })
+    }
+
     return (
         <div className="w-[400px]">
             {currentConversation && currentConversation.type === "private" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
@@ -351,10 +407,11 @@ export default function ConversationDrawer() {
                         <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>
                         {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
                             onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addFriend}</label>}
-                        {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
-                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>}
+                        {/* {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
+                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>} */}
                         {!isFriend && <label className="tooltip p-1 hover:bg-gray-200 rounded-md cursor-pointer" data-tip="Add friend"
-                            onClick={() => { handleSendFriendRequest(currentConversation.members[1]._id) }}>{icons.addFriend}</label>}
+
+                            onClick={() => { sendFriendRequest() }}>{icons.addFriend}</label>}
                     </div>
                 </div>
                 <div>
@@ -402,86 +459,88 @@ export default function ConversationDrawer() {
                     <div><label>{"Do you want to remove this friend?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline" onClick={() => { document.getElementById("removeFriend").close() }}>Cancel</button></form>
-                        <button className="btn btn-secondary" onClick={() => { handleRemoveFriend(currentConversation.members[1]._id) }}>Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => { removeFriend() }}>Confirm</button>
                     </div>
                 </div>
             </dialog>
 
-            {currentConversation && currentConversation.type === "group" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
-                <div className="flex flex-col justify-center items-center">
-                    <div onClick={() => document.getElementById("changeAvatarGroup").showModal()}>
-                        <Avatar link={currentConversation.image} />
-                    </div>
-                    {isShowChangeName ? <div className="flex justify-center items-center p-2 gap-1">
-                        <input type="text" placeholder="New name" className="input input-secondary h-8 w-32" onChange={onNewNameChange} />
-                        <button className="btn btn-success btn-sm" disabled={newName !== '' ? false : true} onClick={() => handleChangeGroupNamed()}>{icons.vCheck}</button>
-                        <button className="btn btn-error btn-sm" onClick={() => setShowChangeName(false)}>{icons.xCancel}</button>
-                    </div> : <div className="flex justify-center items-center gap-2 mt-1">
-                        <label>{currentConversation.name}</label>
-                        <label className="hover:bg-gray-300 p-2 rounded-full" onClick={() => setShowChangeName(true)}>{icons.pencilSquare}</label>
-                    </div>}
-                    <div className="mt-4 flex justify-center items-center gap-2">
-                        <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
-                            onClick={() => { openAddMemberModal() }}>{icons.addFriend}</label>
+            {
+                currentConversation && currentConversation.type === "group" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
+                    <div className="flex flex-col justify-center items-center">
+                        <div onClick={() => document.getElementById("changeAvatarGroup").showModal()}>
+                            <Avatar link={currentConversation.image} />
+                        </div>
+                        {isShowChangeName ? <div className="flex justify-center items-center p-2 gap-1">
+                            <input type="text" placeholder="New name" className="input input-secondary h-8 w-32" onChange={onNewNameChange} />
+                            <button className="btn btn-success btn-sm" disabled={newName !== '' ? false : true} onClick={() => handleChangeGroupNamed()}>{icons.vCheck}</button>
+                            <button className="btn btn-error btn-sm" onClick={() => setShowChangeName(false)}>{icons.xCancel}</button>
+                        </div> : <div className="flex justify-center items-center gap-2 mt-1">
+                            <label>{currentConversation.name}</label>
+                            <label className="hover:bg-gray-300 p-2 rounded-full" onClick={() => setShowChangeName(true)}>{icons.pencilSquare}</label>
+                        </div>}
+                        <div className="mt-4 flex justify-center items-center gap-2">
+                            <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
+                                onClick={() => { openAddMemberModal() }}>{icons.addFriend}</label>
 
-                        {currentConversation && currentConversation.leaders.map((e) => (
-                            currentUser._id === e._id && (<div key={e._id} className="flex justify-center items-center gap-2">
-                                <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Remove from group"
-                                    onClick={() => { openRemoveMemberModal() }}>{icons.removeFriend}</label>
-                                <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Disband group"
-                                    onClick={() => { document.getElementById("disbandGroup").showModal() }}>{icons.trash}</label>
-                            </div>)
-                        ))}
+                            {currentConversation && currentConversation.leaders.map((e) => (
+                                currentUser._id === e._id && (<div key={e._id} className="flex justify-center items-center gap-2">
+                                    <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Remove from group"
+                                        onClick={() => { openRemoveMemberModal() }}>{icons.removeFriend}</label>
+                                    <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Disband group"
+                                        onClick={() => { document.getElementById("disbandGroup").showModal() }}>{icons.trash}</label>
+                                </div>)
+                            ))}
 
+                        </div>
                     </div>
-                </div>
-                <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
-                    {currentConversation && currentConversation.members && currentConversation.members.map((props) => (
-                        <div key={props._id} >
-                            <div className="p-2 w-auto">
-                                {currentConversation && currentConversation.leaders.map((e) => (
-                                    e._id === props._id && (<div key={e._id} className="flex justify-start items-center gap-2">
-                                        <label className="text-yellow-500">{icons.leaderStar}</label>
-                                        <label className="text-black">Leader</label>
-                                    </div>)
-                                ))}
-                                <div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
-                                    <div className="avatar">
-                                        <div className="avatar w-12 h-12 rounded-full bg-black">
-                                            <img src={props.avatar} alt="avatar" />
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between w-full">
-                                        <div className="flex flex-col justify-around w-full gap-2">
-                                            <label className="text-black text-base font-semibold text-ellipsis whitespace-nowrap overflow-hidden w-32">
-                                                {props.name ? props.name : ""}
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="View profile" onClick={() => { setUserSelected(props); document.getElementById('userProfile').showModal() }}>
-                                            {icons.viewProfile}
-                                        </button>
-                                    </div>
-                                    {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
-                                        e._id === currentUser._id && (<div key={e._id}>
-                                            <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
-                                                onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
+                    <div className="overflow-auto max-h-[90%] h-full scroll-smooth text-ellipsis flex-nowrap">
+                        {currentConversation && currentConversation.members && currentConversation.members.map((props) => (
+                            <div key={props._id} >
+                                <div className="p-2 w-auto">
+                                    {currentConversation && currentConversation.leaders.map((e) => (
+                                        e._id === props._id && (<div key={e._id} className="flex justify-start items-center gap-2">
+                                            <label className="text-yellow-500">{icons.leaderStar}</label>
+                                            <label className="text-black">Leader</label>
                                         </div>)
                                     ))}
+                                    <div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
+                                        <div className="avatar">
+                                            <div className="avatar w-12 h-12 rounded-full bg-black">
+                                                <img src={props.avatar} alt="avatar" />
+                                            </div>
+                                        </div>
+                                        <div className="flex justify-between w-full">
+                                            <div className="flex flex-col justify-around w-full gap-2">
+                                                <label className="text-black text-base font-semibold text-ellipsis whitespace-nowrap overflow-hidden w-32">
+                                                    {props.name ? props.name : ""}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="View profile" onClick={() => { setUserSelected(props); document.getElementById('userProfile').showModal() }}>
+                                                {icons.viewProfile}
+                                            </button>
+                                        </div>
+                                        {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
+                                            e._id === currentUser._id && (<div key={e._id}>
+                                                <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
+                                                    onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
+                                            </div>)
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+                    <div className="flex justify-center items-center p-2 w-full">
+                        <button className="btn btn-outline btn-error text-red-500 btn-wide tooltip flex justify-center items-center"
+                            data-tip="Leave group"
+                            onClick={() => { document.getElementById("leaveGroup").showModal() }}>
+                            {icons.leaveGroup}
+                        </button>
+                    </div>
                 </div>
-                <div className="flex justify-center items-center p-2 w-full">
-                    <button className="btn btn-outline btn-error text-red-500 btn-wide tooltip flex justify-center items-center"
-                        data-tip="Leave group"
-                        onClick={() => { document.getElementById("leaveGroup").showModal() }}>
-                        {icons.leaveGroup}
-                    </button>
-                </div>
-            </div>}
+            }
 
 
             <dialog id="addToGroup" className="modal">
@@ -698,6 +757,6 @@ export default function ConversationDrawer() {
                     </div>
                 </div>
             </dialog>
-        </div>
+        </div >
     )
 }

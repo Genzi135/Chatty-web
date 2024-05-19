@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
-import { handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
-import { useEffect, useRef, useState } from "react";
+import { getListConversation, handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
+import { useEffect, useState } from "react";
 import ConversationCard from "../../../components/common/ConversationCard";
 import FriendCard from "../../../components/common/FriendCard";
 import GroupCard from "../../../components/common/GroupCard";
@@ -19,13 +19,8 @@ export default function Contact() {
     const [isRefresh, setIsRefresh] = useState(false);
     const [search, setSearch] = useState('')
 
-    const { socket } = useSocket();
-
-    const currentUserRef = useRef(currentUser);
-
-    useEffect(() => {
-        currentUserRef.current = currentUser;
-    }, [currentUser])
+    const { socket } = useSocket()
+    const dispatch = useDispatch()
 
     const setInputSearch = (e) => {
         setSearch(e.target.value)
@@ -69,6 +64,7 @@ export default function Contact() {
                 .then((dataSource) => setRequestReceiveList(dataSource.data.data))
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
+            getListConversation(dispatch)
         }
 
         const handleCancel = (data) => {
@@ -109,7 +105,7 @@ export default function Contact() {
         if (search == '') {
             handleGetGroupList()
                 .then((dataSource) => setGroupDataSource(dataSource.data.data))
-            return 
+            return
         }
         let found = []
         groupDataSource.map(group => {
@@ -124,14 +120,14 @@ export default function Contact() {
     return (
         <div style={{ width: '100%', height: '100vh' }}>
             {viewState.box === 'contact' && <div className="flex flex-col item-center gap-2">
-                    <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
-                        {icons.listFriend}
-                        <label className="font-semibold text-xl">Friend list</label>
-                    </div>
-                    <div style={{width: '90%'}}>
+                <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
+                    {icons.listFriend}
+                    <label className="font-semibold text-xl">Friend list</label>
+                </div>
+                <div style={{ width: '90%' }}>
                     <div className="w-full h-auto flex justify-between items-center gap-2">
                         <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                            <input type="text" className="grow" id='searchFriend' placeholder="Search" onChange={(setInputSearch)}/>
+                            <input type="text" className="grow" id='searchFriend' placeholder="Search" onChange={(setInputSearch)} />
                         </div>
                         <button className="btn btn-secondary" onClick={() => { searchFriend() }}>Search</button>
                     </div>
@@ -149,7 +145,7 @@ export default function Contact() {
                 </div>
                 <div className="w-full h-auto flex justify-between items-center gap-2">
                     <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                        <input type="text" className="grow" id='searchGroup' placeholder="Search" onChange={(setInputSearch)}/>
+                        <input type="text" className="grow" id='searchGroup' placeholder="Search" onChange={(setInputSearch)} />
                     </div>
                     <button className="btn btn-secondary" onClick={() => { searchGroup() }}>Search</button>
                 </div>
