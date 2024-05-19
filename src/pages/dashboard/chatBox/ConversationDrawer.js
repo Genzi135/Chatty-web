@@ -13,6 +13,7 @@ import ConversationCard from "../../../components/common/ConversationCard";
 import { formatDate } from "../../../helpers/formatDate";
 import { toast } from "react-toastify";
 import CustomButton from "../../../components/common/CustomButton";
+import { useSocket } from "../../../hooks/context/socket";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
@@ -37,6 +38,8 @@ export default function ConversationDrawer() {
 
     const [search, setSearch] = useState('')
     const [isFriend, setIsFriend] = useState(false)
+
+    const {socket} = useSocket()
 
     const setInputSearch = (e) => {
         setSearch(e.target.value)
@@ -99,20 +102,22 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (currentConversation.type == 'group') return
-        handleGetGroupList()
-            .then(response => {
-                let newList = []
-                response.data.data.map(group => {
-                    let found = false
-                    group.members.map(member => {
-                        if (member._id === currentConversation.members[1]._id) {
-                            found = true
-                        }
-                    })
-                    if (!found) newList = [...newList, group]
-                })
-                setGroupList(newList)
+        if (currentConversation.type == 'group') {
+            setIsFriend(true)
+            return
+        }
+        else if (Object.keys(currentConversation) == 0) {
+            return
+        }
+        handleGetFriendList()
+            .then((response) => {
+                let found = false;
+                let Ids = currentConversation.members.map(e => e._id)
+                if (response.data.data.some(friend => Ids.includes(friend.userId))) {
+                    setIsFriend(true);
+                } else {
+                    setIsFriend(false);
+                }
             })
     }, [currentConversation])
 
@@ -334,6 +339,58 @@ export default function ConversationDrawer() {
         document.getElementById("searchMember").value = ""
     }
 
+    function removeFriend() {
+        if  (currentConversation.type == 'private') {
+            let Ids = currentConversation.members.map(member => member._id)
+            console.log(currentConversation.members, currentUser._id)
+            Ids.map(Id => {
+                if (Id != currentUser._id) {
+                    console.log(Id)
+                    handleRemoveFriend(Id)
+                }
+            })
+        }
+    }
+
+    useEffect(() => {
+        const handleAccept = (data) => {
+            if (currentConversation.type === 'private') {
+                let Ids = currentConversation.members.map(e => e._id)
+                if (Ids.includes(data.userInfo._id)) {
+                    setIsFriend(true)
+                }
+            }
+        }
+
+        const handleRemove = (data) => {
+            if (currentConversation.type === 'private') {
+                console.log(data, currentConversation.members)
+                let Ids = currentConversation.members.map(e => e._id)
+                // console.log(data)
+                console.log(Ids, data)
+                if (Ids.includes(data.userId)) {
+                    setIsFriend(false)
+                }
+            }
+        }
+
+        socket.on('friend:accept', handleAccept)
+        socket.on('friend:remove', handleRemove)
+
+        return () => {
+            socket.off('friend:accept', handleAccept)
+            socket.off('friend:remove', handleRemove)
+        }
+    }, [socket])
+
+    function sendFriendRequest() {
+        currentConversation.members.map(member => {
+            if (member._id != currentUser._id) {
+                handleSendFriendRequest(member._id)
+            }
+        })
+    }
+
     return (
         <div className="w-[400px]">
             {currentConversation && currentConversation.type === "private" && <div className="w-full h-full flex flex-col justify-between items-center pt-10">
@@ -344,10 +401,10 @@ export default function ConversationDrawer() {
                         <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>
                         {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
                             onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addFriend}</label>}
-                        {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
-                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>}
+                        {/* {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"
+                            onClick={() => document.getElementById("removeFriend").showModal()}>{icons.removeFriend}</label>} */}
                         {!isFriend && <label className="tooltip p-1 hover:bg-gray-200 rounded-md cursor-pointer" data-tip="Add friend"
-                            onClick={() => {handleSendFriendRequest(currentConversation.members[1]._id)}}>{icons.addFriend}</label>}
+                            onClick={() => { sendFriendRequest() }}>{icons.addFriend}</label>}
                     </div>
                 </div>
                 <div>
@@ -395,7 +452,7 @@ export default function ConversationDrawer() {
                     <div><label>{"Do you want to remove this friend?"}</label></div>
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline" onClick={() => { document.getElementById("removeFriend").close() }}>Cancel</button></form>
-                        <button className="btn btn-secondary" onClick={() => { handleRemoveFriend(currentConversation.members[1]._id) }}>Confirm</button>
+                        <button className="btn btn-secondary" onClick={() => { removeFriend() }}>Confirm</button>
                     </div>
                 </div>
             </dialog>

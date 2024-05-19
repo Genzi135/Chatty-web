@@ -1,6 +1,6 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
-import { handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
+import { getListConversation, handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
 import { useEffect, useState } from "react";
 import ConversationCard from "../../../components/common/ConversationCard";
 import FriendCard from "../../../components/common/FriendCard";
@@ -18,6 +18,7 @@ export default function Contact() {
     const [search, setSearch] = useState('')
 
     const {socket} = useSocket()
+    const dispatch = useDispatch()
 
     const setInputSearch = (e) => {
         setSearch(e.target.value)
@@ -61,6 +62,7 @@ export default function Contact() {
                 .then((dataSource) => setRequestReceiveList(dataSource.data.data))
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
+            getListConversation(dispatch)
         }
 
         const handleCancel = (data) => {
