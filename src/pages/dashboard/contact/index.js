@@ -117,15 +117,17 @@ export default function Contact() {
         document.getElementById('searchGroup').value = ''
     }
 
+    console.log(requestReceiveList);
+
     return (
         <div style={{ width: '100%', height: '100vh' }}>
             {viewState.box === 'contact' && <div className="flex flex-col item-center gap-2">
-                <div className="flex justify-start items-center bg-pink-300 p-5 gap-2">
+                <div className="flex justify-start items-center bg-pink-300 p-5 gap-2 ">
                     {icons.listFriend}
                     <label className="font-semibold text-xl">Friend list</label>
                 </div>
                 <div style={{ width: '90%' }}>
-                    <div className="w-full h-auto flex justify-between items-center gap-2">
+                    <div className="w-full h-auto flex justify-between items-center gap-2 p-2">
                         <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
                             <input type="text" className="grow" id='searchFriend' placeholder="Search" onChange={(setInputSearch)} />
                         </div>
@@ -143,7 +145,7 @@ export default function Contact() {
                     {icons.listGroup}
                     <label className="font-semibold text-xl">Group list</label>
                 </div>
-                <div className="w-full h-auto flex justify-between items-center gap-2">
+                <div className="w-full h-auto flex justify-between items-center gap-2 p-2">
                     <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
                         <input type="text" className="grow" id='searchGroup' placeholder="Search" onChange={(setInputSearch)} />
                     </div>
