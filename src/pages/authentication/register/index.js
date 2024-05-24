@@ -1,6 +1,6 @@
 import { useState } from "react";
 import InputDate from "../../../components/common/InputDate";
-import {handleCheckOTP, handleLogin, handleRegisterAPI, handleVerifyEmail} from '../../../components/shared/api';
+import {handleCheckOTP, handleLogin, handleRegisterAPI, handleVerifyEmail, handleVerifyEmailOTP} from '../../../components/shared/api';
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { checkRegex } from "../../../helpers/regex";
@@ -61,7 +61,7 @@ function Register({ state }) {
     }
 
     const verifyOTP = () => {
-        handleCheckOTP(email, OTP)
+        handleVerifyEmailOTP(email, OTP)
             .then(response => {
                 if (response.status === 200) {
                     setRegisterDisable(false)

@@ -92,6 +92,7 @@ export default function Dashboard() {
         };
 
         const handleNotification = (data) => {
+            console.log(data)
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
                     dispatch(addMessage(data.messages[0]));
