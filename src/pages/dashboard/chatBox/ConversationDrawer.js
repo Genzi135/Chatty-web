@@ -319,15 +319,16 @@ export default function ConversationDrawer() {
                     })
                     setGroupList(newList)
                 })
+        } else {
+            let found = []
+            groupList.map(group => {
+                if (group.name.includes(search))
+                    found.push(group)
+            })
+            setGroupList(found)
+            setSearch("")
+            document.getElementById('searchGroup').value = ""
         }
-        let found = []
-        groupList.map(group => {
-            if (group.name.includes(search))
-                found.push(group)
-        })
-        setGroupList(found)
-        setSearch("")
-        document.getElementById('searchGroup').value = ""
     }
 
     useEffect(() => {
@@ -607,7 +608,7 @@ export default function ConversationDrawer() {
 
 
             <dialog id="addToGroup" className="modal">
-                <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
+                <div className="w-96 max-h-[80%] flex flex-col justify-between bg-white p-5 rounded-lg absolute">
                     <HeaderModal name={"Add to group"} />
                     <div className="w-full h-auto flex justify-between items-center gap-2">
                         <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
@@ -627,7 +628,7 @@ export default function ConversationDrawer() {
                             </div>
                         }
                     </div>
-                    <div>
+                    <div className="overflow-auto w-full h-[auto] p-2 bg-gray-100" >
                         {addMemberList && addMemberList.length > 0 ? addMemberList
                             .map(friend => <div key={friend._id} onClick={() => onSelectedClick(friend)}><FriendCard props={friend} /></div>)
                             : <div>All of your friends are members of this group</div>
@@ -640,7 +641,7 @@ export default function ConversationDrawer() {
                 </div>
             </dialog>
             <dialog id="removeFromGroup" className="modal">
-                <div className="w-96 flex flex-col justify-between bg-white p-5 rounded-lg">
+                <div className="w-96 flex max-h-[80%] absolute flex-col justify-between bg-white p-5 rounded-lg">
                     <HeaderModal name={"Remove from group"} />
                     <div className="w-full h-auto flex justify-between items-center gap-2">
                         <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
@@ -661,7 +662,7 @@ export default function ConversationDrawer() {
                         }
                     </div>
                     <div></div>
-                    <div>{memberList && memberList.map(e => e._id !== currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
+                    <div className="overflow-auto w-full h-[auto] p-2 bg-gray-100" >{memberList && memberList.map(e => e._id !== currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
 
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
