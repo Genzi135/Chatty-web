@@ -38,7 +38,6 @@ export default function SubSideBar() {
     }
 
     const onConversationClick = async (e) => {
-        console.log(e);
         getConversationById(e._id)
             .then(response => {
                 dispatch(setCurrentConversation(response))

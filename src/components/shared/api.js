@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable no-unreachable */
 /* eslint-disable no-useless-concat */
 /* eslint-disable no-unused-vars */
@@ -5,7 +6,9 @@ import axios from 'axios';
 import { addConversation, addMessage, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
 import { checkExist } from '../../helpers/helperFunction';
 
-export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
+// export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
+
+export const BASE_URL = "http://ec2-13-212-80-57.ap-southeast-1.compute.amazonaws.com:8555";
 
 export let userToken = JSON.parse(localStorage.getItem("userToken"));
 
@@ -249,7 +252,6 @@ export async function handleOpenConversation(id, dispatch, listConversation) {
             method: 'post',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-        console.log(response)
         dispatch(setCurrentConversation(response.data.data))
         dispatch(setViewState({
             box: 'chat',
@@ -262,7 +264,6 @@ export async function handleOpenConversation(id, dispatch, listConversation) {
                 list.push(conversation)
         })
         list = [response.data.data, ...list]
-        console.log(list)
         dispatch(setListConversation(list))
 
         if (!checkExist(listConversation, response.data.data._id)) {
@@ -283,7 +284,6 @@ export async function getListMessageByConversation(id, dispatch) {
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` }
         })
-        console.log(response)
         dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
         return error;
@@ -372,7 +372,6 @@ export async function handleUpdateGroupAvatar(conversation, inputAva, yourId, us
                 userName: userName
             }
         })
-        console.log(repsonse)
     } catch (err) {
         return err
     }

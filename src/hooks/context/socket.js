@@ -7,7 +7,7 @@ const SocketContext = createContext();
 
 
 export const SocketProvider = ({ children }) => {
-    let socket = io("http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555");
+    let socket = io("http://ec2-13-212-80-57.ap-southeast-1.compute.amazonaws.com:8555");
     const currentUser = useSelector((state) => state.user);
     console.log('connect...');
     useEffect(() => {
