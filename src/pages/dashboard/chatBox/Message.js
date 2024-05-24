@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useRef, useState } from "react";
@@ -20,6 +21,7 @@ export default function Message({ data }) {
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
     const [option, setOption] = useState('');
+    const [isShowFileViewer, setFileViewer] = useState(false);
 
     const messageRef = useRef(null);
 
@@ -79,11 +81,24 @@ export default function Message({ data }) {
         setShowModalConfirm(false);
     };
 
-    const handleViewFile = (url) => {
-        if (url) {
-            window.open(url);
-        }
-    }
+    // const handleViewFile = (url) => {
+    //     if (url) {
+    //         window.open(url);
+    //     }
+    // }
+
+    // const OfficeViewer = (url) => {
+    //     console.log(url);
+    //     return (
+    //         <iframe
+    //             src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`}
+    //             width="100%"
+    //             height="600px"
+    //             frameborder="0"
+    //         ></iframe>
+    //     );
+    // };
+
 
     if (data && data.type === 'notification') {
         return (
@@ -158,9 +173,9 @@ export default function Message({ data }) {
                         {data.content !== "This message has been deleted" && data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto w-auto inline-block" key={e.url}>
                             {e.type === 'image' && <div className=" flex justify-center gap-2">
                                 <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer max-w-[20%] max-h-[20%] " />
-                                <div className="flex justify-center items-center gap-2">
+                                {/* <div className="flex justify-center items-center gap-2">
                                     <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                </div>
+                                </div> */}
                             </div>}
                             {e.type === 'application' &&
                                 <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-100 p-1 rounded-lg">
@@ -179,19 +194,19 @@ export default function Message({ data }) {
 
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24">{e.url.split(".").pop()}</label>
-                                    <div className="flex justify-center items-center gap-2">
+                                    {/* <div className="flex justify-center items-center gap-2">
                                         <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip="View">{icons.viewFile}</button>
                                         <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             }
                             {e.type === 'video' && <div className="flex justify-center items-center flex-col gap-2 bg-gray-100 p-2 rounded-lg">
                                 <video controls width={'auto'}>
                                     <source src={e.url} type="video/mp4" />
                                 </video>
-                                <div className="flex justify-center items-center gap-2">
+                                {/* <div className="flex justify-center items-center gap-2">
                                     <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                </div>
+                                </div> */}
                             </div>}
                         </div>))}
 

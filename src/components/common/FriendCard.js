@@ -59,7 +59,7 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource 
                 <div className="w-[50%] h-auto flex flex-col justify-between bg-white rounded-lg p-5">
                     <HeaderModal name={'warning'} />
                     <div className="p-5 text-lg">
-                        {'Do you want to remove this message'}
+                        {'Do you want to remove this friend?'}
                     </div>
                     <div className="flex items-center justify-end gap-2 mt-4">
                         <form method="dialog">

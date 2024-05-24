@@ -65,15 +65,17 @@ export default function Dashboard() {
         };
 
         const handleDeleteMessage = (response) => {
-            const newList = listMessageRef.current.map((e) => {
-                if (response.id === e._id) {
-                    return { ...e, content: "This message has been deleted", isDelete: true };
+            if (response) {
+                const newList = listMessageRef.current.map((e) => {
+                    if (response.id === e._id) {
+                        return { ...e, content: "This message has been deleted", isDelete: true };
+                    }
+                    return e;
+                });
+                dispatch(setListMessage(newList));
+                if (newList[newList.length - 1]._id === response.id) {
+                    getListConversation(dispatch)
                 }
-                return e;
-            });
-            dispatch(setListMessage(newList));
-            if (newList[newList.length - 1]._id === response.id) {
-                getListConversation(dispatch)
             }
         };
 

@@ -535,9 +535,9 @@ export default function ConversationDrawer() {
                                 <div className="p-2 w-auto">
                                     {currentConversation && currentConversation.leaders.map((e) => (
                                         e._id === props._id ? (<div key={e._id} className="flex flex-col justify-start items-center gap-2 bg-secondary p-2 rounded-lg">
-                                            <div className="flex justify-start items-center gap-2">
-                                                <label className="text-yellow-500">{icons.leaderStar}</label>
-                                                <label className="text-black">Leader</label>
+                                            <div className="flex justify-start items-center gap-2 bg-white p-1 rounded-md">
+                                                <label className="text-yellow-500 " >{icons.leaderStar}</label>
+                                                <label className="text-black font-semibold">Leader</label>
                                             </div>
                                             <div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
                                                 <div className="avatar">
