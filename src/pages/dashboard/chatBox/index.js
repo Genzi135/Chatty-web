@@ -48,9 +48,10 @@ export default function ChatBox() {
 
         const handleRemove = (data) => {
             if (currentConversationRef.current.type === 'private') {
-
-                if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
-                    setIsFriend(false)
+                if (data.friendRequest.recipient && data.friendRequest.requester) {
+                    if ((currentConversationRef.current.members.some((e) => (e._id === data.friendRequest.recipient))) && (currentConversationRef.current.members.some((e) => e._id === data.friendRequest.requester))) {
+                        setIsFriend(false)
+                    }
                 }
             }
         }

@@ -1,18 +1,28 @@
-import { useDispatch } from "react-redux"
-import { setCurrentConversation, setViewState } from "../../hooks/redux/reducer"
+import { useDispatch, useSelector } from "react-redux"
+import { setCurrentConversation, setListConversation, setViewState } from "../../hooks/redux/reducer"
 import { getListMessageByConversation } from "../shared/api"
 
 export default function GroupCard({ props }) {
+    const listConversation = useSelector((state) => state.listConversation)
+    const currentConversation = useSelector((state) => state.currentConversation)
     const dispatch = useDispatch()
 
     function openGroupChat() {
-        console.log(props)
         dispatch(setCurrentConversation(props))
         dispatch(setViewState({
             box: 'chat',
             subSideBar: 'chat'
         }))
         getListMessageByConversation(props._id, dispatch)
+            .then(() => {
+                let list = []
+                listConversation.map(conversation => {
+                    if (conversation._id !== props._id) 
+                        list.push(conversation)
+                })
+                list = [props, ...list]
+                dispatch(setListConversation(list))
+            })
     }
 
     return (

@@ -1,26 +1,23 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable array-callback-return */
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
 import ConversationSkeleton from "../../../../components/common/ConversationSkeleton";
-import CustomButton from "../../../../components/common/CustomButton";
+// import CustomButton from "../../../../components/common/CustomButton";
 import { getListConversation, getListMessageByConversation, handleCreateGroup, handleGetFriendList } from "../../../../components/shared/api";
 import FriendCard from "../../../../components/common/FriendCard";
 import icons from "../../../../components/shared/icon";
 import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation } from "../../../../hooks/redux/reducer";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useSocket } from "../../../../hooks/context/socket";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
     const [selectedList, setSelectedList] = useState([])
-    const [isShowSelectedList, setShowSelectedList] = useState(false)
+    // const [isShowSelectedList, setShowSelectedList] = useState(false)
     const [isRefresh, setRefresh] = useState(false);
     const [option, setOption] = useState('');
-    const [inputAva, setInputAva] = useState(null);
+    // const [inputAva, setInputAva] = useState(null);
     const [name, setName] = useState('');
     const [search, setSearch] = useState('');
     const [report, setReport] = useState('');
@@ -28,13 +25,13 @@ export default function CreateGroupModal({ onClose }) {
     const dispatch = useDispatch();
 
     const userData = useSelector((state) => state.currentUser);
-    const listConversation = useSelector((state) => state.listConversation)
+    // const listConversation = useSelector((state) => state.listConversation)
 
     const { socket } = useSocket()
 
-    const setAva = (e) => {
-        setInputAva(e.target.files[0])
-    }
+    // const setAva = (e) => {
+    //     setInputAva(e.target.files[0])
+    // }
 
     const setInputName = (e) => {
         setName(e.target.value)
@@ -58,7 +55,6 @@ export default function CreateGroupModal({ onClose }) {
     }
 
     const removeFromSelected = (e) => {
-        const removeItem = e;
         const newSelectedList = selectedList.filter(el => el !== e);
         setSelectedList(newSelectedList);
         setDataSource([...dataSource, e])
@@ -99,15 +95,15 @@ export default function CreateGroupModal({ onClose }) {
             } else {
                 handleCreateGroup(userData._id, selectedList, name, null)
                     .then(() => {
+                        setName("")
+                        document.getElementById("nameInput").value = ""
+                        setSelectedList([])
                         getListConversation(dispatch)
                             .then((response) => {
-                                console.log(response)
                                 dispatch(setCurrentConversation(response.data.data[0]))
                                 getListMessageByConversation(response.data.data[0]._id, dispatch)
                             })
                     })
-                setInputName('')
-                setOption('')
                 setReport('')
                 setSelectedList([])
                 handleGetFriendList().then(response => setDataSource(response.data.data))
@@ -151,7 +147,7 @@ export default function CreateGroupModal({ onClose }) {
             </div> */}
             <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">
-                    <input type="text" className="grow w-full" placeholder="Enter group name" onChange={setInputName} />
+                    <input type="text" id="nameInput" className="grow w-full" placeholder="Enter group name" onChange={setInputName} />
                 </div>
             </div>
             <div className="w-full h-auto flex justify-between items-center gap-2">

@@ -1,7 +1,6 @@
 
 
 export default function AddFriendCard({ props, value }) {
-    console.log(props)
     const onCancelClick = () => {
         return value('cancel')
     }

@@ -249,12 +249,21 @@ export async function handleOpenConversation(id, dispatch, listConversation) {
             method: 'post',
             headers: { Authorization: `Bearer ${userToken}` },
         })
-
+        console.log(response)
         dispatch(setCurrentConversation(response.data.data))
         dispatch(setViewState({
             box: 'chat',
             subSideBar: 'chat'
         }))
+
+        let list = []
+        listConversation.map(conversation => {
+            if (conversation._id !== response.data.data._id)
+                list.push(conversation)
+        })
+        list = [response.data.data, ...list]
+        console.log(list)
+        dispatch(setListConversation(list))
 
         if (!checkExist(listConversation, response.data.data._id)) {
             dispatch(addConversation(response.data.data))
@@ -508,7 +517,17 @@ export async function handleSendMessage(listConversation, currentConversation, i
             }
             return e
         })
-        dispatch(setListConversation(newList))
+
+        let list = [], receiver = {};
+        newList.map(conversation => {
+            if (conversation._id !== currentConversation._id) {
+                list.push(conversation)
+            } else receiver = conversation
+        })
+
+        list = [receiver, ...list]
+
+        dispatch(setListConversation(list))
         return response.data.data
     } catch (err) {
         return err
@@ -718,5 +737,38 @@ export async function handleResetPassword(email, password) {
         return response
     } catch (err) {
         return err
+    }
+}
+
+//Verify email by OTP
+export async function handleVerifyEmail(email) {
+    try {
+        const response = await axios({
+            url: BASE_URL + '/api/v1/auth/sendVerifyEmailOtp',
+            method: 'post',
+            data: {
+                email: email
+            }
+        })
+        return response
+    } catch (err) {
+        return err
+    }
+}
+
+//Handle verify OTP at register
+export async function handleVerifyEmailOTP(email, otp) {
+    try {
+        const response = await axios({
+            url: BASE_URL + '/api/v1/auth/verifyEmailOtp',
+            method: 'post',
+            data: {
+                email: email,
+                otp: otp
+            }
+        })
+        return response
+    } catch (err) {
+        return err;
     }
 }
