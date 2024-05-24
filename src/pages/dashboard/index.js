@@ -68,29 +68,25 @@ export default function Dashboard() {
         };
 
         const handleDeleteMessage = (response) => {
-            console.log(listMessageRef)
-            const newList = listMessageRef.current.map((e) => {
-                if (response.id === e._id) {
-                    return { ...e, content: "This message has been deleted", isDelete: true };
-                }
-
-                if (e.parent) {
-                    console.log(response)
-                    console.log(e.parent._id === response.id)
-                    if (e.parent._id === response._id) {
-                        return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true}}
+            if (response) {
+                const newList = listMessageRef.current.map((e) => {
+                    if (response.id === e._id) {
+                        return { ...e, content: "This message has been deleted", isDelete: true };
                     }
-                    return e;
-                }
-                return e
-            });
+                    if (e.parent) {
+                        if (response.id === e.parent._id) {
+                            return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
+                        }
+                    }
+                    return e
+                });
 
-            console.log(newList)
-            dispatch(setListMessage(newList));
-            if (newList[newList.length - 1]._id === response.id) {
-                getListConversation(dispatch)
+                dispatch(setListMessage(newList));
+                if (newList[newList.length - 1]._id === response.id) {
+                    getListConversation(dispatch)
+                }
             }
-        }
+        };
 
         const handleNotification = (data) => {
             if (data) {
@@ -106,7 +102,6 @@ export default function Dashboard() {
                     dispatch(setListConversation(newList))
                     dispatch(setCurrentConversation(data.conversation));
                 } else if (currentConversationRef.current._id !== data.conservationId) {
-                    console.log(3);
                     if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
                         const newList = [data.conversation, ...listConversationRef.current]
                         toast("New conversation!")
@@ -120,7 +115,6 @@ export default function Dashboard() {
         const handleRemoveMember = (data) => {
             if (data.members.includes(currentUserRef.current._id)) {
                 const newList = listConversationRef.current.filter((e) => e._id !== data.conservationId)
-                console.log(newList);
                 toast("Removed from a conversation")
                 dispatch(setListConversation(newList))
                 if (currentConversationRef.current._id === data.conservationId) {

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useRef, useState } from "react";
@@ -20,6 +21,7 @@ export default function Message({ data }) {
     const [selectedImage, setSelectedImage] = useState('');
     const [isShowOption, setShowOption] = useState(false);
     const [option, setOption] = useState('');
+    const [isShowFileViewer, setFileViewer] = useState(false);
 
     const messageRef = useRef(null);
 
@@ -65,6 +67,11 @@ export default function Message({ data }) {
                     if (id === e._id) {
                         return { ...e, content: "This message has been deleted", isDelete: true };
                     }
+                    if (e.parent) {
+                        if (id === e.parent._id) {
+                            return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
+                        }
+                    }
                     return e;
                 });
                 dispatch(setListMessage(newList));
@@ -79,11 +86,24 @@ export default function Message({ data }) {
         setShowModalConfirm(false);
     };
 
-    const handleViewFile = (url) => {
-        if (url) {
-            window.open(url);
-        }
-    }
+    // const handleViewFile = (url) => {
+    //     if (url) {
+    //         window.open(url);
+    //     }
+    // }
+
+    // const OfficeViewer = (url) => {
+    //     console.log(url);
+    //     return (
+    //         <iframe
+    //             src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`}
+    //             width="100%"
+    //             height="600px"
+    //             frameborder="0"
+    //         ></iframe>
+    //     );
+    // };
+
 
     if (data && data.type === 'notification') {
         return (
@@ -119,9 +139,15 @@ export default function Message({ data }) {
                     </div>
                     {data.content !== "This message has been deleted" && data.parent && <div onClick={onClickAttachments} className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary cursor-pointer">
                         <div>{data.parent.name}</div>
-                        {data.parent.content && data.parent.content !== "This message has been deleted" ? <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                        {data.parent.content && !data.parent.isDelete && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
                             {data.parent.content}
-                        </div> : <div><label>This message has been deleted</label></div>}
+                        </div>}
+                        {data.parent.content === "This message has been deleted" && data.parent.isDelete && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {"This message has been deleted"}
+                        </div>}
+                        {/* {data.parent.content === "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {"This message has been deleted"}
+                        </div>} */}
                         {data.parent.attachments && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
                             {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                                 {icons.image} image
@@ -142,6 +168,12 @@ export default function Message({ data }) {
                                     {e.url.split(".").pop() === 'rar' && <BsFileZip size={40} color='purple' />}
                                     {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
 
+                                    <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
+                                </div>
+                            }
+                            {e.type === 'text' &&
+                                <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
+
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
                                 </div>
@@ -158,9 +190,9 @@ export default function Message({ data }) {
                         {data.content !== "This message has been deleted" && data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto w-auto inline-block" key={e.url}>
                             {e.type === 'image' && <div className=" flex justify-center gap-2">
                                 <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer max-w-[20%] max-h-[20%] " />
-                                <div className="flex justify-center items-center gap-2">
+                                {/* <div className="flex justify-center items-center gap-2">
                                     <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                </div>
+                                </div> */}
                             </div>}
                             {e.type === 'application' &&
                                 <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-100 p-1 rounded-lg">
@@ -179,19 +211,19 @@ export default function Message({ data }) {
 
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24">{e.url.split(".").pop()}</label>
-                                    <div className="flex justify-center items-center gap-2">
+                                    {/* <div className="flex justify-center items-center gap-2">
                                         <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip="View">{icons.viewFile}</button>
                                         <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             }
                             {e.type === 'video' && <div className="flex justify-center items-center flex-col gap-2 bg-gray-100 p-2 rounded-lg">
                                 <video controls width={'auto'}>
                                     <source src={e.url} type="video/mp4" />
                                 </video>
-                                <div className="flex justify-center items-center gap-2">
+                                {/* <div className="flex justify-center items-center gap-2">
                                     <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                </div>
+                                </div> */}
                             </div>}
                         </div>))}
 
