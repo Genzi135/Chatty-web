@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable array-callback-return */
 import { useDispatch, useSelector } from "react-redux"
 import icons from "../../../components/shared/icon";
 import { getListConversation, handleGetFriendList, handleGetFriendRequest, handleGetGroupList } from "../../../components/shared/api";
@@ -66,7 +68,7 @@ export default function Contact() {
                 .then((dataSource) => setRequestReceiveList(dataSource.data.data))
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
-            
+
         }
 
         const handleCancel = (data) => {
@@ -95,7 +97,7 @@ export default function Contact() {
     }, [socket])
 
     function searchFriend() {
-        if (search == '') {
+        if (search === '') {
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
             return
@@ -111,7 +113,7 @@ export default function Contact() {
     }
 
     function searchGroup() {
-        if (search == '') {
+        if (search === '') {
             handleGetGroupList()
                 .then((dataSource) => setGroupDataSource(dataSource.data.data))
             return

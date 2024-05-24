@@ -7,7 +7,7 @@ import ChatInput from "./ChatInput";
 import LandingPage from "../../../components/common/LandingPage";
 import Message from "./Message";
 import { formatDate } from "../../../helpers/formatDate";
-import { handleGetFriendList, handleGetFriendRequest } from "../../../components/shared/api";
+import { handleGetFriendList } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatBox() {
@@ -65,20 +65,22 @@ export default function ChatBox() {
     }, [socket])
 
     useEffect(() => {
-        if (currentConversation.type == 'group') {
+        if (currentConversation.type === 'group') {
             setIsFriend(true)
             return
         }
-        else if (Object.keys(currentConversation) == 0) {
+        else if (Object.keys(currentConversation) === 0) {
             return
         }
         handleGetFriendList()
             .then((response) => {
-                let Ids = currentConversation.members.map(e => e._id)
-                if (response.data.data.some(friend => Ids.includes(friend.userId))) {
-                    setIsFriend(true);
-                } else {
-                    setIsFriend(false);
+                if (currentConversation.members) {
+                    let Ids = currentConversation.members.map(e => e._id)
+                    if (response.data.data.some(friend => Ids.includes(friend.userId))) {
+                        setIsFriend(true);
+                    } else {
+                        setIsFriend(false);
+                    }
                 }
             })
     }, [currentConversation])

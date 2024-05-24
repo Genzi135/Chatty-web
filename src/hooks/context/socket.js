@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { createContext, useContext, useEffect } from "react";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";

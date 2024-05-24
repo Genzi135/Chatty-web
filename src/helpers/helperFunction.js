@@ -1,10 +1,10 @@
-import { useSelector } from "react-redux";
+/* eslint-disable array-callback-return */
 
 export function checkExist(list, key) {
     var found = false;
-    list.map(element => {
-        if (element._id == key) found = true;
+    list.map((element) => {
+        if (element._id === key) found = true;
     });
-    
+
     return found;
 }

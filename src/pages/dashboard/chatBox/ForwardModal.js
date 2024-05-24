@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable array-callback-return */
+/* eslint-disable react-hooks/exhaustive-deps */
 import HeaderModal from '../../../components/common/HeaderModal'
 import CustomButton from '../../../components/common/CustomButton'
 import FriendCard from '../../../components/common/FriendCard'
@@ -5,12 +8,10 @@ import ConversationSkeleton from '../../../components/common/ConversationSkeleto
 import { getListConversation, handleForwardMessage, handleGetFriendList } from '../../../components/shared/api'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import ConversationCard from '../../../components/common/ConversationCard'
 import Button from '../../../components/common/Button'
 import { useSocket } from '../../../hooks/context/socket'
 import { setListConversation } from '../../../hooks/redux/reducer'
 import ConversationForwardCard from '../../../components/common/ConversationForward'
-import { SelectedCard } from '../../../components/common/SelectedCard'
 import icons from '../../../components/shared/icon'
 export default function ForwardModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])

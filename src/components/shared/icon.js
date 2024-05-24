@@ -1,4 +1,4 @@
-import { BsArrow90DegDown, BsBoxArrowRight, BsCamera, BsChatDots, BsChatDotsFill, BsCheck, BsCollectionPlay, BsEmojiSmile, BsEyeFill, BsFillCircleFill, BsFillPeopleFill, BsFillPersonCheckFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPaperclip, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonCheck, BsPersonFillDash, BsPersonLinesFill, BsReplyFill, BsStars, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
+import { BsArrow90DegDown, BsBoxArrowRight, BsCamera, BsChatDots, BsChatDotsFill, BsCheck, BsCollectionPlay, BsDownload, BsEmojiSmile, BsEyeFill, BsFillCircleFill, BsFillPeopleFill, BsFillPersonCheckFill, BsFolder, BsGear, BsGearFill, BsImage, BsJournalBookmark, BsJournalBookmarkFill, BsLayoutSidebarInset, BsLayoutSidebarInsetReverse, BsPaperclip, BsPencilSquare, BsPeople, BsPersonAdd, BsPersonCheck, BsPersonFillDash, BsPersonLinesFill, BsReplyFill, BsStars, BsTelephone, BsTrash, BsTrash3, BsX } from "react-icons/bs";
 
 const icons = {
     contact: <BsJournalBookmark size={25} />,
@@ -41,6 +41,8 @@ const icons = {
     xCancel: <BsX size={20} />,
     vCheck: <BsCheck size={20} />,
     addToGroup: <BsPeople size={20} />,
+    viewFile: <BsEyeFill size={15} />,
+    downloadFile: <BsDownload size={15} />
 }
 
 export default icons;

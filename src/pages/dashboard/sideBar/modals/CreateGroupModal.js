@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import { useCallback, useEffect, useState } from "react";
 import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
@@ -27,7 +30,7 @@ export default function CreateGroupModal({ onClose }) {
     const userData = useSelector((state) => state.currentUser);
     const listConversation = useSelector((state) => state.listConversation)
 
-    const {socket} = useSocket()
+    const { socket } = useSocket()
 
     const setAva = (e) => {
         setInputAva(e.target.files[0])
@@ -91,22 +94,26 @@ export default function CreateGroupModal({ onClose }) {
         } else if (option === 'confirm') {
             if (selectedList.length < 2) {
                 setReport("Need more than 2 members")
-            } else if (name == '') {
+            } else if (name === '') {
                 setReport('Name cannot be empty')
             } else {
                 handleCreateGroup(userData._id, selectedList, name, null)
-                .then(() => {
-                    getListConversation(dispatch)
-                        .then((response) => {
-                            console.log(response)
-                            dispatch(setCurrentConversation(response.data.data[0]))
-                            getListMessageByConversation(response.data.data[0]._id, dispatch)
-                        })
-                })
+                    .then(() => {
+                        getListConversation(dispatch)
+                            .then((response) => {
+                                console.log(response)
+                                dispatch(setCurrentConversation(response.data.data[0]))
+                                getListMessageByConversation(response.data.data[0]._id, dispatch)
+                            })
+                    })
+                setInputName('')
+                setOption('')
                 setReport('')
+                setSelectedList([])
+                handleGetFriendList().then(response => setDataSource(response.data.data))
                 onClose('createGroupModal');
             }
-                            setOption('')
+            setOption('')
         }
     }, [option])
 
@@ -135,7 +142,7 @@ export default function CreateGroupModal({ onClose }) {
     }
 
     return (
-        <div className="flex flex-col justify-between rounded-lg bg-white p-5 w-[500px] rounded-xl gap-4 max-h-[600px]">
+        <div className="flex flex-col justify-between bg-white p-5 w-[500px] rounded-xl gap-4 max-h-[600px]">
             <HeaderModal name={"Create group"} />
             {/* <div className="w-full h-auto flex justify-between items-center gap-2">
                 <div className="w-full h-11 bg-pink-100 input input-bordered flex items-center gap-5">

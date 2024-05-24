@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable array-callback-return */
 import axios from "axios";
 import ConversationCard from "../../../components/common/ConversationCard";
 import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
@@ -36,6 +38,7 @@ export default function SubSideBar() {
     }
 
     const onConversationClick = async (e) => {
+        console.log(e);
         getConversationById(e._id)
             .then(response => {
                 dispatch(setCurrentConversation(response))

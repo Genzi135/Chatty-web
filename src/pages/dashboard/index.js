@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useDispatch, useSelector } from "react-redux";
 import Chat from "./chatBox";
 import SideBar from "./sideBar/SideBar";

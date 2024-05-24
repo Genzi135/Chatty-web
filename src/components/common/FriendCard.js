@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import ModalConfirm from "./ModalConfirm";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
 import { handleGetFriendList, handleOpenConversation, handleRemoveFriend } from "../shared/api";
 import { useDispatch, useSelector } from "react-redux";
 import HeaderModal from "./HeaderModal";

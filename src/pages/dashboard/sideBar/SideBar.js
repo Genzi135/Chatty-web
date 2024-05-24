@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { useDispatch, useSelector } from "react-redux";
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";

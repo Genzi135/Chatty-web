@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import InputDate from "../../../components/common/InputDate";
-import {handleCheckOTP, handleLogin, handleRegisterAPI, handleSearchFriendAPI, handleSendOTP} from '../../../components/shared/api';
+import { handleCheckOTP, handleLogin, handleRegisterAPI, handleSearchFriendAPI, handleSendOTP } from '../../../components/shared/api';
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { checkRegex } from "../../../helpers/regex";
@@ -27,7 +28,7 @@ function Register({ state }) {
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
     const onOTPChange = (e) => setOTP(e.target.value);
-    
+
     const dispatch = useDispatch();
 
     function getOTP() {
@@ -38,10 +39,10 @@ function Register({ state }) {
         handleSearchFriendAPI(email)
             .then(response => {
                 console.log(response)
-                if (response.status == 200) {
+                if (response.status === 200) {
                     setReport("Email had been registered")
                 }
-                else if (email == '') {
+                else if (email === '') {
                     setReport("Email cannot be empty")
                 } else {
                     handleSendOTP(email)
@@ -60,7 +61,7 @@ function Register({ state }) {
     const verifyOTP = () => {
         handleCheckOTP(email, OTP)
             .then(response => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     setRegisterDisable(false)
                     setOTPDisable(true)
                     handleRegister()
@@ -98,7 +99,7 @@ function Register({ state }) {
     const handleRegister = () => {
         handleRegisterAPI(email, password, userName, gender, dob)
             .then(response => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     toast("Register successfully")
                 } else toast("Register failed")
             })
@@ -132,14 +133,14 @@ function Register({ state }) {
                         <input type="email" placeholder="Email" value={email} onChange={onEmailChange} className="input input-bordered w-full bg-white" />
                     </div>
                     <div className="flex justify-center items-center">
-                </div>
+                    </div>
                     <div>
                         <label className="text-gray-500">Password</label>
-                        <input type={isShowPassword ? "text" : "password"}  placeholder="Password" value={password} onChange={onPasswordChange} className="input input-bordered w-full bg-white" />
+                        <input type={isShowPassword ? "text" : "password"} placeholder="Password" value={password} onChange={onPasswordChange} className="input input-bordered w-full bg-white" />
                     </div>
                     <div>
                         <label className="text-gray-500">Confirm password</label>
-                        <input type={isShowPassword ? "text" : "password"}  placeholder="Confirm password" value={confirm} onChange={onConfirmChange} className="input input-bordered w-full bg-white" />
+                        <input type={isShowPassword ? "text" : "password"} placeholder="Confirm password" value={confirm} onChange={onConfirmChange} className="input input-bordered w-full bg-white" />
                         <label className="flex items-center p-1">
                             <input type="checkbox" checked={isShowPassword} onClick={() => setShowPassword(!isShowPassword)} />
                             <span className="text-xs">Show password</span>
@@ -147,16 +148,16 @@ function Register({ state }) {
                     </div>
                     <div>
                         <label className="text-gray-500">Name</label>
-                        <input type="text" placeholder="User name" value={userName}  onChange={onUserNameChange} className="input input-bordered w-full bg-white" />
+                        <input type="text" placeholder="User name" value={userName} onChange={onUserNameChange} className="input input-bordered w-full bg-white" />
                     </div>
                     <div className="flex items-center gap-4 mt-1 text-gray-500">
                         <div className="flex items-center gap-2">
                             <label>Male</label>
-                            <input type="radio" name="gender"  className="radio radio-secondary radio-sm" value="male" checked={gender === 'male'} onChange={onGenderChange} />
+                            <input type="radio" name="gender" className="radio radio-secondary radio-sm" value="male" checked={gender === 'male'} onChange={onGenderChange} />
                         </div>
                         <div className="flex items-center gap-2">
                             <label>Female</label>
-                            <input type="radio" name="gender"  className="radio radio-secondary radio-sm" value="female" checked={gender === 'female'} onChange={onGenderChange} />
+                            <input type="radio" name="gender" className="radio radio-secondary radio-sm" value="female" checked={gender === 'female'} onChange={onGenderChange} />
                         </div>
                     </div>
                     <div>
@@ -166,7 +167,7 @@ function Register({ state }) {
                 {report && <div className="text-red-500">{report}</div>}
 
                 <div className="flex justify-center items-center">
-                    <button className="btn btn-secondary text-white"  onClick={() => {switchViewState()}}>
+                    <button className="btn btn-secondary text-white" onClick={() => { switchViewState() }}>
                         REGISTER
                     </button>
                 </div>
@@ -189,7 +190,7 @@ function Register({ state }) {
                 </button>
                 <button className="btn btn-secondary text-white" onClick={verifyOTP}>
                     VERIFY OTP
-                </button>    
+                </button>
             </div>}
         </div>
     );

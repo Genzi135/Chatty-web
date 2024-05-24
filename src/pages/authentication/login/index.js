@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { BASE_URL, handleCheckOTP, handleLogin, handleResetPassword, handleSendOTP } from "../../../components/shared/api";
-import axios from "axios";
+import { handleCheckOTP, handleLogin, handleResetPassword, handleSendOTP } from "../../../components/shared/api";
 import { useDispatch } from "react-redux";
-import { setCurrentUser, setLogin } from "../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
 import { checkRegex } from "../../../helpers/regex";
 
@@ -28,10 +26,6 @@ function Login({ state }) {
     const [confirm, setConfirm] = useState('')
     const [isDisableChangePass, setDisable] = useState(true)
     const [isDisableOTP, setOTPDisable] = useState(true)
-
-    const handleInputEmailf = (e) => {
-        setEmail(e.target.value)
-    }
 
     const handleSetOTP = (e) => {
         setOTP(e.target.value)
@@ -87,7 +81,7 @@ function Login({ state }) {
         if (password === confirm) {
             handleResetPassword(email, password)
                 .then((response) => {
-                    if (response.status == 200) {
+                    if (response.status === 200) {
                         document.getElementById("sendOTP").disabled = false
                         setViewState('LOGIN')
                         setChange(true)
@@ -123,16 +117,16 @@ function Login({ state }) {
         else if (!checkRegex(password, 'password')) {
             setReport('Password need at least 8 characters')
             return
-        }   
+        }
         handleLogin(email, password, dispatch)
             .then(response => {
-                if (response.status != 200) {
+                if (response.status !== 200) {
                     setReport("Incorrect email or password")
                 } else {
                     setReport("")
                 }
-            }) 
-        }
+            })
+    }
 
     return (
         <div className="card shadow-2xl p-8">
@@ -198,7 +192,7 @@ function Login({ state }) {
                             <input type="text" className={`grow ${isDisableOTP && 'input-disabled'}`} placeholder="OTP" disabled={isDisableOTP} onChange={handleSetOTP} />
                         </label>
                     </div>
-                    <button className="btn btn-secondary text-white" id="verifyOTP" value={OTP} disabled={isDisableOTP} onClick={() => handleVerifyOTP() }>Verify OTP</button>
+                    <button className="btn btn-secondary text-white" id="verifyOTP" value={OTP} disabled={isDisableOTP} onClick={() => handleVerifyOTP()}>Verify OTP</button>
                     <div>
                         <label className="text-gray-500">Password</label>
                         <label className="input input-bordered flex items-center gap-2 bg-white">

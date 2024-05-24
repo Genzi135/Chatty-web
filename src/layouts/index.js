@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch, useSelector } from "react-redux"
 import Dashboard from "../pages/dashboard"
 import Authentication from "../pages/authentication"

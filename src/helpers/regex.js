@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 const emailRegex = /@gmail.com$/;
 const passwordRegex = /.{8,}/;
 

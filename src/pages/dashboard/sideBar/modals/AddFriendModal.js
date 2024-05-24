@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import Button from "../../../../components/common/Button";
 import HeaderModal from "../../../../components/common/HeaderModal";
@@ -16,7 +18,7 @@ export default function AddFriendModal({ onClose }) {
     const [report, setReport] = useState('')
     const [request, setRequest] = useState({})
 
-    const {socket} = useSocket()
+    const { socket } = useSocket()
 
     const setInputEmail = (e) => {
         setEmail(e.target.value)
@@ -40,7 +42,7 @@ export default function AddFriendModal({ onClose }) {
         }
         handleSearchFriendAPI(email)
             .then((response) => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     handleSearchFriendID(response.data.data._id)
                         .then(response => {
                             setDataSource(response.data.data)

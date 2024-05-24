@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import HeaderModal from "../../../../components/common/HeaderModal";
 import icons from "../../../../components/shared/icon";
@@ -6,7 +7,7 @@ import InputDate from "../../../../components/common/InputDate";
 import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../../helpers/formatDate";
 import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile, handleChangePassword } from "../../../../components/shared/api";
-import { setCurrentUser, setViewState } from "../../../../hooks/redux/reducer";
+import { setCurrentUser } from "../../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
 
 export default function ProfileModal() {
@@ -54,7 +55,7 @@ export default function ProfileModal() {
         if (newPassword === confirmPassword) {
             handleChangePassword(password, newPassword)
                 .then(response => {
-                    if (response.status == 200) {
+                    if (response.status === 200) {
                         toast("Password change successfully")
                     }
                     else toast("Password change failed")
@@ -67,7 +68,7 @@ export default function ProfileModal() {
     function checkOldPassword() {
         checkLogin(userData.email, password)
             .then(response => {
-                if (response.status == 200)
+                if (response.status === 200)
                     setDisableChangePass(false)
                 else setDisableChangePass(true)
             })
@@ -76,7 +77,7 @@ export default function ProfileModal() {
     function handleChangeAvatar() {
         handleUpdateAvatar(userData._id, avatar)
             .then(response => {
-                if (response.status == 200) {
+                if (response.status === 200) {
                     toast("Change avatar successfully")
                     handleGetMe().then(response => dispatch(setCurrentUser(response.data.data)))
                 }
@@ -90,7 +91,7 @@ export default function ProfileModal() {
             setViewStateProfile('profile')
             setOption('')
         } else if (option === 'confirm') {
-            handleUpdateProfile(userName, gender, dob).then((response) => { if (response.status == 200) toast("Change profile successfully"); else toast("Change profile failed")});
+            handleUpdateProfile(userName, gender, dob).then((response) => { if (response.status === 200) toast("Change profile successfully"); else toast("Change profile failed") });
             handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
             setViewStateProfile("profile")
             setOption('')

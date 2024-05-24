@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable array-callback-return */
 import { useDispatch, useSelector } from "react-redux"
 import Avatar from "../../../components/common/Avatar";
 import icons from "../../../components/shared/icon";
@@ -60,11 +63,11 @@ export default function ConversationDrawer() {
     };
 
     useEffect(() => {
-        if (currentConversation.type == 'group') {
+        if (currentConversation.type === 'group') {
             setIsFriend(true)
             return
         }
-        else if (Object.keys(currentConversation) == 0) {
+        else if (Object.keys(currentConversation) === 0) {
             return
         }
         handleGetFriendList()
@@ -108,11 +111,11 @@ export default function ConversationDrawer() {
     const dispatch = useDispatch()
 
     useEffect(() => {
-        if (currentConversation.type == 'group') {
+        if (currentConversation.type === 'group') {
             setIsFriend(true)
             return
         }
-        else if (Object.keys(currentConversation) == 0) {
+        else if (Object.keys(currentConversation) === 0) {
             return
         }
         handleGetFriendList()
@@ -299,7 +302,7 @@ export default function ConversationDrawer() {
     }
 
     function searchGroup() {
-        if (search == "") {
+        if (search === "") {
             handleGetGroupList()
                 .then(response => {
                     let newList = []
@@ -352,11 +355,11 @@ export default function ConversationDrawer() {
     }
 
     function removeFriend() {
-        if (currentConversation.type == 'private') {
+        if (currentConversation.type === 'private') {
             let Ids = currentConversation.members.map(member => member._id)
             console.log(currentConversation.members, currentUser._id)
             Ids.map(Id => {
-                if (Id != currentUser._id) {
+                if (Id !== currentUser._id) {
                     console.log(Id)
                     handleRemoveFriend(Id)
                 }
@@ -375,6 +378,7 @@ export default function ConversationDrawer() {
         }
 
         const handleRemove = (data) => {
+            console.log(data);
             if (currentConversationRef.current.type === 'private') {
 
                 if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
@@ -394,7 +398,7 @@ export default function ConversationDrawer() {
 
     function sendFriendRequest() {
         currentConversation.members.map(member => {
-            if (member._id != currentUser._id) {
+            if (member._id !== currentUser._id) {
                 handleSendFriendRequest(member._id)
             }
         })
@@ -501,36 +505,63 @@ export default function ConversationDrawer() {
                             <div key={props._id} >
                                 <div className="p-2 w-auto">
                                     {currentConversation && currentConversation.leaders.map((e) => (
-                                        e._id === props._id && (<div key={e._id} className="flex justify-start items-center gap-2">
-                                            <label className="text-yellow-500">{icons.leaderStar}</label>
-                                            <label className="text-black">Leader</label>
+                                        e._id === props._id ? (<div key={e._id} className="flex flex-col justify-start items-center gap-2 bg-secondary p-2 rounded-lg">
+                                            <div className="flex justify-start items-center gap-2">
+                                                <label className="text-yellow-500">{icons.leaderStar}</label>
+                                                <label className="text-black">Leader</label>
+                                            </div>
+                                            <div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
+                                                <div className="avatar">
+                                                    <div className="avatar w-12 h-12 rounded-full bg-black">
+                                                        <img src={props.avatar} alt="avatar" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex justify-between w-full">
+                                                    <div className="flex flex-col justify-around w-full gap-2">
+                                                        <label className="text-black text-base font-semibold text-ellipsis whitespace-nowrap overflow-hidden w-32">
+                                                            {props.name ? props.name : ""}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="View profile" onClick={() => { setUserSelected(props); document.getElementById('userProfile').showModal() }}>
+                                                        {icons.viewProfile}
+                                                    </button>
+                                                </div>
+                                                {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
+                                                    e._id === currentUser._id && (<div key={e._id}>
+                                                        <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
+                                                            onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
+                                                    </div>)
+                                                ))}
+                                            </div>
+                                        </div>) : (<div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
+                                            <div className="avatar">
+                                                <div className="avatar w-12 h-12 rounded-full bg-black">
+                                                    <img src={props.avatar} alt="avatar" />
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between w-full">
+                                                <div className="flex flex-col justify-around w-full gap-2">
+                                                    <label className="text-black text-base font-semibold text-ellipsis whitespace-nowrap overflow-hidden w-32">
+                                                        {props.name ? props.name : ""}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="View profile" onClick={() => { setUserSelected(props); document.getElementById('userProfile').showModal() }}>
+                                                    {icons.viewProfile}
+                                                </button>
+                                            </div>
+                                            {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
+                                                e._id === currentUser._id && (<div key={e._id}>
+                                                    <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
+                                                        onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
+                                                </div>)
+                                            ))}
                                         </div>)
                                     ))}
-                                    <div className={`flex justify-start items-center p-4 bg-white rounded-lg shadow-sm gap-3 w-full hover:bg-pink-100`}>
-                                        <div className="avatar">
-                                            <div className="avatar w-12 h-12 rounded-full bg-black">
-                                                <img src={props.avatar} alt="avatar" />
-                                            </div>
-                                        </div>
-                                        <div className="flex justify-between w-full">
-                                            <div className="flex flex-col justify-around w-full gap-2">
-                                                <label className="text-black text-base font-semibold text-ellipsis whitespace-nowrap overflow-hidden w-32">
-                                                    {props.name ? props.name : ""}
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="View profile" onClick={() => { setUserSelected(props); document.getElementById('userProfile').showModal() }}>
-                                                {icons.viewProfile}
-                                            </button>
-                                        </div>
-                                        {currentConversation && currentConversation.leaders && currentConversation.leaders.map((e) => (
-                                            e._id === currentUser._id && (<div key={e._id}>
-                                                <button className="btn btn-sm btn-outline btn-secondary tooltip tooltip-left" data-tip="Change leader"
-                                                    onClick={() => { openModal(props._id) }}>{icons.changeLeader}</button>
-                                            </div>)
-                                        ))}
-                                    </div>
+
                                 </div>
                             </div>
                         ))}
@@ -601,7 +632,7 @@ export default function ConversationDrawer() {
                         }
                     </div>
                     <div></div>
-                    <div>{memberList && memberList.map(e => e._id != currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
+                    <div>{memberList && memberList.map(e => e._id !== currentUser._id ? (<div key={e._id} onClick={() => onRemoveSelectedClick(e)}><FriendCard props={e} /></div>) : <div></div>)}</div>
 
                     <div className="flex justify-end items-center gap-2 mt-5">
                         <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
@@ -665,7 +696,7 @@ export default function ConversationDrawer() {
                     })}
                     {currentConversation.leaders.map((e) => {
                         if (e._id !== currentUser._id) {
-                            return (<div className="flex justify-end items-center gap-2 mt-5">
+                            return (<div key={e._id} className="flex justify-end items-center gap-2 mt-5">
                                 <form method="dialog"><button className="btn btn-outline">Cancel</button></form>
                                 <button className="btn btn-secondary" onClick={() => { confirmLeaveGroup() }}>Confirm</button>
                             </div>)

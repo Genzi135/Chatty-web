@@ -1,11 +1,9 @@
+/* eslint-disable no-unreachable */
+/* eslint-disable no-useless-concat */
+/* eslint-disable no-unused-vars */
 import axios from 'axios';
-import { CgLayoutGrid } from 'react-icons/cg';
-import { useDispatch } from 'react-redux';
 import { addConversation, addMessage, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
-import { useEffect } from 'react';
-import SubSideBar from '../../pages/dashboard/sideBar/SubSideBar';
 import { checkExist } from '../../helpers/helperFunction';
-import ConversationSkeleton from '../common/ConversationSkeleton';
 
 export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
 

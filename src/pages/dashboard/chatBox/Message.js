@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useCallback, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import icons from "../../../components/shared/icon";
 import { formatTime } from "../../../helpers/formatDate";
 import { setListMessage, setReplyMessage, setSelectedMessage } from "../../../hooks/redux/reducer";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import ForwardModal from "./ForwardModal";
-import ModalConfirm from "../../../components/common/ModalConfirm";
 import { getListConversation, handleDeleteMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 import HeaderModal from "../../../components/common/HeaderModal";
-import Button from "../../../components/common/Button";
 
 export default function Message({ data }) {
     const currentUser = useSelector((state) => state.currentUser);
@@ -79,6 +79,12 @@ export default function Message({ data }) {
         setShowModalConfirm(false);
     };
 
+    const handleViewFile = (url) => {
+        if (url) {
+            window.open(url);
+        }
+    }
+
     if (data && data.type === 'notification') {
         return (
             <div className="flex justify-center items-center gap-2 text-black mb-2 mt-2">
@@ -113,7 +119,10 @@ export default function Message({ data }) {
                     </div>
                     {data.content !== "This message has been deleted" && data.parent && <div onClick={onClickAttachments} className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary cursor-pointer">
                         <div>{data.parent.name}</div>
-                        {data.parent.attachments && data.parent.attachments.length > 0 && data.parent.content !== "This message has been deleted" ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
+                        {data.parent.content && data.parent.content !== "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {data.content}
+                        </div>}
+                        {data.parent.attachments && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
                             {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                                 {icons.image} image
                                 {/* <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" /> */}
@@ -142,12 +151,17 @@ export default function Message({ data }) {
                                     <source src={e.url} type="video/mp4" />
                                 </video>
                             </div>}
-                        </div>))) : (<div><label>This message has been deleted</label></div>)}
+                        </div>))) : (<div><label></label></div>)}
 
                     </div>}
                     <div className="flex flex-col gap-2">
-                        {data.content !== "This message has been deleted" && data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto inline-block" key={e.url}>
-                            {e.type === 'image' && <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" />}
+                        {data.content !== "This message has been deleted" && data.attachments && data.attachments.length > 0 && data.attachments.map(e => (<div className="h-auto w-auto inline-block" key={e.url}>
+                            {e.type === 'image' && <div className=" flex justify-center gap-2">
+                                <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer max-w-[20%] max-h-[20%] " />
+                                <div className="flex justify-center items-center gap-2">
+                                    <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
+                                </div>
+                            </div>}
                             {e.type === 'application' &&
                                 <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-100 p-1 rounded-lg">
                                     {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
@@ -165,12 +179,19 @@ export default function Message({ data }) {
 
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24">{e.url.split(".").pop()}</label>
+                                    <div className="flex justify-center items-center gap-2">
+                                        <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip="View">{icons.viewFile}</button>
+                                        <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
+                                    </div>
                                 </div>
                             }
-                            {e.type === 'video' && <div>
+                            {e.type === 'video' && <div className="flex justify-center items-center flex-col gap-2 bg-gray-100 p-2 rounded-lg">
                                 <video controls width={'auto'}>
                                     <source src={e.url} type="video/mp4" />
                                 </video>
+                                <div className="flex justify-center items-center gap-2">
+                                    <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
+                                </div>
                             </div>}
                         </div>))}
 

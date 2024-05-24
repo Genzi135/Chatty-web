@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import icons from "../../../components/shared/icon";
 import { setReplyMessage } from "../../../hooks/redux/reducer";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
-import { handleReplyFile, handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
+import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatInput() {
