@@ -119,7 +119,7 @@ function Register({ state }) {
                     toast("Register successfully")
                 } else toast("Register failed")
             })
-        handleLogin(email, password, dispatch);
+            .then(() => handleLogin(email, password, dispatch));
 
         setEmail('')
         setPassword('')
