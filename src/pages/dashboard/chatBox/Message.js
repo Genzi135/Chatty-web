@@ -127,6 +127,7 @@ export default function Message({ data }) {
                 ref={messageRef}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
+                onClick={() => { console.log(data) }}
                 className={`${data.sender && currentUser._id === data.sender._id ? 'flex h-[auto] flex-row-reverse mb-2 pr-2' : 'h-[auto] flex mb-2 pl-2'}`}>
                 {currentUser._id === data.sender._id ? <div>{""}</div> : <div className="avatar">
                     <div className="avatar rounded-full w-8 h-8 mr-2">
@@ -148,7 +149,7 @@ export default function Message({ data }) {
                         {/* {data.parent.content === "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
                             {"This message has been deleted"}
                         </div>} */}
-                        {data.parent.attachments && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
+                        {data.parent.attachments && data.parent.content !== "This message has been deleted" && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
                             {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                                 {icons.image} image
                                 {/* <img onClick={() => showSelectedImage(e.url)} src={e.url} style={{}} alt="" className="cursor-pointer" /> */}
@@ -173,7 +174,6 @@ export default function Message({ data }) {
                             }
                             {e.type === 'text' &&
                                 <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
-
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
                                 </div>
@@ -195,7 +195,7 @@ export default function Message({ data }) {
                                 </div> */}
                             </div>}
                             {e.type === 'application' &&
-                                <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-100 p-1 rounded-lg">
+                                <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
                                     {e.url.split(".").pop() === 'docx' && <BsFiletypeDocx size={40} color='blue' />}
                                     {e.url.split(".").pop() === 'doc' && <BsFiletypeDoc size={40} color='blue' />}
 
@@ -209,12 +209,13 @@ export default function Message({ data }) {
                                     {e.url.split(".").pop() === 'rar' && <BsFileZip size={40} color='purple' />}
                                     {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
 
+                                    <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
+                                </div>
+                            }
+                            {e.type === 'text' &&
+                                <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
-                                    <label className="text-ellipsis whitespace-nowrap w-24">{e.url.split(".").pop()}</label>
-                                    {/* <div className="flex justify-center items-center gap-2">
-                                        <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip="View">{icons.viewFile}</button>
-                                        <button className="btn btn-sm btn-outline btn-secondary tooltip" data-tip='Download'>{icons.downloadFile}</button>
-                                    </div> */}
+                                    <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
                                 </div>
                             }
                             {e.type === 'video' && <div className="flex justify-center items-center flex-col gap-2 bg-gray-100 p-2 rounded-lg">
