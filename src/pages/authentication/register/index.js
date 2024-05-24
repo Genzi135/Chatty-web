@@ -98,7 +98,7 @@ function Register({ state }) {
     // }
 
     const handleRegister = () => {
-        if (email || password || userName || gender || dob) {
+        if (!(email || password || userName || gender || dob)) {
             setReport("Please fill all field")
             return
         }
