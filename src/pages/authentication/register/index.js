@@ -66,7 +66,6 @@ function Register({ state }) {
                 if (response.status === 200) {
                     setRegisterDisable(false)
                     setOTPDisable(true)
-                    handleRegister()
                 } else {
                     setReport("Incorrect OTP")
                 }

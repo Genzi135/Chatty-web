@@ -5,7 +5,7 @@ import axios from 'axios';
 import { addConversation, addMessage, setCurrentConversation, setCurrentUser, setListConversation, setListMessage, setLogin, setViewState } from '../../hooks/redux/reducer';
 import { checkExist } from '../../helpers/helperFunction';
 
-export const BASE_URL = "http://ec2-13-212-80-57.ap-southeast-1.compute.amazonaws.com:8555";
+export const BASE_URL = "http://ec2-54-255-220-169.ap-southeast-1.compute.amazonaws.com:8555";
 
 export let userToken = JSON.parse(localStorage.getItem("userToken"));
 
@@ -611,7 +611,7 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     files: message.attachments
                 }
             })
-            
+            getListConversation(dispatch)
             getListMessageByConversation(conversation._id, dispatch)
             return response.data.data
         } else {
