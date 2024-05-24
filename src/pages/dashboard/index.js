@@ -68,29 +68,29 @@ export default function Dashboard() {
         };
 
         const handleDeleteMessage = (response) => {
-            // console.log(listMessageRef)
-            // const newList = listMessageRef.current.map((e) => {
-            //     if (response.id === e._id) {
-            //         return { ...e, content: "This message has been deleted", isDelete: true };
-            //     }
+            console.log(listMessageRef)
+            const newList = listMessageRef.current.map((e) => {
+                if (response.id === e._id) {
+                    return { ...e, content: "This message has been deleted", isDelete: true };
+                }
 
-            //     if (e.parent) {
-            //         console.log(response)
-            //         console.log(e.parent._id === response.id)
-            //         if (e.parent._id === response._id) {
-            //             return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true}}
-            //         }
-            //         return e;
-            //     }
-            //     return e
-            // });
+                if (e.parent) {
+                    console.log(response)
+                    console.log(e.parent._id === response.id)
+                    if (e.parent._id === response._id) {
+                        return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true}}
+                    }
+                    return e;
+                }
+                return e
+            });
 
-            // console.log(newList)
-            // dispatch(setListMessage(newList));
-            // if (newList[newList.length - 1]._id === response.id) {
-            //     getListConversation(dispatch)
+            console.log(newList)
+            dispatch(setListMessage(newList));
+            if (newList[newList.length - 1]._id === response.id) {
+                getListConversation(dispatch)
             }
-        };
+        }
 
         const handleNotification = (data) => {
             if (data) {

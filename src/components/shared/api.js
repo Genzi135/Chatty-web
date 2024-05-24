@@ -283,6 +283,7 @@ export async function getListMessageByConversation(id, dispatch) {
             method: 'GET',
             headers: { Authorization: `Bearer ${userToken}` }
         })
+        console.log(response)
         dispatch(setListMessage(response.data.data.reverse()))
     } catch (error) {
         return error;
@@ -572,6 +573,7 @@ export async function handleReplyMessage(conversation, message, inputMessage, di
             }
         });
         dispatch(addMessage(response.data.data))
+        getListConversation(dispatch)
         return response.data.data
     } catch (err) {
         return err
@@ -609,6 +611,8 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     files: message.attachments
                 }
             })
+            getListConversation(dispatch)
+            getListMessageByConversation(conversation._id, dispatch)
             return response.data.data
         } else {
             const response = await axios({
@@ -619,6 +623,8 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     content: message.content
                 }
             })
+            getListConversation(dispatch)
+            getListMessageByConversation(conversation._id, dispatch)
             return response.data.data
         }
 
