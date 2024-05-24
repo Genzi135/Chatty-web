@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
 import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
+import { toast } from "react-toastify";
 
 export default function ChatInput() {
     const replyMessage = useSelector((state) => state.replyMessage);
@@ -117,13 +118,14 @@ export default function ChatInput() {
                         conversation: currentConversation
                     })
                 })
-        }
+        } else toast("Nothing to send")
 
         document.getElementById('chatInput').value = ''
         setInputFiles(null)
         setInputVideos(null)
         setInputImages(null)
         setShowImages(null)
+        setInputMessage('')
     }
 
     const keyPressed = (e) => {

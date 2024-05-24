@@ -1,6 +1,6 @@
 import { useState } from "react";
 import InputDate from "../../../components/common/InputDate";
-import { handleCheckOTP, handleLogin, handleRegisterAPI, handleVerifyEmail } from '../../../components/shared/api';
+import {handleCheckOTP, handleLogin, handleRegisterAPI, handleVerifyEmail} from '../../../components/shared/api';
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { checkRegex } from "../../../helpers/regex";
@@ -28,7 +28,7 @@ function Register({ state }) {
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
     const onOTPChange = (e) => setOTP(e.target.value);
-
+    
     const dispatch = useDispatch();
 
     function getOTP() {
@@ -121,7 +121,7 @@ function Register({ state }) {
     };
 
     return (
-        <div className="card shadow-2xl p-8">
+        <div className="card shadow-2xl p-8 w-100">
             {viewState === 'REGISTER' && <div className="flex flex-col text-black justify-between gap-4">
                 <div className="flex justify-center items-center font-medium text-2xl">
                     <h1>REGISTER</h1>
@@ -147,7 +147,7 @@ function Register({ state }) {
                     <div className="flex justify-center items-center">
                         <button className="btn btn-secondary text-white" disabled={OTPDisable} onClick={verifyOTP}>
                             VERIFY OTP
-                        </button>
+                        </button> 
                     </div>
                     <div>
                         <label className="text-gray-500">Password</label>
@@ -179,10 +179,10 @@ function Register({ state }) {
                         <InputDate setDob={setDob} />
                     </div>
                 </div>
-                {report && <div className="text-red-500 whitespace">{report}</div>}
+                {report && <div className="text-red-500 whitespace-pre-wrap break-words w-80">{report}</div>}
 
                 <div className="flex justify-center items-center">
-                    <button className="btn btn-secondary text-white" disabled={registerDisable} onClick={() => { handleRegister() }}>
+                    <button className="btn btn-secondary text-white" disabled={registerDisable} onClick={() => {handleRegister()}}>
                         REGISTER
                     </button>
                 </div>
@@ -205,7 +205,7 @@ function Register({ state }) {
                 </button>
                 <button className="btn btn-secondary text-white" onClick={verifyOTP}>
                     VERIFY OTP
-                </button>
+                </button>    
             </div>}
         </div>
     );

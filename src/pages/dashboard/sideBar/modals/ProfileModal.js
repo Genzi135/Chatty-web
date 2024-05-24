@@ -9,6 +9,7 @@ import { formatDate } from "../../../../helpers/formatDate";
 import { checkLogin, handleGetMe, handleUpdateAvatar, handleUpdateProfile, handleChangePassword } from "../../../../components/shared/api";
 import { setCurrentUser } from "../../../../hooks/redux/reducer";
 import { toast } from "react-toastify";
+import { checkRegex } from "../../../../helpers/regex";
 
 export default function ProfileModal() {
 
@@ -27,6 +28,8 @@ export default function ProfileModal() {
     const [isDisableChangePass, setDisableChangePass] = useState(true)
     //current User data
     const userData = useSelector((state) => state.currentUser);
+
+    const [report, setReport] = useState('')
 
     const onUserNameChange = (e) => setUserName(e.target.value);
     const onGenderChange = (e) => setGender(e.target.value);
@@ -52,17 +55,29 @@ export default function ProfileModal() {
     }
 
     function handlePasswordChange() {
+        if (!password || !confirmPassword) {
+            setReport("Please fill all field")
+            return
+        }
+
+        if (!checkRegex(newPassword, "password")) {
+            setReport("Password need to have at least 8 characters")
+            return
+        }
+
         if (newPassword === confirmPassword) {
             handleChangePassword(password, newPassword)
                 .then(response => {
                     if (response.status === 200) {
                         toast("Password change successfully")
+                        setReport("")
+                        setDisableChangePass(true)
                     }
-                    else toast("Password change failed")
+                    else {toast("Password change failed"); setDisableChangePass(true)}
                     setViewStateProfile('profile')
                 })
             return
-        }
+        } else setReport("New password does not match")
     }
 
     function checkOldPassword() {
@@ -70,7 +85,7 @@ export default function ProfileModal() {
             .then(response => {
                 if (response.status === 200)
                     setDisableChangePass(false)
-                else setDisableChangePass(true)
+                else {setDisableChangePass(true); setReport("Incorrect password")}
             })
     }
 
@@ -90,7 +105,12 @@ export default function ProfileModal() {
         if (option === 'cancel') {
             setViewStateProfile('profile')
             setOption('')
+            setReport('')
         } else if (option === 'confirm') {
+            if (!userName || !gender || !dob) {
+                setReport("Please fill all field")
+                return
+            }
             handleUpdateProfile(userName, gender, dob).then((response) => { if (response.status === 200) toast("Change profile successfully"); else toast("Change profile failed") });
             handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
             setViewStateProfile("profile")
@@ -167,6 +187,7 @@ export default function ProfileModal() {
                         <InputDate setDob={setDob} />
                     </div>
                 </div>
+                {report && <div className="text-red-500 whitespace-pre-wrap break-words w-80">{report}</div>}
                 <Button value={setOption} />
             </div>}
             {viewStateProfile === 'changeAvatar' && <div>
@@ -216,9 +237,10 @@ export default function ProfileModal() {
                     <label>Confirm password</label>
                     <input type="password" placeholder="Confirm password" className={`input input-bordered input-secondary w-full  ${isDisableChangePass && 'input-disabled'}`}
                         onChange={(e) => { onConfirmPasswordChange(e) }}
-                        d disabled={isDisableChangePass}
+                        disabled={isDisableChangePass}
                     />
                 </div>
+                {report && <div className="text-red-500 whitespace-pre-wrap break-words w-80">{report}</div>}
                 <div className="flex justify-end items-center mt-2 gap-2">
                     <button className="btn btn-outline" onClick={() => { setPassword(''); setNewPassword(''); setConfirmPassword(''); setViewStateProfile('profile') }}>Cancel</button>
                     <button className="btn btn-secondary" onClick={() => { handlePasswordChange() }}>Confirm</button>
