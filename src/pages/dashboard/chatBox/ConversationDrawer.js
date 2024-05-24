@@ -319,15 +319,16 @@ export default function ConversationDrawer() {
                     })
                     setGroupList(newList)
                 })
+        } else {
+            let found = []
+            groupList.map(group => {
+                if (group.name.includes(search))
+                    found.push(group)
+            })
+            setGroupList(found)
+            setSearch("")
+            document.getElementById('searchGroup').value = ""
         }
-        let found = []
-        groupList.map(group => {
-            if (group.name.includes(search))
-                found.push(group)
-        })
-        setGroupList(found)
-        setSearch("")
-        document.getElementById('searchGroup').value = ""
     }
 
     useEffect(() => {
