@@ -1,9 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import icons from "../../../components/shared/icon";
-import { setReplyMessage } from "../../../hooks/redux/reducer";
-import { useEffect, useState } from "react";
+import { setListConversation, setReplyMessage } from "../../../hooks/redux/reducer";
+import { useState } from "react";
 import { BsFileZip, BsFiletypeDoc, BsFiletypeDocx, BsFiletypePdf, BsFiletypePpt, BsFiletypePptx, BsFiletypeTxt, BsFiletypeXls, BsFiletypeXlsx } from "react-icons/bs";
-import { handleReplyFile, handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
+import { handleReplyMessage, handleSendFile, handleSendMessage } from "../../../components/shared/api";
 import { useSocket } from "../../../hooks/context/socket";
 
 export default function ChatInput() {
@@ -98,21 +98,37 @@ export default function ChatInput() {
                         conversation: currentConversation
                     })
                 })
+                .then(() => {
+                    if (inputMessage !== '') {
+                        handleSendMessage(listConversation, currentConversation, inputMessage, dispatch)
+                            .then(response => {
+                                socket.emit("message:send", {
+                                    ...response,
+                                    conversation: currentConversation
+                                })
+                            })
+                        }
+                })
         } else if (inputMessage !== '') {
             handleSendMessage(listConversation, currentConversation, inputMessage, dispatch)
                 .then(response => {
-                    console.log(response)
                     socket.emit("message:send", {
                         ...response,
                         conversation: currentConversation
                     })
                 })
-        }
+            }
+
         document.getElementById('chatInput').value = ''
         setInputFiles(null)
         setInputVideos(null)
         setInputImages(null)
         setShowImages(null)
+    }
+
+    const keyPressed = (e) => {
+        if (e.key === 'Enter')
+            SendMessage()
     }
 
     return (
@@ -250,7 +266,7 @@ export default function ChatInput() {
             </div>
             <div className="flex justify-between items-center pt-2 pb-2 gap-2 p-5">
                 <div className="w-full h-auto">
-                    <input className="input w-full input-secondary" id='chatInput' onChange={(setInput)} />
+                    <input className="input w-full input-secondary" id='chatInput' onChange={(setInput)} onKeyDown={keyPressed}/>
                 </div>
                 <div className="btn btn-secondary" onClick={() => SendMessage()}>
                     <label>SEND</label>

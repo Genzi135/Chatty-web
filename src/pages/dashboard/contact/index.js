@@ -27,7 +27,6 @@ export default function Contact() {
     }
 
     useEffect(() => {
-        console.log(isRefresh)
         if (isRefresh) {
             handleGetFriendList()
                 .then((dataSource) => setFriendDataSource(dataSource.data.data))
@@ -44,7 +43,6 @@ export default function Contact() {
             .then((dataSource) => setRequestReceiveList(dataSource.data.data))
     }, [])
 
-    console.log(requestReceiveList)
 
     useEffect(() => {
 

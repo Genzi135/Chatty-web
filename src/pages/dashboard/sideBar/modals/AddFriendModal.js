@@ -61,7 +61,6 @@ export default function AddFriendModal({ onClose }) {
             handleCancelFriendRequest(request._id)
                 .then(() => { searchFriend(); })
         } else if (value === 'confirm') {
-            console.log(dataSource._id)
             handleSendFriendRequest(dataSource._id)
                 .then((response) => {
                     searchFriend()

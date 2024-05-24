@@ -5,22 +5,24 @@ import HeaderModal from "../../../components/common/HeaderModal";
 import { getConversationById, getListConversation, handleAddMember, handleChangeGroupAvatar, handleChangeGroupName, handleDisbandGroup, handleGetFriendList, handleGetGroupList, handleLeaveGroup, handleRemoveFriend, handleRemoveMemeber, handleSearchFriendID, handleSendFile, handleSendFriendRequest, handleTransferGroupLeader, handleUpdateGroupAvatar } from "../../../components/shared/api";
 import { useEffect, useRef, useState } from "react";
 import FriendCard from "../../../components/common/FriendCard";
-import { setCurrentConversation, setListConversation, setSelectedUser } from "../../../hooks/redux/reducer";
-import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
-import { current } from "@reduxjs/toolkit";
+import { setCurrentConversation, setListConversation } from "../../../hooks/redux/reducer";
+// import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
+// import { current } from "@reduxjs/toolkit";
 import Chatty from "../../../components/common/Chatty";
 import ConversationCard from "../../../components/common/ConversationCard";
 import { formatDate } from "../../../helpers/formatDate";
-import { toast } from "react-toastify";
-import CustomButton from "../../../components/common/CustomButton";
+// import { toast } from "react-toastify";
+// import CustomButton from "../../../components/common/CustomButton";
 import { useSocket } from "../../../hooks/context/socket";
+import ConversationSkeleton from "../../../components/common/ConversationSkeleton";
+import { toast } from "react-toastify";
 
 export default function ConversationDrawer() {
     const currentConversation = useSelector(state => state.currentConversation)
     const currentUser = useSelector(state => state.currentUser);
     const listConversation = useSelector(state => state.listConversation);
     const [dataSource, setDataSource] = useState([])
-    const [isRefresh, setRefresh] = useState(false);
+    // const [isRefresh, setRefresh] = useState(false);
     const [addMemberList, setAddMemberList] = useState([])
     const [selectedList, setSelectedAddList] = useState([])
     const [removeList, setRemoveList] = useState([])
@@ -325,6 +327,10 @@ export default function ConversationDrawer() {
         document.getElementById('searchGroup').value = ""
     }
 
+    useEffect(() => {
+        searchGroup();
+    }, [currentConversation])
+
     function searchFriend() {
         if (search === '') {
             check()
@@ -375,10 +381,33 @@ export default function ConversationDrawer() {
         }
 
         const handleRemove = (data) => {
-            if (currentConversationRef.current.type === 'private') {
+            console.log(data)
+            // if (currentConversationRef.current.type === 'private') {
 
-                if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
-                    setIsFriend(false)
+            //     let currentConversationIds = []
+            //     currentConversationRef.current.members.map(member => {
+            //         currentConversationIds.push(member._id)
+            //     })
+
+            //     let comparer = [data.friendRequest.recipent, data.friendRequest.requester]
+
+            //     currentConversationIds = currentConversationIds.slice().sort()
+            //     comparer = comparer.slice().sort()
+
+            //     if (JSON.stringify(currentConversationIds) !== JSON.stringify(comparer)) {
+            //         return
+            //     }
+
+            //     // if (currentConversationRef.current.members.some((e) => e._id === data.userId)) {
+            //     //     setIsFriend(false)
+            //     // }
+            // }
+
+            if (currentConversationRef.current.type === 'private') {
+                if (data.friendRequest.recipient && data.friendRequest.requester) {
+                    if ((currentConversationRef.current.members.some((e) => (e._id === data.friendRequest.recipient))) && (currentConversationRef.current.members.some((e) => e._id === data.friendRequest.requester))) {
+                        setIsFriend(false)
+                    }
                 }
             }
         }
@@ -396,6 +425,7 @@ export default function ConversationDrawer() {
         currentConversation.members.map(member => {
             if (member._id != currentUser._id) {
                 handleSendFriendRequest(member._id)
+                toast("A friend request had been sent")
             }
         })
     }
@@ -407,7 +437,7 @@ export default function ConversationDrawer() {
                     <Avatar link={currentConversation.image} />
                     <label>{currentConversation.name}</label>
                     <div className="mt-4 flex justify-center items-center gap-2">
-                        <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>
+                        {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="View profile" onClick={() => { setUserSelected(currentConversation.members.find((e) => currentConversation.name === e.name)); document.getElementById('userProfile').showModal() }}>{icons.viewProfile}</label>}
                         {isFriend && <label className="tooltip p-1 hover:bg-gray-300 rounded-md cursor-pointer" data-tip="Add to group"
                             onClick={() => document.getElementById("addFriendToGroup").showModal()}>{icons.addToGroup}</label>}
                         {/* {isFriend && <label className="tooltip text-red-500 p-1 hover:bg-red-200 rounded-md cursor-pointer" data-tip="Remove friend"

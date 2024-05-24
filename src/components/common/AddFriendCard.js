@@ -1,7 +1,6 @@
 import { handleCancelFriendRequest, handleSendFriendRequest } from "../shared/api";
 
 export default function AddFriendCard({ props, value }) {
-    console.log(props)
     const onCancelClick = () => {
         return value('cancel')
     }

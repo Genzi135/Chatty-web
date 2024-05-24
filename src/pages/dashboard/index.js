@@ -36,6 +36,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         const handleReceiveMessage = (response) => {
+            console.log(response)
             if (currentConversationRef.current._id === response.conversation._id) {
                 dispatch(addMessage(response));
             }
@@ -50,7 +51,16 @@ export default function Dashboard() {
                 return conversation;
             });
 
-            dispatch(setListConversation(newList));
+            let list = [], receiver = {};
+            newList.map(conversation => {
+                if (conversation._id !== response.conversation._id) {
+                    list.push(conversation);
+                } else receiver = conversation
+            })
+
+            list = [receiver, ...list]
+
+            dispatch(setListConversation(list));
         };
 
         const handleDeleteMessage = (response) => {
@@ -128,7 +138,6 @@ export default function Dashboard() {
         };
 
         const handleRequest = (data) => {
-            console.log("request Data:", data);
             if (currentUserRef.current._id === data.userId) {
                 toast("New friend request")
             }
@@ -142,7 +151,6 @@ export default function Dashboard() {
         }
 
         const handleAccept = (data) => {
-            console.log("request accept:", data);
             if (currentUserRef.current._id === data.userId) {
                 toast(`${data.userInfo.name} accepted friend request`)
             }

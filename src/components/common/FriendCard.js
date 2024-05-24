@@ -3,9 +3,11 @@ import ModalConfirm from "./ModalConfirm";
 import { handleGetFriendList, handleOpenConversation, handleRemoveFriend } from "../shared/api";
 import { useDispatch, useSelector } from "react-redux";
 import HeaderModal from "./HeaderModal";
+import { setListConversation } from "../../hooks/redux/reducer";
 
 export default function FriendCard({ props, optionButton, isRefresh, dataSource }) {
     const reduxListConversation = useSelector((state) => state.listConversation);
+    const currentConversation = useSelector((state) => state.currentConversation)
     const [option, setOption] = useState('');
     const dispatch = useDispatch()
 
@@ -30,6 +32,10 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource 
         document.getElementById("confirmButton").addEventListener("click", () => removeFriend(friendId))
     }
 
+    function openConversation() {
+        handleOpenConversation(props.userId, dispatch, reduxListConversation)
+    }
+
     return (
         <div className="p-2 w-auto">
             <div className={`flex justify-between items-center p-4 gap-2 bg-white rounded-lg hover:bg-pink-100`}>
@@ -42,7 +48,7 @@ export default function FriendCard({ props, optionButton, isRefresh, dataSource 
                     <label className="font-semibold text-lg">{props.name && props.name}</label>
                 </div>
                 {optionButton && optionButton === 'ChatRemove' && <div className="flex justify-center items-center gap-2">
-                    <button className="btn btn-secondary text-white" onClick={() => { handleOpenConversation(props.userId, dispatch, reduxListConversation) }}>Chat</button>
+                    <button className="btn btn-secondary text-white" onClick={() => { openConversation() }}>Chat</button>
                     <button onClick={() => { openModal(props._id) }} className="btn btn-error text-white">Remove</button>
                 </div>}
                 {optionButton && optionButton === 'Selected' && "Selected"}
