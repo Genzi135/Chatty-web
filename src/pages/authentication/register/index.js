@@ -98,7 +98,7 @@ function Register({ state }) {
     // }
 
     const handleRegister = () => {
-        if (!(email || password || userName || gender || dob)) {
+        if (!(email && password && userName && gender && dob)) {
             setReport("Please fill all field")
             return
         }
@@ -115,11 +115,12 @@ function Register({ state }) {
 
         handleRegisterAPI(email, password, userName, gender, dob)
             .then(response => {
-                if (response.status === 200) {
+                if (response) {
                     toast("Register successfully")
+                    handleLogin(email, password, dispatch);
                 } else toast("Register failed")
             })
-        handleLogin(email, password, dispatch);
+
 
         setEmail('')
         setPassword('')
