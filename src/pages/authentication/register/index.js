@@ -98,6 +98,21 @@ function Register({ state }) {
     // }
 
     const handleRegister = () => {
+        if (email || password || userName || gender || dob) {
+            setReport("Please fill all field")
+            return
+        }
+
+        if (!checkRegex(password, "password")) {
+            setReport("Password need to be at least 8 characters")
+            return;
+        }
+
+        if (password === confirm) {
+            setReport("Password does not match")
+            return;
+        }
+
         handleRegisterAPI(email, password, userName, gender, dob)
             .then(response => {
                 if (response.status === 200) {
@@ -115,6 +130,7 @@ function Register({ state }) {
         setRegisterDisable(true)
         setOTPDisable(true)
         setSendOTP(false)
+        setReport("")
 
         clearTimeout(callTimeOut)
     };
