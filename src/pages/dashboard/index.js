@@ -68,31 +68,31 @@ export default function Dashboard() {
         };
 
         const handleDeleteMessage = (response) => {
-            console.log(listMessageRef)
-            const newList = listMessageRef.current.map((e) => {
-                if (response.id === e._id) {
-                    return { ...e, content: "This message has been deleted", isDelete: true };
-                }
-
-                if (e.parent) {
-                    console.log(response)
-                    console.log(e.parent._id === response.id)
-                    if (e.parent._id === response._id) {
-                        return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } }
+            if (response) {
+                const newList = listMessageRef.current.map((e) => {
+                    if (response.id === e._id) {
+                        return { ...e, content: "This message has been deleted", isDelete: true };
                     }
-                    return e;
-                }
-                return e
-            });
+                    if (e.parent) {
+                        if (response.id === e.parent._id) {
+                            if (e.parent.attachments.length > 0) {
+                                return { ...e, parent: { attachments: [], ...e.parent, content: "This message has been deleted", isDelete: true } };
+                            }
+                            return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
+                        }
+                    }
+                    return e
+                });
 
-            console.log(newList)
-            dispatch(setListMessage(newList));
-            if (newList[newList.length - 1]._id === response.id) {
-                getListConversation(dispatch)
+                dispatch(setListMessage(newList));
+                if (newList[newList.length - 1]._id === response.id) {
+                    getListConversation(dispatch)
+                }
             }
-        }
+        };
 
         const handleNotification = (data) => {
+            console.log(data)
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
                     dispatch(addMessage(data.messages[0]));
