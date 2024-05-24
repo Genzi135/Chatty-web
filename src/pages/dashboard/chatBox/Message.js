@@ -119,9 +119,9 @@ export default function Message({ data }) {
                     </div>
                     {data.content !== "This message has been deleted" && data.parent && <div onClick={onClickAttachments} className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary cursor-pointer">
                         <div>{data.parent.name}</div>
-                        {data.parent.content && data.parent.content !== "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
-                            {data.content}
-                        </div>}
+                        {data.parent.content && data.parent.content !== "This message has been deleted" ? <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {data.parent.content}
+                        </div> : <div><label>This message has been deleted</label></div>}
                         {data.parent.attachments && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
                             {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                                 {icons.image} image
