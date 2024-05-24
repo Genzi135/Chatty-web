@@ -38,6 +38,9 @@ export default function Dashboard() {
     useEffect(() => {
         const handleReceiveMessage = (response) => {
             console.log(response)
+            const listIds = listConversationRef.current.map(e => e._id)
+            if (!listIds.includes(response.conversation._id)) return
+
             if (currentConversationRef.current._id === response.conversation._id) {
                 dispatch(addMessage(response));
             }
@@ -70,8 +73,14 @@ export default function Dashboard() {
                     if (response.id === e._id) {
                         return { ...e, content: "This message has been deleted", isDelete: true };
                     }
-                    return e;
+                    if (e.parent) {
+                        if (response.id === e.parent._id) {
+                            return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
+                        }
+                    }
+                    return e
                 });
+
                 dispatch(setListMessage(newList));
                 if (newList[newList.length - 1]._id === response.id) {
                     getListConversation(dispatch)
@@ -93,7 +102,6 @@ export default function Dashboard() {
                     dispatch(setListConversation(newList))
                     dispatch(setCurrentConversation(data.conversation));
                 } else if (currentConversationRef.current._id !== data.conservationId) {
-                    console.log(3);
                     if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
                         const newList = [data.conversation, ...listConversationRef.current]
                         toast("New conversation!")
@@ -107,7 +115,6 @@ export default function Dashboard() {
         const handleRemoveMember = (data) => {
             if (data.members.includes(currentUserRef.current._id)) {
                 const newList = listConversationRef.current.filter((e) => e._id !== data.conservationId)
-                console.log(newList);
                 toast("Removed from a conversation")
                 dispatch(setListConversation(newList))
                 if (currentConversationRef.current._id === data.conservationId) {

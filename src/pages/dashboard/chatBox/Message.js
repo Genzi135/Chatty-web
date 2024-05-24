@@ -67,6 +67,11 @@ export default function Message({ data }) {
                     if (id === e._id) {
                         return { ...e, content: "This message has been deleted", isDelete: true };
                     }
+                    if (e.parent) {
+                        if (id === e.parent._id) {
+                            return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
+                        }
+                    }
                     return e;
                 });
                 dispatch(setListMessage(newList));
@@ -134,9 +139,15 @@ export default function Message({ data }) {
                     </div>
                     {data.content !== "This message has been deleted" && data.parent && <div onClick={onClickAttachments} className="flex flex-col p-2 bg-pink-50 rounded-lg mb-2 gap-2 border-l-8 border-secondary cursor-pointer">
                         <div>{data.parent.name}</div>
-                        {data.parent.content && data.parent.content !== "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
-                            {data.content}
+                        {data.parent.content && !data.parent.isDelete && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {data.parent.content}
                         </div>}
+                        {data.parent.content === "This message has been deleted" && data.parent.isDelete && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {"This message has been deleted"}
+                        </div>}
+                        {/* {data.parent.content === "This message has been deleted" && <div className={`${currentUser._id === data.sender._id ? 'bg-white rounded-lg w-full p-2' : 'bg-white rounded-lg w-full p-2'}`}>
+                            {"This message has been deleted"}
+                        </div>} */}
                         {data.parent.attachments && data.parent.attachments.length > 0 ? (data.parent.attachments.map(e => (<div className="h-auto inline-block" key={e.url} >
                             {e.type === 'image' && <div className="flex gap-2 cursor-pointer">
                                 {icons.image} image
@@ -156,6 +167,12 @@ export default function Message({ data }) {
 
                                     {e.url.split(".").pop() === 'rar' && <BsFileZip size={40} color='purple' />}
                                     {e.url.split(".").pop() === 'zar' && <BsFileZip size={40} color='purple' />}
+
+                                    <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
+                                </div>
+                            }
+                            {e.type === 'text' &&
+                                <div onClick={() => { window.open(e.url) }} className="cursor-pointer flex items-center bg-gray-200 p-1 rounded-lg">
 
                                     {e.url.split(".").pop() === 'txt' && <BsFiletypeTxt size={40} color='black' />}
                                     <label className="text-ellipsis whitespace-nowrap w-24 ">{e.url.split(".").pop()}</label>
