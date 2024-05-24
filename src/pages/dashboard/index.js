@@ -75,6 +75,9 @@ export default function Dashboard() {
                     }
                     if (e.parent) {
                         if (response.id === e.parent._id) {
+                            if (e.parent.attachments.length > 0) {
+                                return { ...e, parent: { attachments: [], ...e.parent, content: "This message has been deleted", isDelete: true } };
+                            }
                             return { ...e, parent: { ...e.parent, content: "This message has been deleted", isDelete: true } };
                         }
                     }
