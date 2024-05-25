@@ -146,7 +146,7 @@ export default function Dashboard() {
             if (data.conversation.members.some(e => e._id === currentUserRef.current._id)) {
                 const newList = [data.conversation, ...listConversationRef.current];
                 dispatch(setListConversation(newList));
-                toast("Create new group successful")
+                toast("New group created")
             } else {
                 console.log('nothing');
             }
