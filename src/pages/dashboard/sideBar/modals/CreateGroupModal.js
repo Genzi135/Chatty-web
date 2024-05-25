@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCurrentConversation } from "../../../../hooks/redux/reducer";
 // import { toast } from "react-toastify";
 import { useSocket } from "../../../../hooks/context/socket";
+import { toast } from "react-toastify";
 
 export default function CreateGroupModal({ onClose }) {
     const [dataSource, setDataSource] = useState([])
@@ -102,6 +103,7 @@ export default function CreateGroupModal({ onClose }) {
                             .then((response) => {
                                 dispatch(setCurrentConversation(response.data.data[0]))
                                 getListMessageByConversation(response.data.data[0]._id, dispatch)
+                                // toast("Create new group successful")
                             })
                     })
                 setReport('')

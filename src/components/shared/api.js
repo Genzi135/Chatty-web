@@ -597,7 +597,7 @@ export async function handleReplyFile(conversation, message, inputMessage, file,
 }
 
 //Forawrd message
-export async function handleForwardMessage(conversation, message, dispatch) {
+export async function handleForwardMessage(conversation, message, currentConversation, dispatch) {
     try {
         if (message.attachments.length !== 0) {
             const response = await axios({
@@ -608,9 +608,11 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                     files: message.attachments
                 }
             })
-
             getListConversation(dispatch)
-            getListMessageByConversation(conversation._id, dispatch)
+            if(conversation._id===currentConversation._id){
+                getListMessageByConversation(conversation._id, dispatch)
+                
+            }
             return response.data.data
         } else {
             const response = await axios({
@@ -622,7 +624,10 @@ export async function handleForwardMessage(conversation, message, dispatch) {
                 }
             })
             getListConversation(dispatch)
-            getListMessageByConversation(conversation._id, dispatch)
+            if(conversation._id===currentConversation._id){
+                getListMessageByConversation(conversation._id, dispatch)
+                
+            }
             return response.data.data
         }
 

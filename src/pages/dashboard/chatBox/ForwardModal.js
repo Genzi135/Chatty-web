@@ -75,7 +75,7 @@ export default function ForwardModal({ onClose }) {
             });
             dispatch(setListConversation(newList))
 
-            handleForwardMessage(e, selectedMessage, dispatch)
+            handleForwardMessage(e, selectedMessage, currentConversation, dispatch)
                 .then(response => {
                     console.log(response)
                     socket.emit("message:send", {
