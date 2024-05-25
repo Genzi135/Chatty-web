@@ -1,6 +1,6 @@
 /* eslint-disable default-case */
 const emailRegex = /.@./;
-const passwordRegex = /.{8,}/;
+const passwordRegex = /.{6,}/;
 
 export function checkRegex(string, type) {
     switch (type) {

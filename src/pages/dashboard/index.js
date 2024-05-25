@@ -92,20 +92,24 @@ export default function Dashboard() {
         };
 
         const handleNotification = (data) => {
-            console.log(data)
+
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
+                    console.log(2);
                     dispatch(addMessage(data.messages[0]));
                     toast(data.messages[0].content);
                     const newList = listConversationRef.current.map(e => {
                         if (e._id === data.conservationId) {
-                            return { ...e, members: data.conversation.members }
+                            return { ...data.conversation }
                         }
                         return e
                     })
+                    console.log(newList);
                     dispatch(setListConversation(newList))
                     dispatch(setCurrentConversation(data.conversation));
-                } else if (currentConversationRef.current._id !== data.conservationId) {
+
+                }
+                else if (currentConversationRef.current._id !== data.conservationId) {
                     console.log(3);
                     if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
                         const newList = [data.conversation, ...listConversationRef.current]
