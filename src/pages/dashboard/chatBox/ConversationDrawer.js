@@ -274,7 +274,7 @@ export default function ConversationDrawer() {
     const addMember = () => {
         handleAddMember(currentConversation, currentUser._id, selectedList)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
             })
         document.getElementById("addToGroup").close()
         setSelectedAddList([])
@@ -364,10 +364,9 @@ export default function ConversationDrawer() {
     function removeFriend() {
         if (currentConversation.type === 'private') {
             let Ids = currentConversation.members.map(member => member._id)
-            console.log(currentConversation.members, currentUser._id)
             Ids.map(Id => {
                 if (Id !== currentUser._id) {
-                    console.log(Id)
+
                     handleRemoveFriend(Id)
                 }
             })
@@ -385,7 +384,6 @@ export default function ConversationDrawer() {
         }
 
         const handleRemove = (data) => {
-            console.log(data)
             // if (currentConversationRef.current.type === 'private') {
 
             //     let currentConversationIds = []

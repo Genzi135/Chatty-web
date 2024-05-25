@@ -95,7 +95,7 @@ export default function Dashboard() {
 
             if (data) {
                 if (currentConversationRef.current._id === data.conservationId) {
-                    console.log(2);
+
                     dispatch(addMessage(data.messages[0]));
                     toast(data.messages[0].content);
                     const newList = listConversationRef.current.map(e => {
@@ -104,13 +104,12 @@ export default function Dashboard() {
                         }
                         return e
                     })
-                    console.log(newList);
                     dispatch(setListConversation(newList))
                     dispatch(setCurrentConversation(data.conversation));
 
                 }
                 else if (currentConversationRef.current._id !== data.conservationId) {
-                    console.log(3);
+
                     if ((!listConversationRef.current.some((e) => e._id === data.conservationId) && (data.conversation.members.some((e) => e._id === currentUserRef.current._id)))) {
                         const newList = [data.conversation, ...listConversationRef.current]
                         toast("New conversation!")
@@ -124,7 +123,7 @@ export default function Dashboard() {
         const handleRemoveMember = (data) => {
             if (data.members.includes(currentUserRef.current._id)) {
                 const newList = listConversationRef.current.filter((e) => e._id !== data.conservationId)
-                console.log(newList);
+
                 toast("Removed from a conversation")
                 dispatch(setListConversation(newList))
                 if (currentConversationRef.current._id === data.conservationId) {
