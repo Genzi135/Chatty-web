@@ -96,7 +96,7 @@ export default function ProfileModal() {
                     toast("Change avatar successfully")
                     handleGetMe().then(response => dispatch(setCurrentUser(response.data.data)))
                 }
-                else toast("Change avatar failed")
+                else { toast("Change avatar failed") }
                 setViewStateProfile('profile')
             })
     }
@@ -111,8 +111,14 @@ export default function ProfileModal() {
                 setReport("Please fill all field")
                 return
             }
-            handleUpdateProfile(userName, gender, dob).then((response) => { if (response.status === 200) toast("Change profile successfully"); else toast("Change profile failed") });
-            handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
+            handleUpdateProfile(userName, gender, dob)
+                .then((response) => { 
+                    if (response.status === 200) toast("Change profile successfully"); 
+                    else { toast("Change profile failed"); return }
+                })
+                .then(() => {
+                    handleGetMe().then((response) => { dispatch(setCurrentUser(response.data.data)) })
+                })
             setViewStateProfile("profile")
             setOption('')
         }
